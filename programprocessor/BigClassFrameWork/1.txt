@@ -1,0 +1,1 @@
+class c#Test c#A f#Map<Integer,String> f#T m#Test m#A m#foo m#foo. ft#Map<Integer,String> ff#a ff#b. ft#T ff#tt. mr#null mn#Test mn#A mp#Map<Integer,String>. mr#POI mn#foo. mr#int mn#foo mp#int mp#ArrayList<Object>.
