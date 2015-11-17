@@ -31,4 +31,7 @@ public class OperationType {
 	public static int NearlyCommonText = 28;
 	public static int BlockCommand = 29;
 	public static int ExpressionMethodReference = 30;
+	public static int LambdaExpressionHint = 31; // just a hint to easy lambda handle.
+	public static int LambdaExpression = 32; // ->
+	public static int LambdaParam = 33;
 }

@@ -77,6 +77,7 @@ import cn.yyx.research.language.JDTManager.ClassLineManager;
 import cn.yyx.research.language.JDTManager.DataLineManager;
 import cn.yyx.research.language.JDTManager.EnteredBlockStack;
 import cn.yyx.research.language.JDTManager.EnteredClassStack;
+import cn.yyx.research.language.JDTManager.EnteredLambdaParamStack;
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
@@ -92,12 +93,12 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 
 	EnteredBlockStack blockstack = new EnteredBlockStack();
 	EnteredClassStack classstack = new EnteredClassStack();
+	EnteredLambdaParamStack lambdaparamstack = new EnteredLambdaParamStack();
 	NodeLineManager nlm = new NodeLineManager();
 	LineCodeManager lcm = new LineCodeManager();
 	DataLineManager dlm = new DataLineManager(blockstack, classstack);
 	NodeCodeManager ncm = new NodeCodeManager();
 	LabelLineManager llm = new LabelLineManager();
-	// FieldAccessNodeManager fanm = new FieldAccessNodeManager();
 	ClassLineManager clm = new ClassLineManager();
 	LineManager lm = new LineManager();
 	
@@ -105,7 +106,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 
 	Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	
-	//TODO method invokation not need to set parameters into the generated code.
+	// method invokation not need to set parameters into the generated code. solved.
 	//TODO = + such operations need to change to first order.
 
 	public ForwardMethodASTVisitor() {
@@ -148,15 +149,34 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean visit(LambdaExpression node) {
-		// TODO
-		 System.out.println("LambdaExpressionBegin:");
-		 System.out.println("LambdaExpression:"+node);
-		 System.out.println("LambdaExpressionHasParenthese:"+node.hasParentheses());
-		 System.out.println("LambdaExpressionParameters:"+node.parameters());
-		 System.out.println("LambdaExpressionBody:"+node.getBody());
-		 System.out.println("LambdaExpressionEnd.");
+		// System.out.println("LambdaExpressionBegin:");
+		// System.out.println("LambdaExpression:"+node);
+		// System.out.println("LambdaExpressionHasParenthese:"+node.hasParentheses());
+		// System.out.println("LambdaExpressionParameters:"+node.parameters());
+		// System.out.println("LambdaExpressionBody:"+node.getBody());
+		// System.out.println("LambdaExpressionEnd.");
+		EnterBlock(node, false);
+		EnterLambdaParam(node);
+		OneTextOneLine(OperationType.LambdaExpressionHint + "#", (node.hasParentheses() ? 1 : 0) + "#");
+		List<ASTNode> params = node.parameters();
+		ASTNode lastdec = params.get(params.size());
+		fotp.InfixNodeAddFirstOrderTask(new FirstOrderTask(lastdec, node.getBody(), node, false) {
+			@Override
+			public void run() {
+				ExitLambdaParam(node);
+				int line = VisitLineOccupy(node);
+				String code = OperationType.LambdaExpression + "#";
+				EndVisitReplaceLineOccupyWithRealContent(line, node, code);
+			}
+		});
 		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(LambdaExpression node) {
+		ExitBlock(false);
 	}
 	
 	@Override
@@ -491,14 +511,13 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void endVisit(SuperMethodInvocation node) {
 		int line = GetOccupiedLine(node);
 		String code = OperationType.MethodInvocation + "#" + "super." + node.getName() + "#";
-		List<Expression> args = node.arguments();
+		/*List<Expression> args = node.arguments();
 		for (Expression arg : args) {
 			code += GetRefCode(arg, line);
-		}
+		}*/
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 	}
 
@@ -517,15 +536,14 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void endVisit(MethodInvocation node) {
 		int line = GetOccupiedLine(node);
 		String exprcode = (node.getExpression() == null ? "" : GetRefCode(node.getExpression(), line));
 		String code = OperationType.MethodInvocation + "#" + exprcode + node.getName() + "#";
-		List<Expression> args = node.arguments();
+		/*List<Expression> args = node.arguments();
 		for (Expression arg : args) {
 			code += GetRefCode(arg, line);
-		}
+		}*/
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 	}
 
@@ -768,14 +786,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		String code = OperationType.ReturnStatement + "#" + GetRefCode(node.getExpression(), line);
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 	}
-
-	@Override
-	public boolean visit(SimpleName node) {
-		// System.out.println("SimpleName:" + node);
-		UnchangedNode(node);
-		return super.visit(node);
-	}
-
+	
 	@Override
 	public boolean visit(PrimitiveType node) {
 		// System.out.println("PrimitiveType:" + node);
@@ -932,7 +943,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		OneTextOneLine(OperationType.BlockCommand + "#", "EXIT#");
 		ExitBlock(false);
 	}
-
+	
 	@Override
 	public boolean visit(SingleVariableDeclaration node) {
 		// System.out.println("SingleVariableDeclaration:"+node);
@@ -943,7 +954,24 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 		return super.visit(node);
 	}
-
+	
+	@Override
+	public boolean visit(SimpleName node) {
+		// System.out.println("SimpleName:" + node);
+		if (lambdaparamstack.IsInLambda())
+		{
+			int line = VisitLineOccupy(node);
+			dlm.AddDataLineInfo(node.toString(), line, false, true);
+			String code = OperationType.LambdaParam + "#" + node;
+			EndVisitReplaceLineOccupyWithRealContent(line, node, code);
+		}
+		else
+		{
+			UnchangedNode(node);
+		}
+		return super.visit(node);
+	}
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(FieldDeclaration node) {
@@ -1220,6 +1248,16 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 
 	private void ExitBlock(boolean isclass) {
 		dlm.ExitBlock(isclass);
+	}
+	
+	private void EnterLambdaParam(LambdaExpression lambda)
+	{
+		lambdaparamstack.push(lambda.hashCode());
+	}
+	
+	private void ExitLambdaParam(LambdaExpression lambda)
+	{
+		lambdaparamstack.pop();
 	}
 
 	private void GiveLinkBetweenNodes(ASTNode linkingnode, ASTNode nodetobelinked) {
