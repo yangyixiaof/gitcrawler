@@ -78,7 +78,7 @@ import cn.yyx.research.language.JDTManager.OperationType;
 public class ForwardMethodASTVisitor extends MyASTVisitor {
 	
 	// TODO (later half part not solved.) method invocation not need to set parameters into the generated code but parameters need to have some prefix to indicate this is a parameter of a method.
-	// TODO not only method invocation, switch while if for such all need prefix.
+	// TODO not only method invocation, switch while if for such all need prefix. judgment, update, no-prefix block, and others all need to be prefixed.
 	// TODO = + such operations need to change to first order.
 	// TODO out of scope variables are thought as First declared.
 	// TODO offset still the assignment but method invoke of an object is taken as assignment.
