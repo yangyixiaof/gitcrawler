@@ -44,8 +44,8 @@ public class ASTTraversal {
 
 	public ArrayList<CorpusContentPair> GeneratePredictionSuiteOnJava() {
 		ArrayList<CorpusContentPair> result = new ArrayList<CorpusContentPair>();
-		CorpusContentPair cp_class_framework = ClassFrameworkCorpus.GenerateClassFrameworkCorpus(compilationUnit);
-		result.add(cp_class_framework);
+		//CorpusContentPair cp_class_framework = ClassFrameworkCorpus.GenerateClassFrameworkCorpus(compilationUnit);
+		//result.add(cp_class_framework);
 		CorpusContentPair cp_class_logic = ClassLogicDetailCorpus.GenerateClassDetailCorpus(compilationUnit);
 		result.add(cp_class_logic);
 		return result;

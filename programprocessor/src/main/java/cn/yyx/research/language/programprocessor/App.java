@@ -76,6 +76,7 @@ public class App {
 					// stop = !...
 					app.StartProcessJavaProjects();
 					break;
+				case "exit":
 				case "stop":
 					if (app != null)
 					{

@@ -35,7 +35,7 @@ public class FirstOrderTaskPool {
 	public void PreIsOver(ASTNode pre)
 	{
 		FirstOrderTask fot = pretasks.remove(GetASTId(pre, true));
-		if (fot.isAfterprerun())
+		if (fot != null && fot.isAfterprerun())
 		{
 			fot.run();
 			posttasks.remove(GetASTId(pre, false));

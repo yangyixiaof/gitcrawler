@@ -195,6 +195,10 @@ public class DataLineManager {
 	{
 		int classscopeid = classstack.peek();
 		LinkedList<String> fieldslist = mScopeDataMap.get(classscopeid);
+		if (fieldslist == null)
+		{
+			return;
+		}
 		for (String field : fieldslist)
 		{
 			LinkedList<Integer> samedatas = mDataLineMap.get(field);

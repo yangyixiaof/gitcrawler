@@ -1,5 +1,6 @@
 package cn.yyx.research.language.JDTHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -78,6 +79,7 @@ import cn.yyx.research.language.JDTManager.DataLineManager;
 import cn.yyx.research.language.JDTManager.EnteredBlockStack;
 import cn.yyx.research.language.JDTManager.EnteredClassStack;
 import cn.yyx.research.language.JDTManager.EnteredLambdaParamStack;
+import cn.yyx.research.language.JDTManager.EnteredMarkerStack;
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
@@ -88,12 +90,15 @@ import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeLineManager;
 import cn.yyx.research.language.JDTManager.OffsetLibrary;
 import cn.yyx.research.language.JDTManager.OperationType;
+import cn.yyx.research.language.JDTManager.OtherCodeManager;
+import cn.yyx.research.language.Utility.CorpusContentPair;
 
 public class ForwardMethodASTVisitor extends ASTVisitor {
-
+	
 	EnteredBlockStack blockstack = new EnteredBlockStack();
 	EnteredClassStack classstack = new EnteredClassStack();
 	EnteredLambdaParamStack lambdaparamstack = new EnteredLambdaParamStack();
+	EnteredMarkerStack markerstack= new EnteredMarkerStack();
 	NodeLineManager nlm = new NodeLineManager();
 	LineCodeManager lcm = new LineCodeManager();
 	DataLineManager dlm = new DataLineManager(blockstack, classstack);
@@ -101,13 +106,15 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	LabelLineManager llm = new LabelLineManager();
 	ClassLineManager clm = new ClassLineManager();
 	LineManager lm = new LineManager();
+	OtherCodeManager ocm = new OtherCodeManager();
 	
 	FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 
 	Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	
 	// method invokation not need to set parameters into the generated code. solved.
-	//TODO = + such operations need to change to first order.
+	// TODO = + such operations need to change to first order.
+	// TODO out of scope variables are thought as First declared.
 
 	public ForwardMethodASTVisitor() {
 	}
@@ -120,6 +127,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(Dimension node) {
+		// []
 		System.out.println("Dimension:" + node);
 		return super.visit(node);
 	}
@@ -188,7 +196,8 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 			@Override
 			public void run() {
 				int line = VisitLineOccupy(node);
-				String code = OperationType.ExpressionMethodReference + "#" + this.getPost().toString();
+				String exprcode = LineOccupied(node.getExpression()) ? "" : GetRefCode(node.getExpression(), line);
+				String code = OperationType.ExpressionMethodReference + "#" + this.getPost().toString() + "#" + exprcode;
 				EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 			}
 		});
@@ -203,19 +212,20 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(ArrayInitializer node) {
+		// System.out.println("ArrayInitializer:"+node);
 		UnchangedNode(node, GCodeMetaInfo.ArrayInitial);
 	}
 	
 	@Override
 	public boolean visit(ArrayCreation node) {
 		// System.out.println("ArrayCreation:"+node);
-		UnchangedNode(node, GCodeMetaInfo.ArrayInitial);
+		UnchangedNode(node, GCodeMetaInfo.ArrayCreation);
 		return false;
 	}
 	
 	@Override
 	public boolean visit(TypeLiteral node) {
-		System.out.println("TypeLiteral:" + node);
+		 System.out.println("TypeLiteral:" + node);
 		// UnchangedNode(node);
 		return super.visit(node);
 	}
@@ -255,8 +265,8 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclarationStatement node) {
-		// Do nothing now.
-		// System.out.println("TypeDeclarationStatement:"+node);
+		// Do not know what it is now.
+		 System.out.println("TypeDeclarationStatement:"+node);
 		return super.visit(node);
 	}
 
@@ -707,14 +717,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		UnchangedNode(node);
 		return super.visit(node);
 	}
-
-	@Override
-	public boolean visit(NumberLiteral node) {
-		// System.out.println("NumberLiteral:"+node);
-		UnchangedNode(node);
-		return super.visit(node);
-	}
-
+	
 	@Override
 	public void endVisit(ParenthesizedExpression node) {
 		// System.out.println("ParenthesizedExpression:"+node);
@@ -789,6 +792,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(PrimitiveType node) {
+		// TODO
 		// System.out.println("PrimitiveType:" + node);
 		UnchangedNode(node);
 		return super.visit(node);
@@ -796,6 +800,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SimpleType node) {
+		// TODO
 		// System.out.println("SimpleType:" + node);
 		UnchangedNode(node);
 		return super.visit(node);
@@ -803,18 +808,28 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(QualifiedType node) {
+		// TODO
 		// System.out.println("QualifiedType:"+node);
 		UnchangedNode(node);
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public boolean visit(StringLiteral node) {
 		// System.out.println("StringLiteral:"+node);
+		AppendOtherCode(GCodeMetaInfo.StringCorpus, node.toString());
 		UnchangedNode(node, GCodeMetaInfo.StringHolder);
 		return super.visit(node);
 	}
-
+	
+	@Override
+	public boolean visit(NumberLiteral node) {
+		// System.out.println("NumberLiteral:"+node);
+		AppendOtherCode(GCodeMetaInfo.NumberCorpus, node.toString());
+		UnchangedNode(node, GCodeMetaInfo.NumberHolder);
+		return super.visit(node);
+	}
+	
 	@Override
 	public boolean visit(SuperConstructorInvocation node) {
 		// System.out.println("SuperConstructorInvocation:"+node);
@@ -905,7 +920,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		OneTextOneLine(OperationType.ThrowException + "#");
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public boolean visit(TryStatement node) {
 		// System.out.println("TryStatement:"+node);
@@ -913,7 +928,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		OneTextOneLine("try");
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public boolean visit(CatchClause node) {
 		// System.out.println("CatchClause:"+node);
@@ -922,7 +937,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public boolean visit(Block node) {
 		// Do nothing now.
@@ -934,7 +949,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public void endVisit(Block node) {
 		// blockstack.pop();
@@ -984,7 +999,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
@@ -993,7 +1008,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		EnterBlock(node, false);
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public void endVisit(MethodDeclaration node) {
 		if (isFirstLevelMethod(node)) {
@@ -1002,7 +1017,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		}
 		ExitBlock(false);
 	}
-
+	
 	@Override
 	public boolean visit(EnumDeclaration node) {
 		// Do nothing now.
@@ -1021,7 +1036,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	public void endVisit(EnumDeclaration node) {
 		OneTextOneLine(".");
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(VariableDeclarationExpression node) {
@@ -1067,7 +1082,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 			}
 		}
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(VariableDeclarationStatement node) {
@@ -1097,7 +1112,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		}
 		return super.visit(node);
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(VariableDeclarationStatement node) {
@@ -1114,7 +1129,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 			}
 		}
 	}
-
+	
 	@Override
 	public boolean visit(WhileStatement node) {
 		// System.out.println("WhileStatement:"+node);
@@ -1124,7 +1139,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		VisitLineOccupy(node);
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public void endVisit(WhileStatement node) {
 		int line = GetOccupiedLine(node);
@@ -1134,7 +1149,7 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 		ExitBlock(false);
 	}
-
+	
 	private String GetRefCode(ASTNode node, int currline) {
 		String code = null;
 		Integer nline = nlm.GetAstNodeLineInfo(node);
@@ -1171,51 +1186,60 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		}
 		return code;
 	}
-
+	
 	private int OneTextOneLine(String nodestr) {
 		int line = lm.NewLine();
 		lcm.AddLineCode(line, OperationType.NearlyCommonText + "#" + nodestr);
 		return line;
 	}
-
+	
 	private int OneTextOneLine(String commandtype, String nodestr) {
 		int line = lm.NewLine();
 		lcm.AddLineCode(line, commandtype + nodestr);
 		return line;
 	}
-
+	
 	private void UnchangedNode(ASTNode node) {
 		ncm.AddASTNodeCode(node, node.toString());
 	}
-
+	
 	private void UnchangedNode(ASTNode node, String nodestr) {
 		ncm.AddASTNodeCode(node, nodestr);
 	}
-
+	
+	private boolean LineOccupied(ASTNode node)
+	{
+		return nlm.GetAstNodeLineInfo(node) != null;
+	}
+	
 	private int VisitLineOccupy(ASTNode node) {
 		int line = lm.NewLine();
 		nlm.AddASTNodeLineInfo(node, line);
 		return line;
 	}
-
+	
 	private Integer GetOccupiedLine(ASTNode node) {
 		return nlm.GetAstNodeLineInfo(node);
 	}
-
+	
 	private void EndVisitReplaceLineOccupyWithRealContent(int line, ASTNode node, String code) {
 		ncm.AddASTNodeCode(node, code);
 		lcm.AddLineCode(line, code);
 	}
-
+	
 	@Override
 	public String toString() {
 		return lcm.GetGeneratedCode();
 	}
-
+	
 	public String GetGeneratedCode() {
 		return lcm.GetGeneratedCode();
 	}
-
+	
+	public ArrayList<CorpusContentPair> GetOtherGeneratedCode() {
+		return ocm.GetOtherGeneratedCode();
+	}
+	
 	/*
 	 * private int OneTextNodeOneLine(ASTNode node) { int line = lm.NewLine();
 	 * nlm.AddASTNodeLineInfo(node, line); ncm.AddASTNodeCode(node,
@@ -1223,15 +1247,15 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	 * lcm.AddLineCode(line, OperationType.NearlyCommonText + "#" +
 	 * node.toString()); return line; }
 	 */
-
+	
 	private void ResetDLM() {
 		dlm.ResetCurrentClassField();
 	}
-
+	
 	private void OneSentenceEnd() {
 		OneTextOneLine(".");
 	}
-
+	
 	private boolean isFirstLevelMethod(MethodDeclaration node) {
 		int classhashcode = classstack.getClassId(0);
 		int parenthashcode = node.getParent().hashCode();
@@ -1240,12 +1264,12 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 		}
 		return false;
 	}
-
+	
 	private void EnterBlock(ASTNode node, boolean isclass) {
 		// System.out.println("Hashcode:"+node.hashCode()+";node:"+node);
 		dlm.EnterBlock(node.hashCode(), isclass);
 	}
-
+	
 	private void ExitBlock(boolean isclass) {
 		dlm.ExitBlock(isclass);
 	}
@@ -1259,9 +1283,14 @@ public class ForwardMethodASTVisitor extends ASTVisitor {
 	{
 		lambdaparamstack.pop();
 	}
-
+	
 	private void GiveLinkBetweenNodes(ASTNode linkingnode, ASTNode nodetobelinked) {
 		nodelink.put(linkingnode.hashCode(), nodetobelinked);
 	}
-
+	
+	private void AppendOtherCode(String corpus, String code)
+	{
+		ocm.AppendOtherCode(corpus, code);
+	}
+	
 }
