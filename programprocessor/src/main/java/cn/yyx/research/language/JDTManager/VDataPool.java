@@ -3,58 +3,48 @@ package cn.yyx.research.language.JDTManager;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-
 public class VDataPool {
 	
 	Map<Integer, JCScope> scopes = new TreeMap<Integer, JCScope>();
 	
-	// a node is only equivalent to one node.
-	Map<Integer, Integer> equivalentScope = null;
-	
-	public VDataPool(Map<Integer, Integer> equivalentScopeParam) {
-		this.equivalentScope = equivalentScopeParam;
+	public void AScopeCreated(OneScope scope)
+	{
+		int id = scope.hashCode();
+		JCScope jscope = new JCScope(id, scope.getLevel());
+		scopes.put(id, jscope);
 	}
 	
-	public void AScopeCreated(ASTNode node, int level)
+	public void AScopeDestroyed(OneScope scope)
 	{
-		int id = node.hashCode();
-		JCScope scope = new JCScope(id, level);
-		Integer equivalentScopeId = equivalentScope.get(id);
-		if (equivalentScopeId == null || !scopes.containsKey(equivalentScopeId))
-		{
-			scopes.put(id, scope);
-		}
-	}
-	
-	public void AScopeDestroyed(ASTNode node)
-	{
-		equivalentScope.remove(node.hashCode());
-		int id = node.hashCode();
+		int id = scope.getID();
 		scopes.remove(id);
 	}
 	
-	public void NewlyAssignedData(ASTNode scope, String data)
+	public void NewlyAssignedData(OneScope scope, String data)
 	{
 		JCScope dataScope = GetDataScope(scope);
 		dataScope.PushNewlyAssignedData(data);
 	}
 	
-	public int GetExactDataOffsetInDataOwnScope(ASTNode scope, String data)
+	public Integer GetExactDataOffsetInDataOwnScope(OneScope scope, String data)
 	{
 		JCScope dataScope = GetDataScope(scope);
 		return dataScope.GetExactOffset(data);
 	}
 	
-	private JCScope GetDataScope(ASTNode scope)
-	{
-		int id = scope.hashCode();
-		Integer scopeid = id;
-		Integer equivalentScopeId = equivalentScope.get(id);
-		if (equivalentScopeId != null)
+	public void ResetClassScope(OneScope scope) {
+		JCScope dataScope = GetDataScope(scope);
+		if (dataScope instanceof JClassScope)
 		{
-			scopeid = equivalentScopeId;
+			JClassScope jcscope = (JClassScope)dataScope;
+			jcscope.ResetScope();
 		}
+	}
+	
+	private JCScope GetDataScope(OneScope scope)
+	{
+		int id = scope.getID();
+		Integer scopeid = id;
 		if (!scopes.containsKey(scopeid))
 		{
 			System.err.println("Error! no handled scope? The system will exit.");

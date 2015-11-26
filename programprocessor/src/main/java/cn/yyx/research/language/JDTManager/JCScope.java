@@ -60,16 +60,22 @@ public class JCScope {
 		}
 	}
 	
-	public int GetExactOffset(String data)
+	public Integer GetExactOffset(String data)
 	{
 		Integer order = dataOrder.get(data);
 		if (order == null)
 		{
-			System.err.println("Wrong data: the data is not declared or assigned. The system will exit. This may be improved in the future to get better compatibility.");
-			System.exit(1);
+			System.err.println("Warning data: the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			return null;
 		}
 		int maxOffset = allDataNum-1;
 		return order-maxOffset;
+	}
+	
+	public void ClearAll()
+	{
+		dataInOrder.clear();
+		dataOrder.clear();
 	}
 	
 }
