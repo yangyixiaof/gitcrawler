@@ -28,7 +28,8 @@ public class ClassLogicDetailCorpus {
 				mbody.accept(new ForwardMethodASTVisitor(onemethod));
 				Content.append(onemethod);
 			}*/
-			ForwardMethodASTVisitor fmastv = new ForwardMethodASTVisitor();
+			ForwardMethodPreProcessASTVisitor fmastv = new ForwardMethodPreProcessASTVisitor();
+			ForwardMethodCodeGenerateASTVisitor fmvgastv = new ForwardMethodCodeGenerateASTVisitor(fmastv);
 			clazzNode.accept(fmastv);
 			Content.append(fmastv.GetGeneratedCode());
 		}

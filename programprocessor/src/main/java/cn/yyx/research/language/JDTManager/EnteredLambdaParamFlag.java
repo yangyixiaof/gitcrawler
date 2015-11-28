@@ -1,11 +1,11 @@
 package cn.yyx.research.language.JDTManager;
 
-public class EnteredLambdaParamStack {
+public class EnteredLambdaParamFlag {
 	
 	//This is not a stack actually.
 	private boolean isInLambdaParam = false;
 	
-	public EnteredLambdaParamStack() {
+	public EnteredLambdaParamFlag() {
 	}
 	
 	public boolean IsInLambda()

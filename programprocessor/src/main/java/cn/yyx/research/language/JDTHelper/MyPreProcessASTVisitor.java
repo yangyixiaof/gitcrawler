@@ -1,6 +1,5 @@
 package cn.yyx.research.language.JDTHelper;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -8,31 +7,21 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.LambdaExpression;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import cn.yyx.research.language.JDTManager.EnteredLambdaParamStack;
-import cn.yyx.research.language.JDTManager.EnteredMarkerStack;
+import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
-import cn.yyx.research.language.JDTManager.LineCodeManager;
-import cn.yyx.research.language.JDTManager.LineManager;
+import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
-import cn.yyx.research.language.JDTManager.NodeLineManager;
-import cn.yyx.research.language.JDTManager.OperationType;
-import cn.yyx.research.language.JDTManager.OtherCodeManager;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
-import cn.yyx.research.language.Utility.CorpusContentPair;
 
-public class MyASTVisitor extends ASTVisitor{
+public class MyPreProcessASTVisitor extends ASTVisitor{
 	
-	private EnteredLambdaParamStack lambdaparamstack = new EnteredLambdaParamStack();
-	private EnteredMarkerStack markerstack= new EnteredMarkerStack();
-	private NodeLineManager nlm = new NodeLineManager();
-	private LineCodeManager lcm = new LineCodeManager();
+	// private EnteredLambdaParamFlag lambdaparamstack = new EnteredLambdaParamFlag();
+	// private NodeLineManager nlm = new NodeLineManager();
+	// private LineManager lm = new LineManager();
+	// private LineCodeManager lcm = new LineCodeManager();
 	private NodeCodeManager ncm = new NodeCodeManager();
-	private LineManager lm = new LineManager();
-	private OtherCodeManager ocm = new OtherCodeManager();
 	
 	private ScopeDataManager sdm = new ScopeDataManager();
 	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
@@ -116,8 +105,9 @@ public class MyASTVisitor extends ASTVisitor{
 		equivalentScope.put(node2.hashCode(), node1.hashCode());
 	}
 	
+	// If doesn't know the kind, just set one as random. The one must be the big kind you want.
 	protected String GetDataOffset(String data, String kind) {
-		String code = sdm.GetDataAssignOffsetInfo(data, ScopeDataManager.GetManagerLevelHintForKind(kind));
+		String code = getSdm().GetDataAssignOffsetInfo(data, ScopeDataManager.GetManagerLevelHintForKind(kind));
 		return code;
 		/*Integer nline = nlm.GetAstNodeLineInfo(node);
 		if (nline != null) {
@@ -150,27 +140,21 @@ public class MyASTVisitor extends ASTVisitor{
 		return code;*/
 	}
 	
-	protected int OneTextOneLine(String nodestr) {
-		int line = lm.NewLine();
-		lcm.AddLineCode(line, OperationType.NearlyCommonText + "#" + nodestr);
-		return line;
-	}
-	
-	protected int OneTextOneLine(String commandtype, String nodestr) {
+	/*protected int OneTextOneLine(String commandtype, String nodestr) {
 		int line = lm.NewLine();
 		lcm.AddLineCode(line, commandtype + nodestr);
 		return line;
-	}
+	}*/
 	
-	protected void UnchangedNode(ASTNode node) {
-		ncm.AddASTNodeCode(node, node.toString());
+	/*protected void UnchangedNode(ASTNode node) {
+		getNcm().AddASTNodeCode(node, node.toString());
 	}
 	
 	protected void UnchangedNode(ASTNode node, String nodestr) {
-		ncm.AddASTNodeCode(node, nodestr);
-	}
+		getNcm().AddASTNodeCode(node, nodestr);
+	}*/
 	
-	protected boolean LineOccupied(ASTNode node)
+	/*protected boolean LineOccupied(ASTNode node)
 	{
 		return nlm.GetAstNodeLineInfo(node) != null;
 	}
@@ -197,11 +181,7 @@ public class MyASTVisitor extends ASTVisitor{
 	
 	public String GetGeneratedCode() {
 		return lcm.GetGeneratedCode();
-	}
-	
-	public ArrayList<CorpusContentPair> GetOtherGeneratedCode() {
-		return ocm.GetOtherGeneratedCode();
-	}
+	}*/
 	
 	/*
 	 * protected int OneTextNodeOneLine(ASTNode node) { int line = lm.NewLine();
@@ -212,15 +192,11 @@ public class MyASTVisitor extends ASTVisitor{
 	 */
 	
 	protected void ResetDLM() {
-		sdm.ResetCurrentClassField();
+		getSdm().ResetCurrentClassField();
 	}
 	
-	protected void OneSentenceEnd() {
-		OneTextOneLine(".");
-	}
-	
-	protected boolean isFirstLevelMethod(MethodDeclaration node) {
-		int classhashcode = sdm.GetFirstClassId();
+	protected boolean isFirstLevelASTNode(ASTNode node) {
+		int classhashcode = getSdm().GetFirstClassId();
 		int parenthashcode = node.getParent().hashCode();
 		if (parenthashcode == classhashcode) {
 			return true;
@@ -230,18 +206,18 @@ public class MyASTVisitor extends ASTVisitor{
 	
 	protected void EnterBlock(ASTNode node, boolean isclass) {
 		// System.out.println("Hashcode:"+node.hashCode()+";node:"+node);
-		sdm.EnterBlock(node.hashCode(), isclass);
+		getSdm().EnterBlock(node.hashCode(), isclass);
 	}
 	
 	protected void ExitBlock() {
-		sdm.ExitBlock();
+		getSdm().ExitBlock();
 	}
 	
 	protected boolean ContainsScope(Integer equid) {
-		return sdm.ContainsScope(equid);
+		return getSdm().ContainsScope(equid);
 	}
 	
-	protected void EnterLambdaParam(LambdaExpression lambda)
+	/*protected void EnterLambdaParam(LambdaExpression lambda)
 	{
 		lambdaparamstack.push(lambda.hashCode());
 	}
@@ -249,15 +225,72 @@ public class MyASTVisitor extends ASTVisitor{
 	protected void ExitLambdaParam(LambdaExpression lambda)
 	{
 		lambdaparamstack.pop();
-	}
+	}*/
 	
 	protected void GiveLinkBetweenNodes(ASTNode linkingnode, ASTNode nodetobelinked) {
 		nodelink.put(linkingnode.hashCode(), nodetobelinked);
 	}
 	
-	protected void AppendOtherCode(String corpus, String code)
+	protected void AddFirstOrderTask(FirstOrderTask runtask)
 	{
-		ocm.AppendOtherCode(corpus, code);
+		fotp.InfixNodeAddFirstOrderTask(runtask);
+	}
+
+	public NodeCodeManager getNcm() {
+		return ncm;
+	}
+
+	public void setNcm(NodeCodeManager ncm) {
+		this.ncm = ncm;
+	}
+
+	public ScopeDataManager getSdm() {
+		return sdm;
+	}
+
+	public void setSdm(ScopeDataManager sdm) {
+		this.sdm = sdm;
+	}
+	
+	protected void DataNewlyUsed(String data, String kind, boolean isFieldDeclare, boolean isCommonDeclare)
+	{
+		sdm.AddDataNewlyUsed(data, kind, isFieldDeclare, isCommonDeclare);
+	}
+	
+	protected void AddNodeCode(ASTNode node, String code)
+	{
+		ncm.AddASTNodeCode(node, code);
+	}
+	
+	protected String GetNodeCode(ASTNode node)
+	{
+		return ncm.GetAstNodeCode(node);
+	}
+	
+	protected void AddNodeHasOccupiedOneLine(ASTNode node, Boolean HasOccupiedOneLine)
+	{
+		ncm.AddASTNodeHasOccupiedOneLine(node, HasOccupiedOneLine);
+	}
+	
+	protected Boolean GetNodeHasOccupiedOneLine(ASTNode node)
+	{
+		return ncm.GetAstNodeHasOccupiedOneLine(node);
+	}
+	
+	protected void AddNodeHasContentHolder(ASTNode node, Boolean ifHasContentHolder)
+	{
+		ncm.AddASTNodeIfHasContentHolder(node, ifHasContentHolder);
+	}
+	
+	protected boolean GetNodeHasContentHolder(ASTNode node)
+	{
+		return ncm.GetAstNodeHasContentHolder(node);
+	}
+	
+	protected String PushBackContentHolder(String code, ASTNode node)
+	{
+		AddNodeHasContentHolder(node, true);
+		return code + GCodeMetaInfo.ContentHolder;
 	}
 	
 }
