@@ -16,6 +16,7 @@ public class GCodeMetaInfo {
 	public static String CodeHole = "@HO";
 	
 	// The white space in code is replaced with '!'.
+	public static String WhiteSpaceReplacer = "!";
 	
 	public static String ContentHolder = "<!%CH!>";
 	

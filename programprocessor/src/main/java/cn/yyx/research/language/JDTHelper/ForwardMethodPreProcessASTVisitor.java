@@ -331,7 +331,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("BreakStatement:"+node);
 		// System.out.println(node.getLabel());
 		ASTNode label = node.getLabel();
-		String code = "break" + label == null ? "" : "!"+GetNodeCode(label);
+		String code = "break" + label == null ? "" : GCodeMetaInfo.WhiteSpaceReplacer+GetNodeCode(label);
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 	}
@@ -339,7 +339,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public void endVisit(ContinueStatement node) {
 		ASTNode label = node.getLabel();
-		String code = "continue" + label == null ? "" : "!"+GetNodeCode(label);
+		String code = "continue" + label == null ? "" : GCodeMetaInfo.WhiteSpaceReplacer+GetNodeCode(label);
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 	}
@@ -347,13 +347,37 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(ClassInstanceCreation node) {
-		int line = GetOccupiedLine(node);
-		String code = OperationType.ClassInstanceCreation + "#" + node.getType() + "#";
+		// System.out.println("Node Type:"+node.getType());
+		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
+		// System.out.println("ClassInstanceCreation:"+node);
+		
+		String code = "new" + GCodeMetaInfo.WhiteSpaceReplacer + node.getType();
+		String pre = "(";
+		String post = ")";
+		code += pre;
 		List<Expression> args = node.arguments();
 		for (Expression arg : args) {
-			String argcode = GetRefCode(arg, line);
-			code += argcode;
+			if (GetNodeHasOccupiedOneLine(arg))
+			{
+				code += GCodeMetaInfo.CodeHole;
+			}
+			else
+			{
+				code += GetNodeCode(arg);
+			}
+			code += ",";
 		}
+		if (args.size() > 0)
+		{
+			code.substring(0, code.length()-1);
+		}
+		code += post;
+		AddNodeCode(node, code);
+		AddNodeHasOccupiedOneLine(node, true);
+		
+		int line = GetOccupiedLine(node);
+		String code = OperationType.ClassInstanceCreation + "#" + node.getType() + "#";
+		
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 	}
 
