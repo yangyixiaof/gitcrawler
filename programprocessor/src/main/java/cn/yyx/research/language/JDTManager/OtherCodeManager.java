@@ -10,14 +10,14 @@ import cn.yyx.research.language.Utility.CorpusContentPair;
 
 public class OtherCodeManager {
 	
-	Map<String, String> othercodemap = new TreeMap<String, String>();
+	private Map<String, String> othercodemap = new TreeMap<String, String>();
 	
 	public OtherCodeManager() {
 	}
 	
 	public void AppendOtherCode(String key, String value)
 	{
-		String ocode = othercodemap.get(key);
+		String ocode = getOtherCodeMap().get(key);
 		if (ocode == null)
 		{
 			ocode = "";
@@ -30,21 +30,29 @@ public class OtherCodeManager {
 		{
 			ocode += " " + value.trim();
 		}
-		othercodemap.put(key, ocode);
+		getOtherCodeMap().put(key, ocode);
 	}
 	
 	public ArrayList<CorpusContentPair> GetOtherGeneratedCode() {
 		ArrayList<CorpusContentPair> result = new ArrayList<CorpusContentPair>();
-		Set<String> corpuses = othercodemap.keySet();
+		Set<String> corpuses = getOtherCodeMap().keySet();
 		Iterator<String> itr = corpuses.iterator();
 		while (itr.hasNext())
 		{
 			String corpus = itr.next();
-			String content = othercodemap.get(corpus);
+			String content = getOtherCodeMap().get(corpus);
 			CorpusContentPair ccp = new CorpusContentPair(corpus, content);
 			result.add(ccp);
 		}
 		return result;
+	}
+
+	public Map<String, String> getOtherCodeMap() {
+		return othercodemap;
+	}
+
+	public void setOthercodemap(Map<String, String> othercodemap) {
+		this.othercodemap = othercodemap;
 	}
 	
 }

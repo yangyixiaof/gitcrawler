@@ -1,20 +1,24 @@
 package cn.yyx.research.language.JDTHelper;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 import cn.yyx.research.language.Utility.CorpusContentPair;
 
 public class ClassLogicDetailCorpus {
 	
 	@SuppressWarnings("unchecked")
-	public static CorpusContentPair GenerateClassDetailCorpus(CompilationUnit compilationUnit)
+	public static ArrayList<CorpusContentPair> GenerateClassDetailCorpus(CompilationUnit compilationUnit)
 	{
-		StringBuilder Content = new StringBuilder("");
 		List<TypeDeclaration> typeDeclarations = compilationUnit.types();
+		Map<String, String> allcodemap = new TreeMap<String, String>();
 		for (Object object : typeDeclarations) {
 			TypeDeclaration clazzNode = (TypeDeclaration) object;
 			
@@ -31,12 +35,32 @@ public class ClassLogicDetailCorpus {
 			ForwardMethodPreProcessASTVisitor fmastv = new ForwardMethodPreProcessASTVisitor();
 			ForwardMethodCodeGenerateASTVisitor fmvgastv = new ForwardMethodCodeGenerateASTVisitor(fmastv);
 			clazzNode.accept(fmastv);
-			Content.append(fmastv.GetGeneratedCode());
+			Map<String, String> codemap = fmvgastv.GetGeneratedCode();
+			Set<String> keys = codemap.keySet();
+			Iterator<String> itr = keys.iterator();
+			while (itr.hasNext())
+			{
+				String corpus = itr.next();
+				if (allcodemap.get(corpus) == null)
+				{
+					allcodemap.put(corpus, "");
+				}
+				String value = codemap.get(corpus);
+				allcodemap.put(corpus, (allcodemap.get(corpus) + value));
+			}
 		}
-		String Contentstr = Content.toString().trim();
 		//testing
 		//System.out.println(Contentstr);
-		return new CorpusContentPair(GCodeMetaInfo.LogicCorpus, Contentstr);
+		ArrayList<CorpusContentPair> result = new ArrayList<CorpusContentPair>();
+		Set<String> keys = allcodemap.keySet();
+		Iterator<String> itr = keys.iterator();
+		while (itr.hasNext())
+		{
+			String corpus = itr.next();
+			String content = allcodemap.get(corpus);
+			result.add(new CorpusContentPair(corpus, content));
+		}
+		return result;
 	}
 	
 }

@@ -1,6 +1,8 @@
 package cn.yyx.research.language.JDTHelper;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -12,6 +14,7 @@ import org.eclipse.jdt.core.dom.SwitchCase;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
+import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 import cn.yyx.research.language.JDTManager.HoleManager;
 import cn.yyx.research.language.JDTManager.NodeCode;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
@@ -206,6 +209,14 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 			ntm.AddNodeType(node, 'b');
 		}
 		return ntm.GetNodeType(node);
+	}
+	
+	public Map<String, String> GetGeneratedCode()
+	{
+		Map<String, String> result = new TreeMap<String, String>();
+		result.putAll(ocm.getOtherCodeMap());
+		result.put(GCodeMetaInfo.LogicCorpus, ojfc.toString());
+		return result;
 	}
 	
 }
