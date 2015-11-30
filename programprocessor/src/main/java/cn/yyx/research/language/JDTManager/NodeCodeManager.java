@@ -9,6 +9,7 @@ public class NodeCodeManager {
 	
 	Map<Integer, String> mNodeCodeMap = new TreeMap<Integer, String>();
 	Map<Integer, Boolean> mNodeHasOccupiedOneLineMap = new TreeMap<Integer, Boolean>();
+	Map<Integer, Boolean> mNodeInMutipleLineMap = new TreeMap<Integer, Boolean>();
 	Map<Integer, Boolean> mNodeHasContentHolder = new TreeMap<Integer, Boolean>();
 	
 	public NodeCodeManager() {
@@ -38,7 +39,7 @@ public class NodeCodeManager {
 		Boolean HasOccupiedOneLine = mNodeHasOccupiedOneLineMap.get(astnodehashcode);
 		if (HasOccupiedOneLine == null)
 		{
-			HasOccupiedOneLine = true;
+			HasOccupiedOneLine = false;
 		}
 		return HasOccupiedOneLine;
 	}
@@ -55,9 +56,26 @@ public class NodeCodeManager {
 		Boolean ifHasContentHolder = mNodeHasContentHolder.get(astnodehashcode);
 		if (ifHasContentHolder == null)
 		{
-			ifHasContentHolder = true;
+			ifHasContentHolder = false;
 		}
 		return ifHasContentHolder;
+	}
+	
+	public void AddASTNodeInMultipleLine(ASTNode node, Boolean inMutipleLine)
+	{
+		int astnodehashcode = node.hashCode();
+		mNodeHasOccupiedOneLineMap.put(astnodehashcode, inMutipleLine);
+	}
+	
+	public boolean GetAstNodeInMultipleLine(ASTNode astnode)
+	{
+		int astnodehashcode = astnode.hashCode();
+		Boolean inMutipleLine = mNodeHasContentHolder.get(astnodehashcode);
+		if (inMutipleLine == null)
+		{
+			inMutipleLine = false;
+		}
+		return inMutipleLine;
 	}
 	
 }

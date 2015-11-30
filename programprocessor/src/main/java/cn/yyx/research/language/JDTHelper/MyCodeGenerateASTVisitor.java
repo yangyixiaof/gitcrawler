@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
@@ -52,6 +55,46 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		nlm.PreVisit(node);
 		fotp.PostIsBegin(node);
 		super.preVisit(node);
+	}
+	
+	@Override
+	public boolean visit(AnonymousClassDeclaration node) {
+		// System.out.println("AnonymousClassDeclaration Begin");
+		// System.out.println(node);
+		// System.out.println("AnonymousClassDeclaration End");
+		nlm.Visit(node);
+		return super.visit(node);
+	}
+
+	@Override
+	public void endVisit(AnonymousClassDeclaration node) {
+		nlm.EndVisit(node);
+	}
+	
+	@Override
+	public boolean visit(Block node) {
+		// System.out.println("Block:"+node);
+		nlm.Visit(node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(Block node) {
+		nlm.EndVisit(node);
+	}
+	
+	@Override
+	public boolean visit(ParenthesizedExpression node) {
+		nlm.Visit(node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(ParenthesizedExpression node) {
+		// System.out.println("ParenthesizedExpression:"+node);
+		// System.out.println("ParenthesizedExpression:"+node.getExpression());
+		// GiveLinkBetweenNodes(node, node.getExpression());
+		nlm.EndVisit(node);
 	}
 	
 	protected boolean isFirstLevelASTNode(ASTNode node) {

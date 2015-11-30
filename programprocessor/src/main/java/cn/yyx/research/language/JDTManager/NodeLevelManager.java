@@ -11,9 +11,9 @@ public class NodeLevelManager {
 	
 	Map<Integer, Integer> nodeLevelMap = new TreeMap<Integer, Integer>();
 	
-	Map<Integer, Boolean> firstNodeAfterDecreasingElement = new TreeMap<Integer, Boolean>();
+	Map<Integer, Byte> firstNodeAfterDecreasingElement = new TreeMap<Integer, Byte>();
 	
-	Map<Integer, Boolean> lastNodeBeforeIncreaseingElement = new TreeMap<Integer, Boolean>();
+	Map<Integer, Byte> lastNodeBeforeIncreaseingElement = new TreeMap<Integer, Byte>();
 	
 	public NodeLevelManager() {
 	}
@@ -23,16 +23,36 @@ public class NodeLevelManager {
 		int nid = node.hashCode();
 		if (firstNodeAfterDecreasingElement.containsKey(nid))
 		{
-			firstNodeAfterDecreasingElement.remove(nid);
 			level--;
 		}
 		nodeLevelMap.put(nid, level);
 	}
 	
+	public void Visit(ASTNode node)
+	{
+		int nid = node.hashCode();
+		if (!firstNodeAfterDecreasingElement.containsKey(nid))
+		{
+			level--;
+		}
+		nodeLevelMap.put(nid, level);
+	}
+	
+	public void EndVisit(ASTNode node)
+	{
+		int nid = node.hashCode();
+		if (!lastNodeBeforeIncreaseingElement.containsKey(nid))
+		{
+			level++;
+		}
+	}
+	
 	public void PostVisit(ASTNode node)
 	{
 		int nid = node.hashCode();
-		// nodeLevelMap.put(nid, level);
+		
+		firstNodeAfterDecreasingElement.remove(nid);
+		
 		if (lastNodeBeforeIncreaseingElement.containsKey(nid))
 		{
 			lastNodeBeforeIncreaseingElement.remove(nid);
@@ -42,11 +62,11 @@ public class NodeLevelManager {
 	
 	// The following two functions should be called by ast visit method.
 	public void RegistFirstNodeAfterDecreasingElement(ASTNode node) {
-		firstNodeAfterDecreasingElement.put(node.hashCode(), true);
+		firstNodeAfterDecreasingElement.put(node.hashCode(), (byte)0);
 	}
 	
 	public void RegistLastNodeBeforeIncreaseingElement(ASTNode node) {
-		lastNodeBeforeIncreaseingElement.put(node.hashCode(), true);
+		lastNodeBeforeIncreaseingElement.put(node.hashCode(), (byte)0);
 	}
 
 	public void DecreaseLevel() {

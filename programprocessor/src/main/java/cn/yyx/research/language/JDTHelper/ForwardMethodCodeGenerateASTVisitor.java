@@ -1,6 +1,8 @@
 package cn.yyx.research.language.JDTHelper;
 
 import org.eclipse.jdt.core.dom.CharacterLiteral;
+import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.StringLiteral;
 
@@ -10,6 +12,22 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 
 	public ForwardMethodCodeGenerateASTVisitor(MyPreProcessASTVisitor mppast) {
 		super(mppast);
+	}
+	
+	@Override
+	public boolean visit(EnumDeclaration node) {
+		// Do nothing now.
+		// System.out.println("EnumDeclaration:"+node);
+		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
+		// OneTextOneLine(node.getName().toString());
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(EnumConstantDeclaration node) {
+		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
+		// OneTextOneLine(node.getName().toString() + "#" + OperationType.EnumConstant + "/0b");
+		return super.visit(node);
 	}
 	
 	@Override

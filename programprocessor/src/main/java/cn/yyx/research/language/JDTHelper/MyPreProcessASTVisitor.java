@@ -1,5 +1,6 @@
 package cn.yyx.research.language.JDTHelper;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -7,13 +8,16 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
+import cn.yyx.research.language.JDTManager.KindLibrary;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
+import cn.yyx.research.language.JDTManager.VarOrObjReferenceManager;
 
 public class MyPreProcessASTVisitor extends ASTVisitor{
 	
@@ -25,6 +29,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	private ScopeDataManager sdm = new ScopeDataManager();
 	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
+	
+	VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
+	
 	private Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	// a node is only equivalent to one node.
 	private Map<Integer, Integer> equivalentScope = new TreeMap<Integer, Integer>();
@@ -81,6 +88,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		{
 			EnterBlock(node, false);
 		}
+		
 		// int line = VisitLineOccupy(node);
 		// String code = OperationType.BlockCommand + "#" + "ENTER#";
 		// EndVisitReplaceLineOccupyWithRealContent(line, node, code);
@@ -100,6 +108,19 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		}
 	}
 	
+	@Override
+	public boolean visit(ParenthesizedExpression node) {
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(ParenthesizedExpression node) {
+		// System.out.println("ParenthesizedExpression:"+node);
+		// System.out.println("ParenthesizedExpression:"+node.getExpression());
+		// GiveLinkBetweenNodes(node, node.getExpression());
+		
+	}
+	
 	protected void AddEquivalentScope(ASTNode node1, ASTNode node2)
 	{
 		equivalentScope.put(node2.hashCode(), node1.hashCode());
@@ -107,7 +128,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	// If doesn't know the kind, just set one as random. The one must be the big kind you want.
 	protected String GetDataOffset(String data, String kind) {
-		String code = getSdm().GetDataAssignOffsetInfo(data, ScopeDataManager.GetManagerLevelHintForKind(kind));
+		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind));
 		return code;
 		/*Integer nline = nlm.GetAstNodeLineInfo(node);
 		if (nline != null) {
@@ -227,7 +248,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		lambdaparamstack.pop();
 	}*/
 	
-	protected void GiveLinkBetweenNodes(ASTNode linkingnode, ASTNode nodetobelinked) {
+	protected void AddLinkBetweenNodes(ASTNode linkingnode, ASTNode nodetobelinked) {
 		nodelink.put(linkingnode.hashCode(), nodetobelinked);
 	}
 	
@@ -287,10 +308,66 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		return ncm.GetAstNodeHasContentHolder(node);
 	}
 	
+	protected void AddNodeInMultipleLine(ASTNode node, Boolean inMultipleLine)
+	{
+		ncm.AddASTNodeInMultipleLine(node, inMultipleLine);
+	}
+	
+	protected boolean GetNodeInMultipleLine(ASTNode node)
+	{
+		return ncm.GetAstNodeInMultipleLine(node);
+	}
+	
 	protected String PushBackContentHolder(String code, ASTNode node)
 	{
 		AddNodeHasContentHolder(node, true);
 		return code + GCodeMetaInfo.ContentHolder;
+	}
+	
+	protected void AddReferenceUpdateHint(ASTNode node, Integer hint)
+	{
+		voorm.AddReferenceUpdateHint(node, hint);
+	}
+	
+	protected Integer GetReferenceUpdateHint(ASTNode node)
+	{
+		return voorm.GetReferenceUpdateHint(node);
+	}
+	
+	protected void AddNodeInMultipleLineWhenRemainIsContentHolder(ASTNode remain, ASTNode container)
+	{
+		if (GetNodeInMultipleLine(remain) || GetNodeHasContentHolder(remain))
+		{
+			AddNodeInMultipleLine(container, true);
+		}
+	}
+	
+	protected Boolean MethodInvocationCode(String methodName, List<ASTNode> args, StringBuilder code)
+	{
+		// "new" + GCodeMetaInfo.WhiteSpaceReplacer + 
+		code.append(methodName);
+		String pre = "(";
+		String post = ")";
+		code.append(pre);
+		boolean inOneLine = true;
+		for (ASTNode arg : args) {
+			if (GetNodeHasOccupiedOneLine(arg))
+			{
+				code.append(GCodeMetaInfo.CodeHole);
+				inOneLine = false;
+			}
+			else
+			{
+				code.append(GetNodeCode(arg));
+			}
+			code.append(",");
+		}
+		if (args.size() > 0)
+		{
+			code.substring(0, code.length()-1);
+		}
+		code.append(post);
+		return inOneLine;
 	}
 	
 }

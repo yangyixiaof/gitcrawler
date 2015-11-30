@@ -73,6 +73,7 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
+import cn.yyx.research.language.JDTManager.KindLibrary;
 import cn.yyx.research.language.JDTManager.OffsetLibrary;
 import cn.yyx.research.language.JDTManager.OperationType;
 import cn.yyx.research.language.JDTManager.VVarObjPoolManager;
@@ -206,6 +207,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			cnt.deleteCharAt(cnt.length()-1);
 		}
 		String code = pre + cnt.toString() + post + "->";
+		AddNodeInMultipleLineWhenRemainIsContentHolder(node.getBody(), node);
 		code = PushBackContentHolder(code, node);
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
@@ -253,6 +255,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public void endVisit(CastExpression node) {
 		String code = "(" + node.getType().toString() + ")";
+		AddNodeInMultipleLineWhenRemainIsContentHolder(node.getExpression(), node);
 		code = PushBackContentHolder(code, node);
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
@@ -270,6 +273,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 		clm.AddClassLineInfo(node.getType().toString(), line);*/
 	}
+	
+	@Override
+	public boolean visit(ArrayAccess node) {
+		AddReferenceUpdateHint(node.getArray(), KindLibrary.DataRefUpdate);
+		return super.visit(node);
+	};
 	
 	@Override
 	public void endVisit(ArrayAccess node) {
@@ -290,7 +299,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			code+="[" + GetNodeCode(idx) + "]";
 		}
 		AddNodeCode(node, code);
-		AddNodeHasOccupiedOneLine(node, false);
+	}
+	
+	@Override
+	public boolean visit(Assignment node) {
+		AddReferenceUpdateHint(node.getLeftHandSide(), KindLibrary.DataRefUpdate);
+		return super.visit(node);
 	}
 	
 	@Override
@@ -310,10 +324,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		if (!GetNodeHasOccupiedOneLine(left))
 		{
 			code = GetNodeCode(left)+node.getOperator().toString();
+			AddNodeInMultipleLineWhenRemainIsContentHolder(node.getRightHandSide(), node);
 		}
 		else
 		{
 			code = node.getOperator().toString();
+			AddNodeInMultipleLine(node, true);
 		}
 		code = PushBackContentHolder(code, node);
 		AddNodeCode(node, code);
@@ -325,7 +341,17 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("BooleanLiteral:"+node);
 		AddNodeCode(node, node.toString());
 	}
-
+	
+	@Override
+	public boolean visit(BreakStatement node) {
+		ASTNode label = node.getLabel();
+		if (label != null)
+		{
+			AddReferenceUpdateHint(label, KindLibrary.LabelRefUse);
+		}
+		return super.visit(node);
+	}
+	
 	@Override
 	public void endVisit(BreakStatement node) {
 		// System.out.println("BreakStatement:"+node);
@@ -335,7 +361,17 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 	}
-
+	
+	@Override
+	public boolean visit(ContinueStatement node) {
+		ASTNode label = node.getLabel();
+		if (label != null)
+		{
+			AddReferenceUpdateHint(label, KindLibrary.LabelRefUse);
+		}
+		return super.visit(node);
+	}
+	
 	@Override
 	public void endVisit(ContinueStatement node) {
 		ASTNode label = node.getLabel();
@@ -350,61 +386,53 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("Node Type:"+node.getType());
 		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
 		// System.out.println("ClassInstanceCreation:"+node);
-		
-		String code = "new" + GCodeMetaInfo.WhiteSpaceReplacer + node.getType();
-		String pre = "(";
-		String post = ")";
-		code += pre;
-		List<Expression> args = node.arguments();
-		for (Expression arg : args) {
-			if (GetNodeHasOccupiedOneLine(arg))
-			{
-				code += GCodeMetaInfo.CodeHole;
-			}
-			else
-			{
-				code += GetNodeCode(arg);
-			}
-			code += ",";
-		}
-		if (args.size() > 0)
-		{
-			code.substring(0, code.length()-1);
-		}
-		code += post;
-		AddNodeCode(node, code);
+		StringBuilder code = new StringBuilder("new" + GCodeMetaInfo.WhiteSpaceReplacer);
+		MethodInvocationCode(node.getType().toString(), node.arguments(), code);
+		AddNodeCode(node, code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
-		
-		int line = GetOccupiedLine(node);
-		String code = OperationType.ClassInstanceCreation + "#" + node.getType() + "#";
-		
-		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
+		if (node.getAnonymousClassDeclaration() != null)
+		{
+			AddNodeInMultipleLine(node, true);
+		}
 	}
-
-	@Override
-	public boolean visit(ConditionalExpression node) {
-		// System.out.println("ConditionalExpression:"+node);
-		// System.out.println("ConditionalExpressionExpr:"+node.getExpression());
-		// System.out.println("ConditionalExpressionThenExpr:"+node.getThenExpression());
-		// System.out.println("ConditionalExpressionElseExpr:"+node.getElseExpression());
-		VisitLineOccupy(node);
-		return super.visit(node);
-	}
-
+	
 	@Override
 	public void endVisit(ConditionalExpression node) {
-		int line = GetOccupiedLine(node);
-		String codeexpr = GetRefCode(node.getExpression(), line);
-		String codethen = GetRefCode(node.getThenExpression(), line);
-		String codeelse = GetRefCode(node.getElseExpression(), line);
-		String code = OperationType.ConditionalExpression + "#" + codeexpr + codethen + codeelse;
-		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
+		ASTNode judge = node.getExpression();
+		String thenexprcode = GCodeMetaInfo.CodeHole;
+		ASTNode thenexpr = node.getThenExpression();
+		if (!GetNodeHasOccupiedOneLine(thenexpr))
+		{
+			thenexprcode = GetNodeCode(thenexpr);
+		}
+		String elseexprcode = GCodeMetaInfo.CodeHole;
+		ASTNode elseexpr = node.getElseExpression();
+		if (!GetNodeHasOccupiedOneLine(elseexpr))
+		{
+			elseexprcode = GetNodeCode(elseexpr);
+		}
+		String code = "?"+thenexprcode+":"+elseexprcode;
+		if (!GetNodeInMultipleLine(judge))
+		{
+			code = GetNodeCode(judge)+code;
+		}
+		AddNodeCode(node, code);
+		AddNodeHasOccupiedOneLine(node, true);
+		AddNodeInMultipleLine(node, true);
 	}
 
 	@Override
 	public boolean visit(ConstructorInvocation node) {
 		// Do nothing now.
-		System.out.println("ConstructorInvocation:" + node);
+		// System.out.println("ConstructorInvocation:" + node);
+		StringBuilder code = new StringBuilder("");
+		boolean isInOneLine = MethodInvocationCode("this", node.arguments(), code);
+		AddNodeCode(node, code.toString());
+		AddNodeHasOccupiedOneLine(node, true);
+		if (!isInOneLine)
+		{
+			AddNodeInMultipleLine(node, true);
+		}
 		return super.visit(node);
 	}
 
@@ -413,41 +441,63 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("Do statement begin:");
 		// System.out.println("DoStatement:"+node);
 		// System.out.println("Do statement end.");
-		OneTextOneLine("do");
+		
+		// Remember to add "do" in code line.
 		return super.visit(node);
 	}
 
 	@Override
 	public void endVisit(DoStatement node) {
-		VisitLineOccupy(node);
-		int line = GetOccupiedLine(node);
-		String code = OperationType.DoStatement + "#" + GetRefCode(node.getExpression(), line);
-		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
+		String exprcode = "";
+		ASTNode expr = node.getExpression();
+		if (GetNodeInMultipleLine(expr))
+		{
+			exprcode = GCodeMetaInfo.CodeHole;
+			AddNodeInMultipleLine(node, true);
+		}
+		else
+		{
+			exprcode = GetNodeCode(expr);
+		}
+		String code = "while"+"(" + exprcode + ")";
+		// this expr needs to register level.
+		AddNodeCode(node, code);
+		AddNodeHasOccupiedOneLine(node, true);
 	}
-
+	
 	@Override
 	public boolean visit(EnhancedForStatement node) {
 		// System.out.println("EnhancedForStatementParameter:"+node.getParameter());
 		// System.out.println("EnhancedForStatementExpr:"+node.getExpression());
 		// System.out.println("EnhancedForStatementBody:"+node.getBody());
 		EnterBlock(node, false);
-		VisitLineOccupy(node);
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public void endVisit(EnhancedForStatement node) {
-		int line = GetOccupiedLine(node);
-		String code = OperationType.EnhancedForStatement + "#" + GetRefCode(node.getParameter(), line)
-				+ GetRefCode(node.getExpression(), line) + GetRefCode(node.getBody(), line);
-		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
-		dlm.ExitBlock(false);
+		String exprcode = GCodeMetaInfo.CodeHole;
+		ASTNode expr = node.getExpression();
+		if (!GetNodeInMultipleLine(expr))
+		{
+			exprcode = GetNodeCode(expr);
+		}
+		else
+		{
+			AddNodeInMultipleLine(node, true);
+		}
+		String code = "for(" + node.getParameter().getType().toString() + ":" + exprcode + ")";
+		AddNodeCode(node, code);
+		AddNodeHasOccupiedOneLine(node, true);
+		
+		ExitBlock();
 	}
 
 	@Override
 	public boolean visit(ExpressionStatement node) {
 		// This method is too high level, almost useless.
 		// System.out.println("ExpressionStatement:"+node);
+		AddLinkBetweenNodes(node, node.getExpression());
 		return super.visit(node);
 	}
 
@@ -685,7 +735,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String code = OperationType.InstanceofExpression + "#" + GetRefCode(node.getLeftOperand(), line) + itype;
 		EndVisitReplaceLineOccupyWithRealContent(line, node, code);
 	}
-
+	
 	@Override
 	public boolean visit(LabeledStatement node) {
 		// System.out.println("LabeledStatement:"+node);
@@ -693,17 +743,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		llm.AddLabelLine(node.getLabel().toString(), line);
 		return super.visit(node);
 	}
-
-	@Override
-	public boolean visit(NullLiteral node) {
-		// System.out.println("NullLiteral:"+node);
-		UnchangedNode(node);
-		return super.visit(node);
-	}
 	
 	@Override
 	public boolean visit(ParenthesizedExpression node) {
-		DecreaseLevel();
+		// TODO
 		return super.visit(node);
 	}
 	
@@ -712,7 +755,15 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("ParenthesizedExpression:"+node);
 		// System.out.println("ParenthesizedExpression:"+node.getExpression());
 		// GiveLinkBetweenNodes(node, node.getExpression());
-		IncreaseLevel();
+	}
+	
+	// Tomorrow ending.
+
+	@Override
+	public boolean visit(NullLiteral node) {
+		// System.out.println("NullLiteral:"+node);
+		AddNodeCode(node, node.toString());
+		return super.visit(node);
 	}
 
 	@Override
@@ -807,14 +858,14 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(StringLiteral node) {
 		// System.out.println("StringLiteral:"+node);
-		UnchangedNode(node, GCodeMetaInfo.StringHolder);
+		AddNodeCode(node, GCodeMetaInfo.StringHolder);
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(NumberLiteral node) {
 		// System.out.println("NumberLiteral:"+node);
-		UnchangedNode(node, GCodeMetaInfo.NumberHolder);
+		AddNodeCode(node, GCodeMetaInfo.NumberHolder);
 		return super.visit(node);
 	}
 	
@@ -898,7 +949,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(ThisExpression node) {
 		// System.out.println("ThisExpression:"+node);
-		UnchangedNode(node);
+		AddNodeCode(node, node.toString());
 		return super.visit(node);
 	}
 
@@ -985,22 +1036,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			// dlm.ClearRawStringDataLineInfo();
 		}
 		ExitBlock();
-	}
-	
-	@Override
-	public boolean visit(EnumDeclaration node) {
-		// Do nothing now.
-		// System.out.println("EnumDeclaration:"+node);
-		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
-		// OneTextOneLine(node.getName().toString());
-		return super.visit(node);
-	}
-	
-	@Override
-	public boolean visit(EnumConstantDeclaration node) {
-		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
-		// OneTextOneLine(node.getName().toString() + "#" + OperationType.EnumConstant + "/0b");
-		return super.visit(node);
 	}
 	
 	@Override
