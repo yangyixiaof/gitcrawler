@@ -6,7 +6,9 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
+import org.eclipse.jdt.core.dom.SwitchCase;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
@@ -58,12 +60,41 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	}
 	
 	@Override
+	public boolean visit(Initializer node) {
+		// Do nothing now.
+		// System.out.println("Initializer:"+node);
+		// ResetDLM();
+		if (isFirstLevelASTNode(node))
+		{
+			BeginningLevelSet(node);
+		}
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(Initializer node) {
+		FlushCode();
+		// dlm.ClearRawStringDataLineInfo();
+	}
+	
+	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
 		// System.out.println("AnonymousClassDeclaration Begin");
 		// System.out.println(node);
 		// System.out.println("AnonymousClassDeclaration End");
 		nlm.Visit(node);
 		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(SwitchCase node) {
+		nlm.Visit(node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(SwitchCase node) {
+		nlm.EndVisit(node);
 	}
 
 	@Override

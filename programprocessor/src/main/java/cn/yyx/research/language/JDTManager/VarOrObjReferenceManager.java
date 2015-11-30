@@ -26,5 +26,9 @@ public class VarOrObjReferenceManager {
 		}
 		return result;
 	}
+
+	public void DeleteReferenceUpdateHint(ASTNode node) {
+		hintReferenceStack.remove(node.hashCode());
+	}
 	
 }

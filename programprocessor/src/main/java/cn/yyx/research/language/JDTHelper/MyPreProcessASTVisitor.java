@@ -329,6 +329,11 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		voorm.AddReferenceUpdateHint(node, hint);
 	}
 	
+	protected void DeleteReferenceUpdateHint(ASTNode node)
+	{
+		voorm.DeleteReferenceUpdateHint(node);
+	}
+	
 	protected Integer GetReferenceUpdateHint(ASTNode node)
 	{
 		return voorm.GetReferenceUpdateHint(node);
