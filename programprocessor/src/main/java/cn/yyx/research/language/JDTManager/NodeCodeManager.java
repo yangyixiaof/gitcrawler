@@ -11,6 +11,8 @@ public class NodeCodeManager {
 	Map<Integer, Boolean> mNodeHasOccupiedOneLineMap = new TreeMap<Integer, Boolean>();
 	Map<Integer, Boolean> mNodeInMutipleLineMap = new TreeMap<Integer, Boolean>();
 	Map<Integer, Boolean> mNodeHasContentHolder = new TreeMap<Integer, Boolean>();
+	// type should be a / c.
+	Map<Integer, Character> mNodeTypeMap = new TreeMap<Integer, Character>();
 	
 	public NodeCodeManager() {
 	}
@@ -76,6 +78,22 @@ public class NodeCodeManager {
 			inMutipleLine = false;
 		}
 		return inMutipleLine;
+	}
+	
+	public void AddNodeType(ASTNode node, Character type)
+	{
+		mNodeTypeMap.put(node.hashCode(), type);
+	}
+	
+	public Character GetNodeType(ASTNode node)
+	{
+		return mNodeTypeMap.get(node.hashCode());
+	}
+	
+	// this should be b type.
+	public boolean IsNewStatement(ASTNode node)
+	{
+		return !mNodeTypeMap.containsKey(node.hashCode());
 	}
 	
 }

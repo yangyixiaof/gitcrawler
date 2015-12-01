@@ -9,43 +9,44 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.Initializer;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
-import org.eclipse.jdt.core.dom.SwitchCase;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
-import cn.yyx.research.language.JDTManager.HoleManager;
 import cn.yyx.research.language.JDTManager.NodeCode;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeLevelManager;
-import cn.yyx.research.language.JDTManager.NodeTypeManager;
+import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
 import cn.yyx.research.language.JDTManager.OneJavaFileCode;
+import cn.yyx.research.language.JDTManager.OperationType;
 import cn.yyx.research.language.JDTManager.OtherCodeManager;
-import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.Utility.CorpusContentPair;
 
 public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	
 	private OtherCodeManager ocm = new OtherCodeManager();
+	// One Method Code.
 	private NodeCode omc = new NodeCode();
 	private OneJavaFileCode ojfc = new OneJavaFileCode();
 	
 	// node code should be as such System.out.println(STR#,HOLE#)#14#b/
 	// if no code, just not set NodeCodeManager.
 	// node type and level should be deleted after used immediately.
-	private NodeTypeManager ntm = new NodeTypeManager();
+	// private NodeTypeManager ntm = new NodeTypeManager();
 	private NodeLevelManager nlm = new NodeLevelManager();
-	private HoleManager hm = new HoleManager();
+	// private HoleManager hm = new HoleManager();
 	
 	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 	
 	private NodeCodeManager ncm = null;
-	private ScopeDataManager sdm = null;
+	
+	private Integer FirstLevelClass = null;
 	
 	public MyCodeGenerateASTVisitor(MyPreProcessASTVisitor mppast) {
 		ncm = mppast.getNcm();
-		sdm = mppast.getSdm();
 	}
 	
 	@Override
@@ -63,13 +64,30 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	}
 	
 	@Override
+	public boolean visit(TypeDeclaration node) {
+		if (getFirstLevelClass() == null)
+		{
+			FirstLevelClass = node.hashCode();
+		}
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(TypeDeclaration node) {
+		if (FirstLevelClass == node.hashCode())
+		{
+			FirstLevelClass = null;			
+		}
+	}
+	
+	@Override
 	public boolean visit(Initializer node) {
 		// Do nothing now.
 		// System.out.println("Initializer:"+node);
 		// ResetDLM();
 		if (isFirstLevelASTNode(node))
 		{
-			BeginningLevelSet(node);
+			omc = new NodeCode();
 		}
 		return super.visit(node);
 	}
@@ -90,19 +108,29 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	}
 	
 	@Override
-	public boolean visit(SwitchCase node) {
-		nlm.Visit(node);
+	public void endVisit(AnonymousClassDeclaration node) {
+		nlm.EndVisit(node);
+	}
+	
+	@Override
+	public boolean visit(MethodDeclaration node) {
+		if (isFirstLevelASTNode(node))
+		{
+			omc = new NodeCode();
+		}
 		return super.visit(node);
 	}
 	
 	@Override
-	public void endVisit(SwitchCase node) {
-		nlm.EndVisit(node);
-	}
-
-	@Override
-	public void endVisit(AnonymousClassDeclaration node) {
-		nlm.EndVisit(node);
+	public void endVisit(MethodDeclaration node) {
+		if (isFirstLevelASTNode(node))
+		{
+			FlushCode();
+		}
+		else
+		{
+			OneSentenceEnd();
+		}
 	}
 	
 	@Override
@@ -132,9 +160,8 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	}
 	
 	protected boolean isFirstLevelASTNode(ASTNode node) {
-		int classhashcode = sdm.GetFirstClassId();
 		int parenthashcode = node.getParent().hashCode();
-		if (parenthashcode == classhashcode) {
+		if (parenthashcode == getFirstLevelClass()) {
 			return true;
 		}
 		return false;
@@ -150,11 +177,17 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		fotp.InfixNodeAddFirstOrderTask(runtask);
 	}
 	
-	// code has ......#leixing/b, only need to add info of lines.
-	protected void TrulyGenerateOneLine(String nodestr, int level, boolean hasContentHolder) {
-		// int line = lm.NewLine();
-		// lcm.AddLineCode(line, OperationType.NearlyCommonText + "#" + nodestr);
-		omc.AddOneLineCode(nodestr, level, hasContentHolder);
+	// code has ......#leixing, the rest is %b/ as an example, only need to add info of lines.
+	protected void TrulyGenerateOneLine(ASTNode node, int level, boolean hasContentHolder) {
+		String nodecode = GetNodeCode(node) + GCodeMetaInfo.CommonSplitter + OperationType.GetTypeDescriptionId(node.getClass());
+		nodecode += "%" + HandleNodeType(node) + "/";
+		omc.AddOneLineCode(nodecode, level, hasContentHolder);
+	}
+	
+	protected void TrulyGenerateOneLine(String rawtext, Integer astNodeType, Character relativeNodeType, int level, boolean hasContentHolder) {
+		String nodecode = rawtext + GCodeMetaInfo.CommonSplitter + astNodeType;
+		nodecode += "%" + relativeNodeType + "/";
+		omc.AddOneLineCode(nodecode, level, hasContentHolder);
 	}
 	
 	public ArrayList<CorpusContentPair> GetOtherGeneratedCode() {
@@ -176,7 +209,7 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	}
 	
 	protected void ClearMethodNodeCode() {
-		omc = new NodeCode();
+		omc = null;
 	}
 
 	protected void PushMethodNodeCodeToJavaFileCode() {
@@ -190,13 +223,6 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		ClearMethodNodeCode();
 	}
 	
-	protected void BeginningLevelSet(ASTNode node)
-	{
-		int level = GetNodeLevel(node);
-		omc.setFirstCodeLevel(level);
-		omc.setLastCodeLevel(level);
-	}
-	
 	protected int GetNodeLevel(ASTNode node)
 	{
 		return nlm.GetNodeLevel(node);
@@ -204,11 +230,11 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	
 	protected Character HandleNodeType(ASTNode node)
 	{
-		if (ntm.IsNewStatement(node))
+		if (ncm.IsNewStatement(node))
 		{
-			ntm.AddNodeType(node, 'b');
+			ncm.AddNodeType(node, NodeTypeLibrary.newstart);
 		}
-		return ntm.GetNodeType(node);
+		return ncm.GetNodeType(node);
 	}
 	
 	public Map<String, String> GetGeneratedCode()
@@ -217,6 +243,38 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		result.putAll(ocm.getOtherCodeMap());
 		result.put(GCodeMetaInfo.LogicCorpus, ojfc.toString());
 		return result;
+	}
+	
+	public void RegistFirstNodeAfterDecreasingElement(ASTNode node) {
+		nlm.RegistFirstNodeAfterDecreasingElement(node);
+	}
+	
+	public void RegistLastNodeBeforeIncreaseingElement(ASTNode node) {
+		nlm.RegistLastNodeBeforeIncreaseingElement(node);
+	}
+
+	public Integer getFirstLevelClass() {
+		return FirstLevelClass;
+	}
+	
+	protected String GetNodeCode(ASTNode node)
+	{
+		return ncm.GetAstNodeCode(node);
+	}
+	
+	protected Boolean GetNodeHasOccupiedOneLine(ASTNode node)
+	{
+		return ncm.GetAstNodeHasOccupiedOneLine(node);
+	}
+	
+	protected boolean GetNodeHasContentHolder(ASTNode node)
+	{
+		return ncm.GetAstNodeHasContentHolder(node);
+	}
+	
+	protected boolean GetNodeInMultipleLine(ASTNode node)
+	{
+		return ncm.GetAstNodeInMultipleLine(node);
 	}
 	
 }

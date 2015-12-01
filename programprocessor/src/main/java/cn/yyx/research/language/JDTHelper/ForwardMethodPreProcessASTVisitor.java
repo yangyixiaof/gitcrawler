@@ -87,6 +87,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	// TODO if nothing found in data pool, should return first declared.
 	// TODO check the call of DataNewlyUsed function and the call of AddDataReferenceHint.
 	
+	// TODO set node type map in NodeCodeManager.
+	
 	// For one visit, there are two tasks: 
 	// task 1. raw code. generated raw node code which is stored in NodeCodeManager.
 	// task 2. operation & line type. generate codes which have OperationType and line type but not have line offset info.
@@ -1172,7 +1174,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			typedec.deleteCharAt(typedec.length()-1);
 		}
-		code = "(" + typedec.toString() + ")";
+		code += GCodeMetaInfo.WhiteSpaceReplacer + typedec.toString();
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);

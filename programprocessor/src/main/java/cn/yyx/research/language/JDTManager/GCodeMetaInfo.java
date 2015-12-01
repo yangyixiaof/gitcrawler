@@ -9,9 +9,9 @@ public class GCodeMetaInfo {
 	public static String NumberHolder = "@NUB";
 	
 	public static String NoStatement = "nu#";
-	public static String CommonEnd = "#";
+	public static String CommonSplitter = "#";
 	
-	public static String NoDeclaredType = "NT#";
+	public static String NoDeclaredType = "@NT";
 	
 	public static String CodeHole = "@HO";
 	
