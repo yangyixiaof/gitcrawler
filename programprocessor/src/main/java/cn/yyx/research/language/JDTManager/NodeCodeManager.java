@@ -10,9 +10,10 @@ public class NodeCodeManager {
 	Map<Integer, String> mNodeCodeMap = new TreeMap<Integer, String>();
 	Map<Integer, Boolean> mNodeHasOccupiedOneLineMap = new TreeMap<Integer, Boolean>();
 	Map<Integer, Boolean> mNodeInMutipleLineMap = new TreeMap<Integer, Boolean>();
-	Map<Integer, Boolean> mNodeHasContentHolder = new TreeMap<Integer, Boolean>();
+	Map<Integer, Boolean> mNodeHasContentHolderMap = new TreeMap<Integer, Boolean>();
 	// type should be a / c.
 	Map<Integer, Character> mNodeTypeMap = new TreeMap<Integer, Character>();
+	Map<Integer, Boolean> mNodeHasUsedMap = new TreeMap<Integer, Boolean>();
 	
 	public NodeCodeManager() {
 	}
@@ -55,7 +56,7 @@ public class NodeCodeManager {
 	public boolean GetAstNodeHasContentHolder(ASTNode astnode)
 	{
 		int astnodehashcode = astnode.hashCode();
-		Boolean ifHasContentHolder = mNodeHasContentHolder.get(astnodehashcode);
+		Boolean ifHasContentHolder = mNodeHasContentHolderMap.get(astnodehashcode);
 		if (ifHasContentHolder == null)
 		{
 			ifHasContentHolder = false;
@@ -72,7 +73,7 @@ public class NodeCodeManager {
 	public boolean GetAstNodeInMultipleLine(ASTNode astnode)
 	{
 		int astnodehashcode = astnode.hashCode();
-		Boolean inMutipleLine = mNodeHasContentHolder.get(astnodehashcode);
+		Boolean inMutipleLine = mNodeHasContentHolderMap.get(astnodehashcode);
 		if (inMutipleLine == null)
 		{
 			inMutipleLine = false;
@@ -94,6 +95,17 @@ public class NodeCodeManager {
 	public boolean IsNewStatement(ASTNode node)
 	{
 		return !mNodeTypeMap.containsKey(node.hashCode());
+	}
+	
+	//Map<Integer, Boolean> mNodeHasUsedMap
+	public void AddNodeHasUsed(ASTNode node, boolean used)
+	{
+		mNodeHasUsedMap.put(node.hashCode(), used);
+	}
+	
+	public boolean GetNodeHasUsed(ASTNode node)
+	{
+		return mNodeHasUsedMap.get(node.hashCode());
 	}
 	
 }

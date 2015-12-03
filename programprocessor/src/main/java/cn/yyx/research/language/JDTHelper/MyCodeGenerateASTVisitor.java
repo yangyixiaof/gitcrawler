@@ -50,17 +50,17 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	}
 	
 	@Override
-	public void postVisit(ASTNode node) {
-		nlm.PostVisit(node);
-		fotp.PreIsOver(node);
-		super.postVisit(node);
-	}
-	
-	@Override
 	public void preVisit(ASTNode node) {
 		nlm.PreVisit(node);
 		fotp.PostIsBegin(node);
 		super.preVisit(node);
+	}
+	
+	@Override
+	public void postVisit(ASTNode node) {
+		nlm.PostVisit(node);
+		fotp.PreIsOver(node);
+		super.postVisit(node);
 	}
 	
 	@Override
@@ -275,6 +275,25 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	protected boolean GetNodeInMultipleLine(ASTNode node)
 	{
 		return ncm.GetAstNodeInMultipleLine(node);
+	}
+	
+	protected boolean GetNodeHasUsed(ASTNode node)
+	{
+		return ncm.GetNodeHasUsed(node);
+	}
+	
+	protected char GetNodeType(ASTNode node)
+	{
+		return ncm.GetNodeType(node);
+	}
+	
+	protected boolean ShouldExecute(ASTNode node)
+	{
+		if (GetNodeHasUsed(node))
+		{
+			return false;
+		}
+		return true;
 	}
 	
 }

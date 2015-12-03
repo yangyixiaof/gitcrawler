@@ -119,7 +119,7 @@ public class ScopeDataManager {
 		}
 	}
 	
-	public String GetDataAssignOffsetInfo(String data, KindHint hintkind) {
+	public String GetDataAssignOffsetInfo(String data, KindHint hintkind, String kind) {
 		boolean isfield = false;
 		if (data.startsWith("this."))
 		{
@@ -162,7 +162,8 @@ public class ScopeDataManager {
 				}
 			}*/
 		}
-		return null;
+		AddDataNewlyUsed(data, kind, false, true);
+		return GCodeMetaInfo.FirstDeclaredData;
 	}
 	
 	public void EnterBlock(int scopeid, boolean isclass)

@@ -23,7 +23,7 @@ public class GCodeMetaInfo {
 	public static String DataRefIndicator = "$";
 	
 	public static int OutofScopeVarOrObject = -10;
-	public static String OutofScopeDesc = "$FDC#";
+	public static String FirstDeclaredData = "$FDC#";
 	//public static String OutofScopeDesc = "$INF#";
 	
 	//for field only which means data only.

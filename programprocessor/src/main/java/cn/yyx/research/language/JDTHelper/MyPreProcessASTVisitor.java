@@ -8,15 +8,19 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 import cn.yyx.research.language.JDTManager.KindLibrary;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
+import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
+import cn.yyx.research.language.JDTManager.VVarObjPoolManager;
 import cn.yyx.research.language.JDTManager.VarOrObjReferenceManager;
 
 public class MyPreProcessASTVisitor extends ASTVisitor{
@@ -32,7 +36,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
 	
-	private Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
+	// private Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	// a node is only equivalent to one node.
 	private Map<Integer, Integer> equivalentScope = new TreeMap<Integer, Integer>();
 	
@@ -128,7 +132,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	// If doesn't know the kind, just set one as random. The one must be the big kind you want.
 	protected String GetDataOffset(String data, String kind) {
-		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind));
+		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind), kind);
 		return code;
 		/*Integer nline = nlm.GetAstNodeLineInfo(node);
 		if (nline != null) {
@@ -248,9 +252,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		lambdaparamstack.pop();
 	}*/
 	
-	protected void AddLinkBetweenNodes(ASTNode linkingnode, ASTNode nodetobelinked) {
+	/*protected void AddLinkBetweenNodes(ASTNode linkingnode, ASTNode nodetobelinked) {
 		nodelink.put(linkingnode.hashCode(), nodetobelinked);
-	}
+	}*/
 	
 	protected void AddFirstOrderTask(FirstOrderTask runtask)
 	{
@@ -318,6 +322,26 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		return ncm.GetAstNodeInMultipleLine(node);
 	}
 	
+	public void AddNodeHasUsed(ASTNode node, boolean used)
+	{
+		ncm.AddNodeHasUsed(node, used);
+	}
+	
+	public boolean GetNodeHasUsed(ASTNode node)
+	{
+		return ncm.GetNodeHasUsed(node);
+	}
+	
+	public void AddNodeType(ASTNode node, char type)
+	{
+		ncm.AddNodeType(node, type);
+	}
+	
+	public char GetNodeType(ASTNode node)
+	{
+		return ncm.GetNodeType(node);
+	}
+	
 	protected String PushBackContentHolder(String code, ASTNode node)
 	{
 		AddNodeHasContentHolder(node, true);
@@ -347,6 +371,25 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		}
 	}
 	
+	// v means virtual, r means real.
+	protected void DirectLinkCode(ASTNode vnode, ASTNode rnode)
+	{
+		AddNodeCode(vnode, GetNodeCode(rnode));
+		AddNodeHasUsed(rnode, true);
+		if (GetNodeHasContentHolder(rnode))
+		{
+			AddNodeHasContentHolder(rnode, true);
+		}
+		if (GetNodeHasOccupiedOneLine(rnode))
+		{
+			AddNodeHasOccupiedOneLine(rnode, true);
+		}
+		if (GetNodeInMultipleLine(rnode))
+		{
+			AddNodeInMultipleLine(rnode, true);
+		}
+	}
+	
 	protected Boolean MethodInvocationCode(String methodName, List<ASTNode> args, StringBuilder code)
 	{
 		// "new" + GCodeMetaInfo.WhiteSpaceReplacer + 
@@ -356,9 +399,11 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		code.append(pre);
 		boolean inOneLine = true;
 		for (ASTNode arg : args) {
+			AddNodeHasUsed(arg, true);
 			if (GetNodeHasOccupiedOneLine(arg))
 			{
 				code.append(GCodeMetaInfo.CodeHole);
+				AddNodeType(arg, NodeTypeLibrary.comphole);
 				inOneLine = false;
 			}
 			else
@@ -373,6 +418,46 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		}
 		code.append(post);
 		return inOneLine;
+	}
+	
+	protected void VariableDeclarationReferenceHint(List<VariableDeclarationFragment> fs)
+	{
+		for (VariableDeclarationFragment vdf : fs) {
+			AddReferenceUpdateHint(vdf.getName(), KindLibrary.DataRefDeclare);
+		}
+	}
+	
+	protected void VariableDeclarationCode(ASTNode node, List<VariableDeclarationFragment> fs, String type)
+	{
+		StringBuilder code = new StringBuilder("");
+		if (fs != null && fs.size() > 0)
+		{
+			for (VariableDeclarationFragment vdf : fs) {
+				code.append(type);
+				Expression iniexpr = vdf.getInitializer();
+				if (iniexpr != null) {
+					code.append("=");
+					if (!GetNodeHasOccupiedOneLine(iniexpr))
+					{
+						code.append(GetNodeCode(iniexpr));
+						AddNodeHasUsed(iniexpr, true);
+					}
+					else
+					{
+						code.append(GCodeMetaInfo.CodeHole);
+						AddNodeType(iniexpr, NodeTypeLibrary.comphole);
+					}
+					DataNewlyUsed(vdf.getName().toString(), VVarObjPoolManager.VarOrObjPool, false, true);
+				}
+				code.append(",");
+			}
+			code.deleteCharAt(code.length()-1);
+		}
+		AddNodeCode(node, code.toString());
+		
+		for (VariableDeclarationFragment vdf : fs) {
+			DeleteReferenceUpdateHint(vdf);
+		}
 	}
 	
 }

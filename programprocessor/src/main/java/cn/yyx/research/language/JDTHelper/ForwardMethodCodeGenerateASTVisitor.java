@@ -96,6 +96,8 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	
 	@Override
 	public boolean visit(LambdaExpression node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		RegistFirstNodeAfterDecreasingElement(node.getBody());
 		RegistLastNodeBeforeIncreaseingElement(node.getBody());
 		
@@ -112,13 +114,16 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	}
 	
 	@Override
-	public boolean visit(ExpressionMethodReference node) {
+	public void endVisit(ExpressionMethodReference node) {
+		if (!ShouldExecute(node)) {return;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(CastExpression node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
@@ -131,24 +136,32 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	
 	@Override
 	public boolean visit(Assignment node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(BreakStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(ContinueStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(ClassInstanceCreation node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		// System.out.println("Node Type:"+node.getType());
 		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
 		// System.out.println("ClassInstanceCreation:"+node);
@@ -158,12 +171,16 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	
 	@Override
 	public boolean visit(ConditionalExpression node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(ConstructorInvocation node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		// Do nothing now.
 		// System.out.println("ConstructorInvocation:" + node);
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
@@ -172,6 +189,8 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 
 	@Override
 	public boolean visit(DoStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine("do", OperationType.DoRawCode, NodeTypeLibrary.newstart, GetNodeLevel(node), false);
 		RegistFirstNodeAfterDecreasingElement(node.getExpression());
 		RegistLastNodeBeforeIncreaseingElement(node.getExpression());
@@ -182,11 +201,15 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 
 	@Override
 	public void endVisit(DoStatement node) {
+		if (!ShouldExecute(node)) {return;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 	}
 	
 	@Override
 	public boolean visit(EnhancedForStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
@@ -212,6 +235,8 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(SuperMethodInvocation node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		List<ASTNode> args = node.arguments();
 		if (args.size() > 0)
 		{
@@ -225,6 +250,8 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodInvocation node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		List<ASTNode> args = node.arguments();
 		if (args.size() > 0)
 		{
@@ -238,6 +265,8 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ForStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		ASTNode first = null;
 		ASTNode last = null;
 		List<ASTNode> inis = node.initializers();
@@ -296,12 +325,15 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	
 	@Override
 	public boolean visit(VariableDeclarationExpression node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(IfStatement node) {
+		if (!ShouldExecute(node)) {return false;}
 		
 		RegistFirstNodeAfterDecreasingElement(node.getExpression());
 		RegistLastNodeBeforeIncreaseingElement(node.getExpression());
@@ -326,10 +358,12 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@SuppressWarnings("unchecked")
 	public boolean visit(InfixExpression node) {
 		int nodelevel = GetNodeLevel(node);
-		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		String operatorcode = node.getOperator().toString();
+		if (ShouldExecute(node)) {
+			TrulyGenerateOneLine(node, nodelevel, GetNodeHasContentHolder(node));
+		}
 		List<ASTNode> extendops = node.extendedOperands();
 		ASTNode pre = node.getRightOperand();
+		String operatorcode = node.getOperator().toString();
 		for (ASTNode op : extendops)
 		{
 			AddFirstOrderTask(new FirstOrderTask(pre, op, node, false) {
@@ -346,30 +380,40 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	
 	@Override
 	public boolean visit(InstanceofExpression node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(LabeledStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(PostfixExpression node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(PrefixExpression node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(ReturnStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
@@ -377,6 +421,8 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(SuperConstructorInvocation node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		List<ASTNode> args = node.arguments();
 		if (args.size() > 0)
 		{
@@ -389,30 +435,39 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	
 	@Override
 	public boolean visit(SwitchStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(SwitchCase node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(SynchronizedStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(ThrowStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(CatchClause node) {
+		if (!ShouldExecute(node)) {return false;}
 		
 		RegistFirstNodeAfterDecreasingElement(node.getBody());
 		RegistLastNodeBeforeIncreaseingElement(node.getBody());
@@ -423,24 +478,32 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	
 	@Override
 	public boolean visit(SingleVariableDeclaration node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(VariableDeclarationStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(WhileStatement node) {
+		if (!ShouldExecute(node)) {return false;}
+		
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return super.visit(node);
 	}
