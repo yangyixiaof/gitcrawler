@@ -2,11 +2,6 @@ package cn.yyx.research.language.JDTManager;
 
 public class KindLibrary {
 	
-	public static final int NoHint = 0;
-	public static final int DataRefUpdate = 1;
-	public static final int DataRefDeclare = 2;
-	public static final int LabelRefUse = 3;
-	
 	public static KindHint GetManagerLevelHintForKind(String kind)
 	{
 		switch (kind) {

@@ -20,7 +20,6 @@ import cn.yyx.research.language.JDTManager.KindLibrary;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
-import cn.yyx.research.language.JDTManager.VVarObjPoolManager;
 import cn.yyx.research.language.JDTManager.VarOrObjReferenceManager;
 
 public class MyPreProcessASTVisitor extends ASTVisitor{
@@ -420,10 +419,10 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		return inOneLine;
 	}
 	
-	protected void VariableDeclarationReferenceHint(List<VariableDeclarationFragment> fs)
+	protected void VariableDeclarationReferenceHint(List<VariableDeclarationFragment> fs, int overAllHint)
 	{
 		for (VariableDeclarationFragment vdf : fs) {
-			AddReferenceUpdateHint(vdf.getName(), KindLibrary.DataRefDeclare);
+			AddReferenceUpdateHint(vdf.getName(), overAllHint);
 		}
 	}
 	
@@ -447,7 +446,6 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 						code.append(GCodeMetaInfo.CodeHole);
 						AddNodeType(iniexpr, NodeTypeLibrary.comphole);
 					}
-					DataNewlyUsed(vdf.getName().toString(), VVarObjPoolManager.VarOrObjPool, false, true);
 				}
 				code.append(",");
 			}

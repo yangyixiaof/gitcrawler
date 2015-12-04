@@ -22,7 +22,7 @@ public class VarOrObjReferenceManager {
 		Integer result = hintReferenceStack.get(node.hashCode());
 		if (result == null)
 		{
-			result = KindLibrary.NoHint;
+			result = ReferenceHintLibrary.NoHint;
 		}
 		return result;
 	}
