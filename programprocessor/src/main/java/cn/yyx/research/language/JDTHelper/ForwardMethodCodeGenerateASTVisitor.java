@@ -77,7 +77,8 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	public boolean visit(StringLiteral node) {
 		// System.out.println("StringLiteral:"+node);
-		AppendOtherCode(GCodeMetaInfo.StringCorpus, node.toString());
+		String literal = node.toString().trim();
+		AppendOtherCode(GCodeMetaInfo.StringCorpus, literal.substring(1, literal.length()-1));
 		return super.visit(node);
 	}
 
