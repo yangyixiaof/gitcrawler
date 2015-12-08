@@ -22,13 +22,15 @@ public class OtherCodeManager {
 		{
 			ocode = "";
 		}
-		if (ocode.equals("") || value.trim().equals("."))
+		// ocode.equals("") || 
+		String trimvalue = value.trim();
+		if (trimvalue.equals("."))
 		{
-			ocode += value.trim();
+			ocode += trimvalue;
 		}
 		else
 		{
-			ocode += " " + value.trim();
+			ocode += " " + trimvalue;
 		}
 		getOtherCodeMap().put(key, ocode);
 	}
