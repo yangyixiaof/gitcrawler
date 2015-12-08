@@ -1,7 +1,5 @@
 package cn.yyx.research.language.Utility;
 
-import cn.yyx.research.language.JDTHelper.var;
-
 public class jclasstest {
 	public jclasstest() {
 	}

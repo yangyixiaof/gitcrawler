@@ -148,19 +148,6 @@ public class ScopeDataManager {
 				OneScope dataScope = ivp.getScope();
 				return GetDataExactOffset(dataScope, data, hintkind);
 			}
-			/*Integer line = (mDataLineMap.get(data) == null || mDataLineMap.get(data).size() == 0) ? null : mDataLineMap.get(data).get(0);
-			if (line != null)
-			{
-				return line;
-			}
-			else
-			{
-				line = mRawStringDataLineMap.get(data);
-				if (line != null)
-				{
-					return line;
-				}
-			}*/
 		}
 		AddDataNewlyUsed(data, kind, false, true);
 		return GCodeMetaInfo.FirstDeclaredData;

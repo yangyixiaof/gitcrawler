@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
@@ -28,16 +30,21 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.IntersectionType;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.LambdaExpression;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
@@ -47,11 +54,13 @@ import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperFieldAccess;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.SuperMethodReference;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
@@ -60,6 +69,8 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jdt.core.dom.TypeMethodReference;
+import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -148,6 +159,65 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(TypeDeclarationStatement node) {
 		// Do not know what it is now.
 		 System.out.println("TypeDeclarationStatement:"+node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(ImportDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AnnotationTypeDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AnnotationTypeMemberDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PackageDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SingleMemberAnnotation node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(NormalAnnotation node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(MarkerAnnotation node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(Modifier node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeParameter node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(SuperMethodReference node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeMethodReference node) {
+		// TODO Auto-generated method stub
 		return super.visit(node);
 	}
 	
@@ -252,6 +322,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		});*/
 		AddNodeType(node, NodeTypeLibrary.adjacent);
 		AddNodeCode(node, "::"+node.getName());
+		NoVisit(node.getName());
 		AddNodeHasOccupiedOneLine(node, true);
 		return super.visit(node);
 	}
@@ -276,7 +347,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public void endVisit(CastExpression node) {
-		String code = "(" + node.getType().toString() + ")";
+		String code = "(" + GetNodeCode(node.getType()) + ")";
 		AddNodeInMultipleLineWhenRemainIsContentHolder(node.getExpression(), node);
 		code = PushBackContentHolder(code, node);
 		AddNodeCode(node, code);
@@ -387,6 +458,13 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	@SuppressWarnings("unchecked")
+	public boolean visit(ClassInstanceCreation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
 	public void endVisit(ClassInstanceCreation node) {
 		// System.out.println("Node Type:"+node.getType());
 		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
@@ -399,6 +477,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
+		MethodInvocationDeleteHint(node.arguments());
 	}
 	
 	@Override
@@ -440,7 +519,14 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);
 	}
-
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(ConstructorInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
+	}
+		
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(ConstructorInvocation node) {
@@ -454,6 +540,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
+		MethodInvocationDeleteHint(node.arguments());
 	}
 
 	@Override
@@ -557,6 +644,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public void endVisit(FieldAccess node) {
 		ASTNode preexpr = node.getExpression();
 		String code = "";
+		NoVisit(node.getName());
 		if (GetNodeInMultipleLine(preexpr))
 		{
 			AddNodeType(node, NodeTypeLibrary.adjacent);
@@ -582,8 +670,16 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	@SuppressWarnings("unchecked")
+	public boolean visit(SuperMethodInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
 	public void endVisit(SuperMethodInvocation node) {
 		StringBuilder code = new StringBuilder("");
+		NoVisit(node.getName());
 		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
 		AddNodeCode(node, "super."+code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
@@ -591,12 +687,21 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
+		MethodInvocationDeleteHint(node.arguments());
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(MethodInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(MethodInvocation node) {
 		StringBuilder code = new StringBuilder("");
+		NoVisit(node.getName());
 		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
 		AddNodeCode(node, code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
@@ -604,6 +709,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
+		MethodInvocationDeleteHint(node.arguments());
 	}
 	
 	@Override
@@ -631,46 +737,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		StringBuilder code = new StringBuilder("for");
 		List<ASTNode> inis = node.initializers();
 		List<ASTNode> ups = node.updaters();
-		/*code.append("for(");
-		
-		if (inis.size() > 1)
-		{
-			System.out.println("Appeared! Mutiple ForStatement initializers In legend.");
-			System.exit(1);
-		}
-		if (inis.size() > 0)
-		{
-			ASTNode iniexpr = inis.get(0);
-			code.append(GetNodeCode(iniexpr));
-		}
-		code.append(";");
-		
-		ASTNode judge = node.getExpression();
-		if (judge != null)
-		{
-			if (!GetNodeInMultipleLine(judge))
-			{
-				code.append(GetNodeCode(judge));
-			}
-			else
-			{
-				code.append(GCodeMetaInfo.CodeHole);
-			}
-		}
-		code.append(";");
-		
-		List<ASTNode> ups = node.updaters();
-		if (ups.size() > 1)
-		{
-			System.out.println("Appeared! Mutiple ForStatement updaters In legend.");
-			System.exit(1);
-		}
-		if (ups.size() > 0)
-		{
-			ASTNode upexpr = ups.get(0);
-			code.append(GetNodeCode(upexpr));
-		}
-		code.append(")");*/
 		
 		AddNodeCode(node, code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
@@ -778,15 +844,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
-		
-		/*int opline = line;
-		for (Expression op : ops) {
-			opline++;
-			String opcode = OperationType.InfixExpression + "#" + node.getOperator().toString() + "#"
-					+ OffsetLibrary.GetOffsetDescription(line - opline) + GetRefCode(op, opline);
-			lcm.AddLineCode(opline, opcode);
-			// code += GetRefCode(op, line);
-		}*/
 		/*
 		 * System.out.println("=========传说中的分割线==开始==========");
 		 * System.out.println("InfixExpression:"+node);
@@ -818,8 +875,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public void endVisit(InstanceofExpression node) {
-		String type = node.getRightOperand().toString();
-		String typecode = GetDataOffset(type, VHiddenClassPoolManager.ClassHiddenPool);
+		ASTNode typenode = node.getRightOperand();
+		String typecode = GetNodeCode(typenode);
 		ASTNode left = node.getLeftOperand();
 		String leftcode = GCodeMetaInfo.CodeHole;
 		if (!GetNodeInMultipleLine(left))
@@ -946,7 +1003,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(SimpleType node) {
 		// System.out.println("SimpleType:" + node);
-		AddNodeCode(node, node.toString());
+		NoVisit(node.getName());
+		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
 		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
 		return super.visit(node);
 	}
@@ -954,7 +1012,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(QualifiedType node) {
 		// System.out.println("QualifiedType:"+node);
-		AddNodeCode(node, node.toString());
+		NoVisit(node.getName());
+		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
 		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
 		return super.visit(node);
 	}
@@ -975,6 +1034,13 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	@SuppressWarnings("unchecked")
+	public boolean visit(SuperConstructorInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
 	public void endVisit(SuperConstructorInvocation node) {
 		StringBuilder code = new StringBuilder("");
 		boolean isInOneLine = MethodInvocationCode("super", node.arguments(), code);
@@ -984,6 +1050,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
+		MethodInvocationDeleteHint(node.arguments());
 	}
 	
 	@Override
@@ -1193,6 +1260,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public void endVisit(SimpleName node) {
 		if (!ShouldVisit(node))
 		{
+			DeleteNoVisit(node);
 			return;
 		}
 		// System.out.println("SimpleName:" + node);
@@ -1200,26 +1268,30 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		if (hint != null)
 		{
 			String code = null;
+			boolean hasCorrespond = false;
 			String data = node.toString();
 			switch (hint) {
 			case ReferenceHintLibrary.DataUse:
+				hasCorrespond = true;
 				break;
 			case ReferenceHintLibrary.DataDeclare:
 				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, false, true);
+				hasCorrespond = true;
 				return;
 			case ReferenceHintLibrary.DataUpdate:
+			case ReferenceHintLibrary.FieldUpdate:
 				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
 				break;
 			case ReferenceHintLibrary.FieldUse:
+				hasCorrespond = true;
 				break;
 			case ReferenceHintLibrary.FieldDeclare:
 				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, true, false);
+				hasCorrespond = true;
 				return;
-			case ReferenceHintLibrary.FieldUpdate:
-				code = GetDataOffset(node.toString(), VVarObjPoolManager.VarOrObjPool);
-				break;
 			case ReferenceHintLibrary.LabelDeclare:
 				DataNewlyUsed(node.toString(), VLabelPoolManager.LabelPool, false, false);
+				hasCorrespond = true;
 				break;
 			case ReferenceHintLibrary.LabelUse:
 				code = GetDataOffset(node.toString(), VLabelPoolManager.LabelPool);
@@ -1233,7 +1305,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			}
 			else
 			{
-				System.err.println("Debugging : No corresponding data offset. Maybe data use or others. Data is : "+node);
+				if (!hasCorrespond)
+				{
+					AddNodeCode(node, node.toString());
+					System.err.println("Debugging : No corresponding data offset. Maybe data use or others. Data is : "+node);
+				}
 			}
 		}
 		else

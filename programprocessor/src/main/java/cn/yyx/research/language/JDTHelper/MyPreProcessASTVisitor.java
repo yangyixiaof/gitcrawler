@@ -21,6 +21,7 @@ import cn.yyx.research.language.JDTManager.KindLibrary;
 import cn.yyx.research.language.JDTManager.NoVisitNodeManager;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
+import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.JDTManager.VarOrObjReferenceManager;
 
@@ -129,7 +130,6 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		// System.out.println("ParenthesizedExpression:"+node);
 		// System.out.println("ParenthesizedExpression:"+node.getExpression());
 		// GiveLinkBetweenNodes(node, node.getExpression());
-		
 	}
 	
 	protected void AddEquivalentScope(ASTNode node1, ASTNode node2)
@@ -141,87 +141,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	protected String GetDataOffset(String data, String kind) {
 		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind), kind);
 		return code;
-		/*Integer nline = nlm.GetAstNodeLineInfo(node);
-		if (nline != null) {
-			code = OffsetLibrary.GetOffsetDescription(nline - currline);
-		} else {
-			String data = node.toString();
-			Integer lline = sdm.GetDataAssignOffsetInfo(data);
-			if (lline == GCodeMetaInfo.OutofScopeVarOrObject) {
-				String nodecode = ncm.GetAstNodeCode(node);
-				if (nodecode == null) {
-					ASTNode linkednode = nodelink.get(node.hashCode());
-					if (linkednode != null) {
-						return GetRefCode(linkednode, currline);
-					}
-					nodecode = node.toString();
-					 // debuging
-					 System.err.println("Warning : No node code, just use the raw string of the node. nodecode is :"+nodecode);
-					// new Exception("No node code").printStackTrace();
-					// System.exit(1);
-				}
-				code = nodecode + GCodeMetaInfo.CommonEnd;
-			} else {
-				if (lline == GCodeMetaInfo.IsField) {
-					code = GCodeMetaInfo.IsFieldDesc;
-				} else {
-					code = OffsetLibrary.GetOffsetDescription(lline - currline);
-				}
-			}
-		}
-		return code;*/
 	}
-	
-	/*protected int OneTextOneLine(String commandtype, String nodestr) {
-		int line = lm.NewLine();
-		lcm.AddLineCode(line, commandtype + nodestr);
-		return line;
-	}*/
-	
-	/*protected void UnchangedNode(ASTNode node) {
-		getNcm().AddASTNodeCode(node, node.toString());
-	}
-	
-	protected void UnchangedNode(ASTNode node, String nodestr) {
-		getNcm().AddASTNodeCode(node, nodestr);
-	}*/
-	
-	/*protected boolean LineOccupied(ASTNode node)
-	{
-		return nlm.GetAstNodeLineInfo(node) != null;
-	}
-	
-	protected int VisitLineOccupy(ASTNode node) {
-		int line = lm.NewLine();
-		nlm.AddASTNodeLineInfo(node, line);
-		return line;
-	}
-	
-	protected Integer GetOccupiedLine(ASTNode node) {
-		return nlm.GetAstNodeLineInfo(node);
-	}
-	
-	protected void EndVisitReplaceLineOccupyWithRealContent(int line, ASTNode node, String code) {
-		ncm.AddASTNodeCode(node, code);
-		lcm.AddLineCode(line, code);
-	}
-	
-	@Override
-	public String toString() {
-		return lcm.GetGeneratedCode();
-	}
-	
-	public String GetGeneratedCode() {
-		return lcm.GetGeneratedCode();
-	}*/
-	
-	/*
-	 * protected int OneTextNodeOneLine(ASTNode node) { int line = lm.NewLine();
-	 * nlm.AddASTNodeLineInfo(node, line); ncm.AddASTNodeCode(node,
-	 * OperationType.NearlyCommonText + "#" + node.toString());
-	 * lcm.AddLineCode(line, OperationType.NearlyCommonText + "#" +
-	 * node.toString()); return line; }
-	 */
 	
 	protected void ResetDLM() {
 		getSdm().ResetCurrentClassField();
@@ -397,6 +317,20 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		}
 	}
 	
+	protected void MethodInvocationAddHint(List<ASTNode> args)
+	{
+		for (ASTNode arg : args) {
+			AddReferenceUpdateHint(arg, ReferenceHintLibrary.DataUpdate);
+		}
+	}
+	
+	protected void MethodInvocationDeleteHint(List<ASTNode> args)
+	{
+		for (ASTNode arg : args) {
+			DeleteReferenceUpdateHint(arg);
+		}
+	}
+	
 	protected Boolean MethodInvocationCode(String methodName, List<ASTNode> args, StringBuilder code)
 	{
 		// "new" + GCodeMetaInfo.WhiteSpaceReplacer + 
@@ -474,6 +408,11 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	protected boolean ShouldVisit(ASTNode node)
 	{
 		return nvnm.NeedVisit(node.hashCode());
+	}
+	
+	protected void DeleteNoVisit(ASTNode node)
+	{
+		nvnm.DeleteNoVisit(node.hashCode());
 	}
 	
 }
