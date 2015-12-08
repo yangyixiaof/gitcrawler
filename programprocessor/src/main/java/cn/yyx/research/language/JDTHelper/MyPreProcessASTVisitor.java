@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
+import cn.yyx.research.language.JDTManager.DebugNodeCorrespondingCode;
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
@@ -47,6 +48,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	@Override
 	public void preVisit(ASTNode node) {
+		// debuging
+		DebugNodeCorrespondingCode.AddIdNodePair(node);
+		
 		fotp.PostIsBegin(node);
 		super.preVisit(node);
 	}

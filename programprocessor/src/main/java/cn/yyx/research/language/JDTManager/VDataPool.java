@@ -47,7 +47,7 @@ public class VDataPool {
 		Integer scopeid = id;
 		if (!scopes.containsKey(scopeid))
 		{
-			System.err.println("Error! no handled scope? The system will exit.");
+			System.err.println("Error! no handled scope? The system will exit." + "scope content:" + DebugNodeCorrespondingCode.GetNodeById(scopeid));
 			System.exit(1);
 		}
 		return scopes.get(scopeid);
