@@ -26,23 +26,5 @@ class ttest {
 		};
 		new Thread(r).start();
 		System.out.println("haha haha!");
-		
-		
-		Runnable test = new Runnable("foo", function(done){
-            process.nextTick(done);
-            process.nextTick(done);
-            process.nextTick(done);
-            process.nextTick(done);
-        });
-		test.start();
-		
-		Runnable test = new Runnable("foo", System::function);
-		
-		Runnable = new Runnable("foo", <HOLE>)#21/b1
-		System::function#25/c0
-		
-		(Test)node.getExpression()#25/c0#21/c0
-		
-		test.start();
 	}
 }

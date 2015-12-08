@@ -14,24 +14,25 @@ public class OperationType {
 	public static final int ForStatement = 11;
 	public static final int IfStatement = 12;
 	public static final int FieldAccess = 13;
-	public static final int MethodInvocation = 14;
-	public static final int InstanceofExpression = 15;
-	public static final int ReturnStatement = 16;
-	public static final int PostfixExpression = 17;
-	public static final int PrefixExpression = 18;
-	public static final int StringLiteral = 19;
-	public static final int SynchronizedStatement = 20;
-	public static final int SwitchStatement = 21;
-	public static final int SwitchCase = 22;
-	public static final int SuperConstructorInvocation = 23;
-	public static final int ThrowStatement = 24;
-	public static final int CatchClause = 25;
-	public static final int VariableDeclarationStatement = 26;
-	public static final int SingleVariableDeclaration = 27;
-	public static final int NearlyCommonText = 28;
-	public static final int BlockCommand = 29;
-	public static final int ExpressionMethodReference = 30;
-	public static final int LambdaExpression = 31;
+	public static final int FieldDeclaration = 14;
+	public static final int MethodInvocation = 15;
+	public static final int InstanceofExpression = 16;
+	public static final int ReturnStatement = 17;
+	public static final int PostfixExpression = 18;
+	public static final int PrefixExpression = 19;
+	public static final int StringLiteral = 20;
+	public static final int SynchronizedStatement = 21;
+	public static final int SwitchStatement = 22;
+	public static final int SwitchCase = 23;
+	public static final int SuperConstructorInvocation = 24;
+	public static final int ThrowStatement = 25;
+	public static final int CatchClause = 26;
+	public static final int VariableDeclarationStatement = 27;
+	public static final int SingleVariableDeclaration = 28;
+	public static final int NearlyCommonText = 29;
+	public static final int BlockCommand = 30;
+	public static final int ExpressionMethodReference = 31;
+	public static final int LambdaExpression = 32;
 	public static final int LambdaParam = 33;
 	public static final int MethodDeclaration = 34;
 	public static final int EnumDeclaration = 35;
@@ -91,7 +92,13 @@ public class OperationType {
 		}
 		if (org.eclipse.jdt.core.dom.FieldAccess.class == ASTClass)
 		{
+			System.err.println("FieldAccess should not have a single line");
+			new Exception().printStackTrace();
 			return FieldAccess;
+		}
+		if (org.eclipse.jdt.core.dom.FieldDeclaration.class == ASTClass)
+		{
+			return FieldDeclaration;
 		}
 		if (org.eclipse.jdt.core.dom.InstanceofExpression.class == ASTClass)
 		{
@@ -162,7 +169,8 @@ public class OperationType {
 		{
 			return LabeledStatement;
 		}
-		System.err.println("Serious errir: no catched ast node class. The system will exit.");
+		System.err.println("Serious errir: no catched ast node class. The system will exit." + " The class is" + ASTClass);
+		new Exception().printStackTrace();
 		System.exit(1);
 		return -1;
 	}

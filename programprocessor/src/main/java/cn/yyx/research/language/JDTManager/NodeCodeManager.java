@@ -105,7 +105,12 @@ public class NodeCodeManager {
 	
 	public boolean GetNodeHasUsed(ASTNode node)
 	{
-		return mNodeHasUsedMap.get(node.hashCode());
+		Boolean hasUsed = mNodeHasUsedMap.get(node.hashCode());
+		if (hasUsed == null)
+		{
+			return false;
+		}
+		return hasUsed;
 	}
 	
 }

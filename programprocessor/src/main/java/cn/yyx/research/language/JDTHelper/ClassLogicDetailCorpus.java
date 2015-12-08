@@ -35,6 +35,7 @@ public class ClassLogicDetailCorpus {
 			ForwardMethodPreProcessASTVisitor fmastv = new ForwardMethodPreProcessASTVisitor();
 			ForwardMethodCodeGenerateASTVisitor fmvgastv = new ForwardMethodCodeGenerateASTVisitor(fmastv);
 			clazzNode.accept(fmastv);
+			clazzNode.accept(fmvgastv);
 			Map<String, String> codemap = fmvgastv.GetGeneratedCode();
 			Set<String> keys = codemap.keySet();
 			Iterator<String> itr = keys.iterator();

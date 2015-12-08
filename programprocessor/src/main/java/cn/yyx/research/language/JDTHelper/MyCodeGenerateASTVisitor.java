@@ -65,6 +65,10 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	
 	@Override
 	public boolean visit(TypeDeclaration node) {
+		if (omc == null)
+		{
+			omc = new NodeCode();
+		}
 		if (getFirstLevelClass() == null)
 		{
 			FirstLevelClass = node.hashCode();
@@ -179,6 +183,11 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	
 	// code has ......#leixing, the rest is %b/ as an example, only need to add info of lines.
 	protected void TrulyGenerateOneLine(ASTNode node, int level, boolean hasContentHolder) {
+		/*if (omc == null)
+		{
+			System.err.println(node);
+		}*/
+		
 		String nodecode = GetNodeCode(node) + GCodeMetaInfo.CommonSplitter + OperationType.GetTypeDescriptionId(node.getClass());
 		nodecode += "%" + HandleNodeType(node) + "/";
 		omc.AddOneLineCode(nodecode, level, hasContentHolder);
