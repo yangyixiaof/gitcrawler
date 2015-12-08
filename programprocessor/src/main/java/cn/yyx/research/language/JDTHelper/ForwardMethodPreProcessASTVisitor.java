@@ -88,7 +88,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	// AddEquivalentScope(node, node.get);
 	
 	// if nothing found in data pool, should return first declared. Solved.
-	// TODO check the call of DataNewlyUsed function and the call of AddDataReferenceHint.
+	// check the call of DataNewlyUsed function and the call of AddDataReferenceHint.
 	
 	// set node type map in NodeCodeManager. Solved.
 	// set node used map in NodeCodeManager. Solved.
@@ -1142,6 +1142,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
 		ResetDLM();
 		EnterBlock(node, false);
+		NoVisit(node.getName());
 		return super.visit(node);
 	}
 	
@@ -1190,6 +1191,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public void endVisit(SimpleName node) {
+		if (!ShouldVisit(node))
+		{
+			return;
+		}
 		// System.out.println("SimpleName:" + node);
 		Integer hint = GetReferenceUpdateHint(node);
 		if (hint != null)

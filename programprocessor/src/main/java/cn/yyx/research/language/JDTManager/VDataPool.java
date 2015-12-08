@@ -9,7 +9,11 @@ public class VDataPool {
 	
 	public void AScopeCreated(OneScope scope)
 	{
-		int id = scope.hashCode();
+		int id = scope.getID();
+		
+		// testing
+		// System.out.println("newly created scope id:"+id);
+		
 		JCScope jscope = new JCScope(id, scope.getLevel());
 		scopes.put(id, jscope);
 	}
@@ -47,7 +51,8 @@ public class VDataPool {
 		Integer scopeid = id;
 		if (!scopes.containsKey(scopeid))
 		{
-			System.err.println("Error! no handled scope? The system will exit." + "scope content:" + DebugNodeCorrespondingCode.GetNodeById(scopeid));
+			System.err.println("Error! no handled scope? The system will exit." + " scope id:" + scopeid + " scope content:" + DebugNodeCorrespondingCode.GetNodeById(scopeid));
+			new Exception().printStackTrace();
 			System.exit(1);
 		}
 		return scopes.get(scopeid);

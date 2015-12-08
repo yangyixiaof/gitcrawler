@@ -18,6 +18,7 @@ import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 import cn.yyx.research.language.JDTManager.KindLibrary;
+import cn.yyx.research.language.JDTManager.NoVisitNodeManager;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
@@ -35,6 +36,8 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 	
 	VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
+	
+	NoVisitNodeManager nvnm = new NoVisitNodeManager();
 	
 	// private Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	// a node is only equivalent to one node.
@@ -64,6 +67,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		// classstack.push(node.hashCode());
 		// blockstack.push(node.hashCode());
 		EnterBlock(node, true);
+		NoVisit(node.getName());
 		return super.visit(node);
 	}
 
@@ -460,6 +464,16 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		for (VariableDeclarationFragment vdf : fs) {
 			DeleteReferenceUpdateHint(vdf);
 		}
+	}
+	
+	protected void NoVisit(ASTNode node)
+	{
+		nvnm.AddNoVisitNode(node.hashCode());
+	}
+	
+	protected boolean ShouldVisit(ASTNode node)
+	{
+		return nvnm.NeedVisit(node.hashCode());
 	}
 	
 }

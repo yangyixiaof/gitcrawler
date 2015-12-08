@@ -220,6 +220,10 @@ public class ScopeDataManager {
 	public void ResetCurrentClassField()
 	{
 		OneScope classscope = classstack.peek();
+		
+		//testing
+		//TestUtil.PrintEnteredScopeStack(classstack);
+		
 		vvopm.ResetClassScope(classscope);
 	}
 	
