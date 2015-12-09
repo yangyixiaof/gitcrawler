@@ -16,7 +16,7 @@ public class NodeCodeManager {
 	Map<Integer, Boolean> mNodeHasUsedMap = new TreeMap<Integer, Boolean>();
 	Map<Integer, Integer> mNodeLinkMap = new TreeMap<Integer, Integer>();
 	
-	// TODO handle NodeLink. create a new function and while and return the real node. change all other functions the way handle the node.
+	// handle NodeLink. create a new function and while and return the real node. change all other functions the way handle the node.
 	
 	public NodeCodeManager() {
 	}
