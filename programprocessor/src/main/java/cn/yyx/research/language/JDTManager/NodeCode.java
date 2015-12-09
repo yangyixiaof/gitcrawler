@@ -21,6 +21,19 @@ public class NodeCode {
 		return codelist.size() == 0;
 	}
 	
+	public boolean LastCharacterIsDot()
+	{
+		if (codelist.size() > 0)
+		{
+			String code = codelist.get(codelist.size()-1);
+			if (code.charAt(code.length()-1) == '.')
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean NotInitialize()
 	{
 		return getFirstCodeLevel() == -1;

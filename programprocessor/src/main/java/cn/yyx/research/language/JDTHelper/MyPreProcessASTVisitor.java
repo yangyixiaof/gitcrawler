@@ -356,7 +356,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		}
 		if (args.size() > 0)
 		{
-			code.substring(0, code.length()-1);
+			code.deleteCharAt(code.length()-1);
 		}
 		code.append(post);
 		return inOneLine;

@@ -18,7 +18,8 @@ public class FirstOrderTaskPool {
 		FirstOrderTask already = null;
 		already = pretasks.put(GetASTId(task.getPre(), true), task);
 		JudgeTaskError(already);
-		already = posttasks.put(GetASTId(task.getPre(), false), task);
+		// TODO this is an error.
+		already = posttasks.put(GetASTId(task.getPost(), false), task);
 		JudgeTaskError(already);
 	}
 	
@@ -54,6 +55,8 @@ public class FirstOrderTaskPool {
 			if (pretask != null)
 			{
 				new Exception("Order is not what you think.").printStackTrace();
+				System.err.println("error post node:"+post);
+				System.err.println("error pre node:"+pre);
 				System.exit(1);
 			}
 			// check end.
