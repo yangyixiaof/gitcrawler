@@ -488,10 +488,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		MethodInvocationCode(node.getType().toString(), node.arguments(), code);
 		AddNodeCode(node, code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
-		if (node.getAnonymousClassDeclaration() != null)
+		/*if (node.getAnonymousClassDeclaration() != null)
 		{
 			AddNodeInMultipleLine(node, true);
-		}
+		}*/
 		MethodInvocationDeleteHint(node.arguments());
 	}
 	

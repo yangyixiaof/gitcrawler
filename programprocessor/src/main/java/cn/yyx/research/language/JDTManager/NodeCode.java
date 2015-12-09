@@ -42,6 +42,11 @@ public class NodeCode {
 	// code has b/leixing#......, only need to add info of lines.
 	public void AddOneLineCode(String code, int level, boolean hasContentHolder)
 	{
+		
+		//testing
+		// TODO
+		System.err.println("Code:"+code+" hasch:"+hasContentHolder);
+		
 		code = code + (lastCodeLevel == -1 ? 0 : (level - lastCodeLevel));
 		lastCodeLevel = level;
 		if (lastHasContentHolder)
@@ -84,8 +89,13 @@ public class NodeCode {
 	}
 
 	public void AppendLast(String firstcode) {
+		
+		//testing
+		// TODO
+		System.err.println(firstcode);
+		
 		int idx = codelist.size()-1;
-		String lastcode = codelist.get(idx).replace(GCodeMetaInfo.ContentHolder, firstcode);
+		String lastcode = codelist.get(idx).replaceAll(GCodeMetaInfo.ContentHolder, firstcode);
 		codelist.set(idx, lastcode);
 	}
 

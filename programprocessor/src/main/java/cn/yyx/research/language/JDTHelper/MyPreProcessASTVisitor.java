@@ -386,8 +386,16 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 					}
 					else
 					{
-						code.append(GCodeMetaInfo.CodeHole);
-						AddNodeType(iniexpr, NodeTypeLibrary.comphole);
+						if (GetNodeInMultipleLine(iniexpr) || fs.size() > 1)
+						{
+							code.append(GCodeMetaInfo.CodeHole);
+							AddNodeType(iniexpr, NodeTypeLibrary.comphole);
+						}
+						else
+						{
+							code.append(GCodeMetaInfo.ContentHolder);
+							AddNodeHasContentHolder(node, true);
+						}
 					}
 				}
 				code.append(",");
