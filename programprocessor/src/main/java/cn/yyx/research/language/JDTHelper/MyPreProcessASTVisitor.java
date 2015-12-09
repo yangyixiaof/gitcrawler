@@ -301,7 +301,8 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	// v means virtual, r means real.
 	protected void DirectLinkCode(ASTNode vnode, ASTNode rnode)
 	{
-		AddNodeCode(vnode, GetNodeCode(rnode));
+		ncm.AddNodeLink(vnode, rnode);
+		/*AddNodeCode(vnode, GetNodeCode(rnode));
 		AddNodeHasUsed(rnode, true);
 		if (GetNodeHasContentHolder(rnode))
 		{
@@ -314,7 +315,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		if (GetNodeInMultipleLine(rnode))
 		{
 			AddNodeInMultipleLine(rnode, true);
-		}
+		}*/
 	}
 	
 	protected void MethodInvocationAddHint(List<ASTNode> args)

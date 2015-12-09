@@ -14,6 +14,9 @@ public class NodeCodeManager {
 	// type should be a / c.
 	Map<Integer, Character> mNodeTypeMap = new TreeMap<Integer, Character>();
 	Map<Integer, Boolean> mNodeHasUsedMap = new TreeMap<Integer, Boolean>();
+	Map<Integer, Integer> mNodeLinkMap = new TreeMap<Integer, Integer>();
+	
+	// TODO handle NodeLink. create a new function and while and return the real node. change all other functions the way handle the node.
 	
 	public NodeCodeManager() {
 	}
@@ -111,6 +114,16 @@ public class NodeCodeManager {
 			return false;
 		}
 		return hasUsed;
+	}
+	
+	public void AddNodeLink(ASTNode vnode, ASTNode rnode)
+	{
+		mNodeLinkMap.put(vnode.hashCode(), rnode.hashCode());
+	}
+	
+	public Integer GetNodeLink(ASTNode vnode)
+	{
+		return mNodeLinkMap.get(vnode.hashCode());
 	}
 	
 }

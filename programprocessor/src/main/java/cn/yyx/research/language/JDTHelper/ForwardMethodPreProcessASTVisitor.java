@@ -618,6 +618,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("FieldAccess:"+node);
 		// System.out.println("FieldAccessName:"+node.getName());
 		// System.out.println("FieldAccessExpr:"+node.getExpression());
+		NoVisit(node.getName());
 		ASTNode expr = node.getExpression();
 		if (expr != null)
 		{
@@ -644,7 +645,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public void endVisit(FieldAccess node) {
 		ASTNode preexpr = node.getExpression();
 		String code = "";
-		NoVisit(node.getName());
 		if (GetNodeInMultipleLine(preexpr))
 		{
 			AddNodeType(node, NodeTypeLibrary.adjacent);
@@ -672,6 +672,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(SuperMethodInvocation node) {
 		MethodInvocationAddHint(node.arguments());
+		NoVisit(node.getName());
 		return super.visit(node);
 	}
 	
@@ -679,7 +680,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public void endVisit(SuperMethodInvocation node) {
 		StringBuilder code = new StringBuilder("");
-		NoVisit(node.getName());
 		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
 		AddNodeCode(node, "super."+code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
@@ -694,6 +694,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodInvocation node) {
 		MethodInvocationAddHint(node.arguments());
+		NoVisit(node.getName());
 		return super.visit(node);
 	}
 	
@@ -701,9 +702,20 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public void endVisit(MethodInvocation node) {
 		StringBuilder code = new StringBuilder("");
-		NoVisit(node.getName());
+		ASTNode expr = node.getExpression();
+		String exprcode = "";
+		if (GetNodeHasOccupiedOneLine(expr))
+		{
+			AddNodeType(node, NodeTypeLibrary.adjacent);
+			AddNodeInMultipleLine(node, true);
+		}
+		else
+		{
+			exprcode = GetNodeCode(expr) + ".";
+			
+		}
 		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
-		AddNodeCode(node, code.toString());
+		AddNodeCode(node, exprcode + code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
 		if (!isInOneLine)
 		{
