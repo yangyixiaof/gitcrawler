@@ -58,8 +58,6 @@ public class ClassFrameworkCorpus {
 			}
 		}
 		String Contentstr = Content.toString();
-		//testing
-		//System.out.println(Contentstr);
 		return new CorpusContentPair(Corpus, Contentstr);
 	}
 	
