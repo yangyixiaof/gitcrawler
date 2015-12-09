@@ -345,14 +345,19 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 		if (ShouldExecute(node)) {
 			TrulyGenerateOneLine(node, nodelevel, GetNodeHasContentHolder(node));
 		}
-		List<ASTNode> extendops = node.extendedOperands();
 		ASTNode pre = node.getRightOperand();
 		String operatorcode = node.getOperator().toString();
+		List<ASTNode> extendops = node.extendedOperands();
 		for (ASTNode op : extendops) {
 			AddFirstOrderTask(new FirstOrderTask(pre, op, node, false) {
 				@Override
 				public void run() {
-					String code = operatorcode + GCodeMetaInfo.ContentHolder;
+					String postcode = GetNodeCode(getPost());
+					if (GetNodeHasOccupiedOneLine(getPost()))
+					{
+						postcode = GCodeMetaInfo.ContentHolder;
+					}
+					String code = operatorcode + postcode;
 					TrulyGenerateOneLine(code, OperationType.InfixExpression, NodeTypeLibrary.adjacent, nodelevel,
 							true);
 				}

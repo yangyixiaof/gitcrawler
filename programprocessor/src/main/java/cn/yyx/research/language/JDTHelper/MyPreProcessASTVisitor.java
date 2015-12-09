@@ -341,7 +341,6 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		code.append(pre);
 		boolean inOneLine = true;
 		for (ASTNode arg : args) {
-			AddNodeHasUsed(arg, true);
 			if (GetNodeHasOccupiedOneLine(arg))
 			{
 				code.append(GCodeMetaInfo.CodeHole);
@@ -351,6 +350,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 			else
 			{
 				code.append(GetNodeCode(arg));
+				AddNodeHasUsed(arg, true);
 			}
 			code.append(",");
 		}

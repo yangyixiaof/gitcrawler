@@ -23,12 +23,12 @@ public class GCodeMetaInfo {
 	public static String DataRefIndicator = "$";
 	
 	public static int OutofScopeVarOrObject = -10;
-	public static String FirstDeclaredData = "$FDC#";
-	//public static String OutofScopeDesc = "$INF#";
+	public static String FirstDeclaredData = "$FDC";
+	//public static String OutofScopeDesc = "$INF";
 	
 	//for field only which means data only.
-	public static int IsField = -9;
-	public static String IsFieldDesc = "$FREF#";
+	//public static int IsField = -9;
+	//public static String IsFieldDesc = "$FREF#";
 	
 	// corpus name
 	public static String EnumCorpus = "BigEnumDetail";

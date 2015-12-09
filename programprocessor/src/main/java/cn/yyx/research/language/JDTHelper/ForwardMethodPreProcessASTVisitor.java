@@ -849,7 +849,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		ASTNode right = node.getRightOperand();
 		if (!GetNodeHasOccupiedOneLine(right))
 		{
-			rightcode = GetNodeCode(left);
+			rightcode = GetNodeCode(right);
 			AddNodeHasUsed(right, true);
 		}
 		else
