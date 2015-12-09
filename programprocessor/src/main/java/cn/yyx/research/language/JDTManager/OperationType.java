@@ -100,6 +100,10 @@ public class OperationType {
 		{
 			return FieldDeclaration;
 		}
+		if (org.eclipse.jdt.core.dom.MethodInvocation.class == ASTClass)
+		{
+			return MethodInvocation;
+		}
 		if (org.eclipse.jdt.core.dom.InstanceofExpression.class == ASTClass)
 		{
 			return InstanceofExpression;

@@ -40,7 +40,10 @@ import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.MethodRef;
+import org.eclipse.jdt.core.dom.MethodRefParameter;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
@@ -217,6 +220,18 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public boolean visit(TypeMethodReference node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(MethodRef node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(MethodRefParameter node) {
 		// TODO Auto-generated method stub
 		return super.visit(node);
 	}
@@ -982,13 +997,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 	}
-
-	@Override
-	public boolean visit(QualifiedName node) {
-		// System.out.println("QualifiedName:"+node);
-		AddNodeCode(node, node.toString());
-		return super.visit(node);
-	}
 	
 	@Override
 	public void endVisit(ReturnStatement node) {
@@ -1266,6 +1274,30 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String type = node.getType().toString();
 		List<VariableDeclarationFragment> fs = node.fragments();
 		VariableDeclarationCode(node, fs, type);
+	}
+	
+	@Override
+	public boolean visit(QualifiedName node) {
+		SimpleName name = node.getName();
+		NoVisit(name);
+		Name qualifier = node.getQualifier();
+		if (qualifier instanceof SimpleName)
+		{
+			NoVisit(qualifier);
+		}
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(QualifiedName node) {
+		SimpleName name = node.getName();
+		Name qualifier = node.getQualifier();
+		String qualifiercode = GetNodeCode(qualifier);
+		if (qualifier instanceof SimpleName)
+		{
+			qualifiercode = qualifier.toString();
+		}
+		AddNodeCode(node, qualifiercode + "." + name.toString());
 	}
 	
 	@Override
