@@ -231,7 +231,7 @@ public class ScopeDataManager {
 			return null;
 		}
 		OneScope currentscope = blockstack.getScope(blockstack.getSize()-1);
-		return (dataScope.getLevel() - currentscope.getLevel())+"/"+OffsetLibrary.GetOffsetDescription(exactoffset);
+		return "$" + (dataScope.getLevel() - currentscope.getLevel())+"/"+OffsetLibrary.GetOffsetDescription(exactoffset);
 	}
 	
 	private IndexValuePair GetLastIdInList(String data)

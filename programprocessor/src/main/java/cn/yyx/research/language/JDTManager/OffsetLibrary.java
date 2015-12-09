@@ -6,9 +6,11 @@ public class OffsetLibrary {
 	
 	public static String GetOffsetDescription(int offset)
 	{
-		String pre = "$" + (offset > 0 ? "+" : "-");
+		//"$" + 
+		String pre = (offset < 0 ? "-" : "");
 		offset = Math.abs(offset);
-		String result = pre + (offset <= 1 ? "aj#" : (offset/OffsetBlock)+"#");
+		String result = pre + offset;
+		//(offset <= 1 ? "aj#" : (offset/OffsetBlock)+"#")
 		return result;
 	}
 	
