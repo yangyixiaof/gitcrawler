@@ -482,6 +482,11 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 
 	@Override
 	public boolean visit(VariableDeclarationStatement node) {
+		
+		//testing
+		System.err.println(node.hashCode() + " " + GetNodeHasContentHolder(node));
+		System.err.println(GetRealNode(node));
+		
 		if (ShouldExecute(node)) {
 			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		}

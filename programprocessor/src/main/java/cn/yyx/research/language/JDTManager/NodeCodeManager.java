@@ -53,7 +53,7 @@ public class NodeCodeManager {
 	public void AddASTNodeIfHasContentHolder(ASTNode node, Boolean ifHasContentHolder)
 	{
 		int astnodehashcode = GetRealNode(node);
-		mNodeHasOccupiedOneLineMap.put(astnodehashcode, ifHasContentHolder);
+		mNodeHasContentHolderMap.put(astnodehashcode, ifHasContentHolder);
 	}
 	
 	public boolean GetAstNodeHasContentHolder(ASTNode astnode)
@@ -70,13 +70,13 @@ public class NodeCodeManager {
 	public void AddASTNodeInMultipleLine(ASTNode node, Boolean inMutipleLine)
 	{
 		int astnodehashcode = GetRealNode(node);
-		mNodeHasOccupiedOneLineMap.put(astnodehashcode, inMutipleLine);
+		mNodeInMutipleLineMap.put(astnodehashcode, inMutipleLine);
 	}
 	
 	public boolean GetAstNodeInMultipleLine(ASTNode astnode)
 	{
 		int astnodehashcode = GetRealNode(astnode);
-		Boolean inMutipleLine = mNodeHasContentHolderMap.get(astnodehashcode);
+		Boolean inMutipleLine = mNodeInMutipleLineMap.get(astnodehashcode);
 		if (inMutipleLine == null)
 		{
 			inMutipleLine = false;
@@ -126,7 +126,7 @@ public class NodeCodeManager {
 		return mNodeLinkMap.get(vnode.hashCode());
 	}
 	
-	private Integer GetRealNode(ASTNode vnode)
+	public Integer GetRealNode(ASTNode vnode)
 	{
 		Integer vid = vnode.hashCode();
 		Integer rid = vid;

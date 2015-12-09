@@ -299,6 +299,10 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		return ncm.GetNodeType(node);
 	}
 	
+	protected Integer GetRealNode(ASTNode node) {
+		return ncm.GetRealNode(node);
+	}
+	
 	protected boolean ShouldExecute(ASTNode node)
 	{
 		if (GetNodeHasUsed(node))
