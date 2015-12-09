@@ -20,11 +20,11 @@ public class OneJavaFileCode {
 	
 	public void OneSentenceEnd()
 	{
-		System.err.println(sb);
+		/*System.err.println(sb);
 		if (sb.length() == 0 || sb.charAt(sb.length()-1) != '.')
 		{
 			sb.append(".");
-		}
+		}*/
 	}
 	
 	@Override

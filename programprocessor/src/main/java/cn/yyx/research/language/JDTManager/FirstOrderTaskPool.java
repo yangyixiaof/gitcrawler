@@ -18,7 +18,6 @@ public class FirstOrderTaskPool {
 		FirstOrderTask already = null;
 		already = pretasks.put(GetASTId(task.getPre(), true), task);
 		JudgeTaskError(already);
-		// TODO this is an error.
 		already = posttasks.put(GetASTId(task.getPost(), false), task);
 		JudgeTaskError(already);
 	}
