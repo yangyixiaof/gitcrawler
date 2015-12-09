@@ -18,6 +18,11 @@ public class NodeCode {
 	
 	public boolean IsEmpty()
 	{
+		return codelist.size() == 0;
+	}
+	
+	public boolean NotInitialize()
+	{
 		return getFirstCodeLevel() == -1;
 	}
 	

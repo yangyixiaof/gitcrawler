@@ -227,8 +227,11 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	
 	protected void FlushCode()
 	{
-		OneSentenceEnd();
-		PushMethodNodeCodeToJavaFileCode();
+		if (!omc.IsEmpty())
+		{
+			PushMethodNodeCodeToJavaFileCode();
+			OneSentenceEnd();
+		}
 		ClearMethodNodeCode();
 	}
 	
