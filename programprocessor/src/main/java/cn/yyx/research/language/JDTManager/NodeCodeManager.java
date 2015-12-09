@@ -23,25 +23,25 @@ public class NodeCodeManager {
 	
 	public void AddASTNodeCode(ASTNode astnode, String generatedCode)
 	{
-		int astnodehashcode = astnode.hashCode();
+		int astnodehashcode = GetRealNode(astnode);
 		mNodeCodeMap.put(astnodehashcode, generatedCode);
 	}
 	
 	public String GetAstNodeCode(ASTNode astnode)
 	{
-		int astnodehashcode = astnode.hashCode();
+		int astnodehashcode = GetRealNode(astnode);
 		return mNodeCodeMap.get(astnodehashcode);
 	}
 	
 	public void AddASTNodeHasOccupiedOneLine(ASTNode astnode, Boolean HasOccupiedOneLine)
 	{
-		int astnodehashcode = astnode.hashCode();
+		int astnodehashcode = GetRealNode(astnode);
 		mNodeHasOccupiedOneLineMap.put(astnodehashcode, HasOccupiedOneLine);
 	}
 	
 	public boolean GetAstNodeHasOccupiedOneLine(ASTNode astnode)
 	{
-		int astnodehashcode = astnode.hashCode();
+		int astnodehashcode = GetRealNode(astnode);
 		Boolean HasOccupiedOneLine = mNodeHasOccupiedOneLineMap.get(astnodehashcode);
 		if (HasOccupiedOneLine == null)
 		{
@@ -52,13 +52,13 @@ public class NodeCodeManager {
 	
 	public void AddASTNodeIfHasContentHolder(ASTNode node, Boolean ifHasContentHolder)
 	{
-		int astnodehashcode = node.hashCode();
+		int astnodehashcode = GetRealNode(node);
 		mNodeHasOccupiedOneLineMap.put(astnodehashcode, ifHasContentHolder);
 	}
 	
 	public boolean GetAstNodeHasContentHolder(ASTNode astnode)
 	{
-		int astnodehashcode = astnode.hashCode();
+		int astnodehashcode = GetRealNode(astnode);
 		Boolean ifHasContentHolder = mNodeHasContentHolderMap.get(astnodehashcode);
 		if (ifHasContentHolder == null)
 		{
@@ -69,13 +69,13 @@ public class NodeCodeManager {
 	
 	public void AddASTNodeInMultipleLine(ASTNode node, Boolean inMutipleLine)
 	{
-		int astnodehashcode = node.hashCode();
+		int astnodehashcode = GetRealNode(node);
 		mNodeHasOccupiedOneLineMap.put(astnodehashcode, inMutipleLine);
 	}
 	
 	public boolean GetAstNodeInMultipleLine(ASTNode astnode)
 	{
-		int astnodehashcode = astnode.hashCode();
+		int astnodehashcode = GetRealNode(astnode);
 		Boolean inMutipleLine = mNodeHasContentHolderMap.get(astnodehashcode);
 		if (inMutipleLine == null)
 		{
@@ -86,29 +86,29 @@ public class NodeCodeManager {
 	
 	public void AddNodeType(ASTNode node, Character type)
 	{
-		mNodeTypeMap.put(node.hashCode(), type);
+		mNodeTypeMap.put(GetRealNode(node), type);
 	}
 	
 	public Character GetNodeType(ASTNode node)
 	{
-		return mNodeTypeMap.get(node.hashCode());
+		return mNodeTypeMap.get(GetRealNode(node));
 	}
 	
 	// this should be b type.
 	public boolean IsNewStatement(ASTNode node)
 	{
-		return !mNodeTypeMap.containsKey(node.hashCode());
+		return !mNodeTypeMap.containsKey(GetRealNode(node));
 	}
 	
 	//Map<Integer, Boolean> mNodeHasUsedMap
 	public void AddNodeHasUsed(ASTNode node, boolean used)
 	{
-		mNodeHasUsedMap.put(node.hashCode(), used);
+		mNodeHasUsedMap.put(GetRealNode(node), used);
 	}
 	
 	public boolean GetNodeHasUsed(ASTNode node)
 	{
-		Boolean hasUsed = mNodeHasUsedMap.get(node.hashCode());
+		Boolean hasUsed = mNodeHasUsedMap.get(GetRealNode(node));
 		if (hasUsed == null)
 		{
 			return false;
@@ -124,6 +124,17 @@ public class NodeCodeManager {
 	public Integer GetNodeLink(ASTNode vnode)
 	{
 		return mNodeLinkMap.get(vnode.hashCode());
+	}
+	
+	private Integer GetRealNode(ASTNode vnode)
+	{
+		Integer vid = vnode.hashCode();
+		Integer rid = vid;
+		while ((vid = mNodeLinkMap.get(vid)) != null)
+		{
+			rid = vid;
+		}
+		return rid;
 	}
 	
 }
