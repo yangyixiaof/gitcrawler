@@ -18,8 +18,11 @@ public class FirstOrderTaskPool {
 		FirstOrderTask already = null;
 		already = pretasks.put(GetASTId(task.getPre(), true), task);
 		JudgeTaskError(already);
-		already = posttasks.put(GetASTId(task.getPost(), false), task);
-		JudgeTaskError(already);
+		if (!task.isAfterprerun())
+		{
+			already = posttasks.put(GetASTId(task.getPost(), false), task);
+			JudgeTaskError(already);
+		}
 	}
 	
 	private void JudgeTaskError(FirstOrderTask already)
@@ -38,7 +41,10 @@ public class FirstOrderTaskPool {
 		if (fot != null && fot.isAfterprerun())
 		{
 			fot.run();
-			posttasks.remove(GetASTId(pre, false));
+			if (!fot.isAfterprerun())
+			{
+				posttasks.remove(GetASTId(fot.getPost(), false));
+			}
 		}
 	}
 	

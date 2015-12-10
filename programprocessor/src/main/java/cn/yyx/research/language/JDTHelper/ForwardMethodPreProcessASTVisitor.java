@@ -103,6 +103,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	// if nothing found in data pool, should return first declared. Solved.
 	// check the call of DataNewlyUsed function and the call of AddDataReferenceHint.
+	// The DataNewlyUsed function is called in the end of GetDataOffset.
 	
 	// set node type map in NodeCodeManager. Solved.
 	// set node used map in NodeCodeManager. Solved.
@@ -1025,7 +1026,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("SimpleType:" + node);
 		NoVisit(node.getName());
 		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
-		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
 		return super.visit(node);
 	}
 	
@@ -1034,7 +1034,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("QualifiedType:"+node);
 		NoVisit(node.getName());
 		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
-		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
 		return super.visit(node);
 	}
 	

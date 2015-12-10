@@ -140,6 +140,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	// If doesn't know the kind, just set one as random. The one must be the big kind you want.
 	protected String GetDataOffset(String data, String kind) {
 		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind), kind);
+		DataNewlyUsed(data, kind, false, false);
 		return code;
 	}
 	

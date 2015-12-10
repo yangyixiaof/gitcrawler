@@ -165,7 +165,6 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	public boolean visit(ClassInstanceCreation node) {
 		// System.out.println("Node Type:"+node.getType());
 		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
-		// System.out.println("ClassInstanceCreation:"+node);
 		if (ShouldExecute(node)) {
 			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		}
@@ -254,15 +253,27 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	public boolean visit(MethodInvocation node) {
 		if (ShouldExecute(node)) {
 			List<ASTNode> args = node.arguments();
+			ASTNode postnode = null;
+			boolean afterprerun = false;
 			if (args.size() > 0) {
+				postnode = args.get(0);
 				RegistFirstNodeAfterDecreasingElement(args.get(0));
 				RegistLastNodeBeforeIncreaseingElement(args.get(args.size() - 1));
 			}
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			else
+			{
+				afterprerun = true;
+			}
+			AddFirstOrderTask(new FirstOrderTask(node.getExpression(), postnode, node, afterprerun) {
+				@Override
+				public void run() {
+					TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+				}
+			});
 		}
 		return super.visit(node);
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ForStatement node) {
@@ -352,14 +363,16 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 			AddFirstOrderTask(new FirstOrderTask(pre, op, node, false) {
 				@Override
 				public void run() {
+					boolean hasContentHolder = false;
 					String postcode = GetNodeCode(getPost());
 					if (GetNodeHasOccupiedOneLine(getPost()))
 					{
 						postcode = GCodeMetaInfo.ContentHolder;
+						hasContentHolder = true;
 					}
 					String code = operatorcode + postcode;
 					TrulyGenerateOneLine(code, OperationType.InfixExpression, NodeTypeLibrary.adjacent, nodelevel,
-							true);
+							hasContentHolder);
 				}
 			});
 			pre = op;
