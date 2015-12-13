@@ -284,4 +284,9 @@ public class ScopeDataManager {
 		return classstack.getScope(0).getID();
 	}
 	
+	public int GetCurrentLevel()
+	{
+		return blockstack.getSize()-1;
+	}
+	
 }

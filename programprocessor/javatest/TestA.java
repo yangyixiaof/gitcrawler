@@ -1,4 +1,3 @@
-
 public class TestA<T, M> extends Test {
 	Map<Integer, String> a, b;
 	T tt;
@@ -10,13 +9,13 @@ public class TestA<T, M> extends Test {
 
 	public TestA(Map<Integer, String> a) {
 		this.a = a;
-		super.a.b = null;
-		super.a.c();
+		super.q.b = null;
+		super.p.c();
 		super.g(foo()).h = null;
 		super(a);
 	}
 
-	public POI foo() {
+	/*public POI foo() {
 		return new POI();
 	}
 
@@ -91,5 +90,5 @@ public class TestA<T, M> extends Test {
 			e.printStackTrace();
 		}
 		return (5 + 6) / 10;
-	}
+	}*/
 }

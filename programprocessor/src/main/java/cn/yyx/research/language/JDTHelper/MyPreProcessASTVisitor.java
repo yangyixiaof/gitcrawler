@@ -429,4 +429,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		nvnm.DeleteNoVisit(node.hashCode());
 	}
 	
+	protected void PrintLevelInfo()
+	{
+		System.out.println("Current Level:" + sdm.GetCurrentLevel());
+	}
+	
 }

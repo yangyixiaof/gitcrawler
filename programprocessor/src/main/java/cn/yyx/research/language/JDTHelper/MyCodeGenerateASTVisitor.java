@@ -91,6 +91,10 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		// ResetDLM();
 		if (isFirstLevelASTNode(node))
 		{
+			if (omc != null && !omc.IsEmpty())
+			{
+				PushMethodNodeCodeToJavaFileCode();
+			}
 			omc = new NodeCode();
 		}
 		return super.visit(node);

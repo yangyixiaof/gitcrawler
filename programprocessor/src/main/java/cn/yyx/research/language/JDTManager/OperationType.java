@@ -16,29 +16,30 @@ public class OperationType {
 	public static final int FieldAccess = 13;
 	public static final int FieldDeclaration = 14;
 	public static final int MethodInvocation = 15;
-	public static final int InstanceofExpression = 16;
-	public static final int ReturnStatement = 17;
-	public static final int PostfixExpression = 18;
-	public static final int PrefixExpression = 19;
-	public static final int StringLiteral = 20;
-	public static final int SynchronizedStatement = 21;
-	public static final int SwitchStatement = 22;
-	public static final int SwitchCase = 23;
-	public static final int SuperConstructorInvocation = 24;
-	public static final int ThrowStatement = 25;
-	public static final int CatchClause = 26;
-	public static final int VariableDeclarationStatement = 27;
-	public static final int SingleVariableDeclaration = 28;
-	public static final int NearlyCommonText = 29;
-	public static final int BlockCommand = 30;
-	public static final int ExpressionMethodReference = 31;
-	public static final int LambdaExpression = 32;
-	public static final int LambdaParam = 33;
-	public static final int MethodDeclaration = 34;
-	public static final int EnumDeclaration = 35;
-	public static final int EnumConstant = 36;
-	public static final int DoRawCode = 37;
-	public static final int LabeledStatement = 38;
+	public static final int SuperMethodInvocation = 16;
+	public static final int InstanceofExpression = 17;
+	public static final int ReturnStatement = 18;
+	public static final int PostfixExpression = 19;
+	public static final int PrefixExpression = 20;
+	public static final int StringLiteral = 21;
+	public static final int SynchronizedStatement = 22;
+	public static final int SwitchStatement = 23;
+	public static final int SwitchCase = 24;
+	public static final int SuperConstructorInvocation = 25;
+	public static final int ThrowStatement = 26;
+	public static final int CatchClause = 27;
+	public static final int VariableDeclarationStatement = 28;
+	public static final int SingleVariableDeclaration = 29;
+	public static final int NearlyCommonText = 30;
+	public static final int BlockCommand = 31;
+	public static final int ExpressionMethodReference = 32;
+	public static final int LambdaExpression = 33;
+	public static final int LambdaParam = 34;
+	public static final int MethodDeclaration = 35;
+	public static final int EnumDeclaration = 36;
+	public static final int EnumConstant = 37;
+	public static final int DoRawCode = 38;
+	public static final int LabeledStatement = 39;
 	
 	public static int GetTypeDescriptionId(Class<?> ASTClass)
 	{
@@ -92,8 +93,8 @@ public class OperationType {
 		}
 		if (org.eclipse.jdt.core.dom.FieldAccess.class == ASTClass)
 		{
-			System.err.println("FieldAccess should not have a single line");
-			new Exception().printStackTrace();
+			// System.err.println("FieldAccess should not have a single line");
+			// new Exception().printStackTrace();
 			return FieldAccess;
 		}
 		if (org.eclipse.jdt.core.dom.FieldDeclaration.class == ASTClass)
@@ -103,6 +104,10 @@ public class OperationType {
 		if (org.eclipse.jdt.core.dom.MethodInvocation.class == ASTClass)
 		{
 			return MethodInvocation;
+		}
+		if (org.eclipse.jdt.core.dom.SuperMethodInvocation.class == ASTClass)
+		{
+			return SuperMethodInvocation;
 		}
 		if (org.eclipse.jdt.core.dom.InstanceofExpression.class == ASTClass)
 		{

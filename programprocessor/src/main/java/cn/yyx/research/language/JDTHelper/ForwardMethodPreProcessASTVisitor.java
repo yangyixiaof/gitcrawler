@@ -396,12 +396,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public boolean visit(Assignment node) {
-		AddReferenceUpdateHint(node.getLeftHandSide(), ReferenceHintLibrary.DataUpdate);
 		ASTNode left = node.getLeftHandSide();
-		if (!GetNodeHasOccupiedOneLine(left))
-		{
-			AddNodeHasUsed(left, true);
-		}
+		ASTNode right = node.getRightHandSide();
+		AddReferenceUpdateHint(left, ReferenceHintLibrary.DataUpdate);
+		AddReferenceUpdateHint(right, ReferenceHintLibrary.DataUse);
 		return super.visit(node);
 	}
 	
@@ -409,10 +407,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public void endVisit(Assignment node) {
 		String code = "";
 		ASTNode left = node.getLeftHandSide();
+		ASTNode right = node.getRightHandSide();
 		if (!GetNodeHasOccupiedOneLine(left))
 		{
 			code = GetNodeCode(left)+node.getOperator().toString();
-			AddNodeInMultipleLineWhenRemainIsContentHolder(node.getRightHandSide(), node);
+			AddNodeHasUsed(left, true);
 		}
 		else
 		{
@@ -420,8 +419,15 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			code = node.getOperator().toString();
 			AddNodeInMultipleLine(node, true);
 		}
-		AddNodeType(node.getRightHandSide(), NodeTypeLibrary.adjacent);
-		code = PushBackContentHolder(code, node);
+		if (!GetNodeHasOccupiedOneLine(right))
+		{
+			code += GetNodeCode(right);
+		}
+		else
+		{
+			code = PushBackContentHolder(code, node);
+			AddNodeInMultipleLine(node, true);
+		}
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		
@@ -648,7 +654,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("FieldAccess:"+node);
 		// System.out.println("FieldAccessName:"+node.getName());
 		// System.out.println("FieldAccessExpr:"+node.getExpression());
-		NoVisit(node.getName());
 		ASTNode expr = node.getExpression();
 		if (expr != null)
 		{
@@ -665,26 +670,47 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			}
 			else
 			{
+				NoVisit(node.getName());
 				AddReferenceUpdateHint(node.getName(), rh != null ? rh.GetOverAllHint() : ReferenceHintLibrary.DataUpdate);
 			}
+		}
+		else
+		{
+			NoVisit(node.getName());
 		}
 		return super.visit(node);
 	}
 
 	@Override
 	public void endVisit(FieldAccess node) {
-		ASTNode preexpr = node.getExpression();
+		ASTNode expr = node.getExpression();
+		String exprstr = expr.toString();
 		String code = "";
-		if (GetNodeInMultipleLine(preexpr))
+		if (exprstr.equals("this"))
 		{
-			AddNodeType(node, NodeTypeLibrary.adjacent);
-			code = "."+node.getName().toString();
-			AddNodeInMultipleLine(node, true);
+			code = GetNodeCode(node.getName());
 		}
 		else
 		{
-			AddNodeHasUsed(preexpr, true);
-			code = GetNodeCode(preexpr)+"."+node.getName().toString();
+			if (GetNodeInMultipleLine(expr))
+			{
+				AddNodeType(node, NodeTypeLibrary.adjacent);
+				code = "."+node.getName().toString();
+				AddNodeInMultipleLine(node, true);
+				AddNodeHasOccupiedOneLine(node, true);
+			}
+			else
+			{
+				if (GetNodeHasOccupiedOneLine(expr))
+				{
+					AddNodeHasOccupiedOneLine(node, true);
+				}
+				else
+				{
+					AddNodeHasUsed(expr, true);
+					code = GetNodeCode(expr)+"."+node.getName().toString();
+				}
+			}
 		}
 		AddNodeCode(node, code);
 		
@@ -694,6 +720,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(SuperFieldAccess node) {
 		// System.out.println("SuperFieldAccess:"+node);
+		NoVisit(node.getName());
 		AddNodeCode(node, node.toString());
 		return super.visit(node);
 	}
@@ -739,15 +766,18 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		StringBuilder code = new StringBuilder("");
 		ASTNode expr = node.getExpression();
 		String exprcode = "";
-		if (GetNodeHasOccupiedOneLine(expr))
+		if (expr != null)
 		{
-			AddNodeType(node, NodeTypeLibrary.adjacent);
-			AddNodeInMultipleLine(node, true);
-		}
-		else
-		{
-			exprcode = GetNodeCode(expr) + ".";
-			
+			if (GetNodeHasOccupiedOneLine(expr))
+			{
+				AddNodeType(node, NodeTypeLibrary.adjacent);
+				AddNodeInMultipleLine(node, true);
+			}
+			else
+			{
+				exprcode = GetNodeCode(expr) + ".";
+				AddNodeHasUsed(expr, true);
+			}
 		}
 		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
 		AddNodeCode(node, exprcode + code.toString());
@@ -916,6 +946,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// Do nothing now.
 		// System.out.println("Initializer:"+node);
 		ResetDLM();
+		// PrintLevelInfo();
 		return super.visit(node);
 	}
 	
@@ -1047,12 +1078,20 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public void endVisit(ReturnStatement node) {
 		ASTNode expr = node.getExpression();
-		String exprcode = GetNodeCode(expr);
-		if (GetNodeInMultipleLine(expr))
+		String exprcode = "";
+		if (expr != null)
 		{
-			exprcode = GCodeMetaInfo.ContentHolder;
-			AddNodeHasContentHolder(node, true);
-			AddNodeInMultipleLine(node, true);
+			if (GetNodeInMultipleLine(expr))
+			{
+				exprcode = GCodeMetaInfo.ContentHolder;
+				AddNodeHasContentHolder(node, true);
+				AddNodeInMultipleLine(node, true);
+			}
+			else
+			{
+				exprcode = GetNodeCode(expr);
+				AddNodeHasUsed(expr, true);
+			}
 		}
 		String code = "return" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
 		AddNodeCode(node, code);

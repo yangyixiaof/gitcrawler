@@ -95,6 +95,18 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 		AppendOtherCode(GCodeMetaInfo.StringCorpus, node.toString());
 		return super.visit(node);
 	}
+	
+	@Override
+	public boolean visit(ExpressionStatement node) {
+		// do nothing.
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(SuperFieldAccess node) {
+		// do nothing.
+		return super.visit(node);
+	}
 
 	@Override
 	public boolean visit(LambdaExpression node) {
@@ -132,15 +144,22 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	}
 
 	@Override
-	public boolean visit(ArrayAccess node) {
-		// do nothing.
-		return super.visit(node);
-	};
-
-	@Override
 	public boolean visit(Assignment node) {
 		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			ASTNode expr = node.getLeftHandSide();
+			if (GetNodeHasOccupiedOneLine(expr))
+			{
+				AddFirstOrderTask(new FirstOrderTask(expr, node.getRightHandSide(), node, false) {
+					@Override
+					public void run() {
+						TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+					}
+				});
+			}
+			else
+			{
+				TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			}
 		}
 		return super.visit(node);
 	}
@@ -215,22 +234,34 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 		}
 		return super.visit(node);
 	}
-
+	
 	@Override
-	public boolean visit(ExpressionStatement node) {
+	public boolean visit(ArrayAccess node) {
 		// do nothing.
+		// TODO
 		return super.visit(node);
-	}
+	};
 
 	@Override
 	public boolean visit(FieldAccess node) {
 		// do nothing.
-		return super.visit(node);
-	}
-
-	@Override
-	public boolean visit(SuperFieldAccess node) {
-		// do nothing.
+		if (ShouldExecute(node))
+		{
+			ASTNode expr = node.getExpression();
+			if (GetNodeInMultipleLine(expr))
+			{
+				AddFirstOrderTask(new FirstOrderTask(expr, node.getName(), node, false) {
+					@Override
+					public void run() {
+						TrulyGenerateOneLine(node, GetNodeLevel(node), false);
+					}
+				});
+			}
+			else
+			{
+				TrulyGenerateOneLine(node, GetNodeLevel(node), false);
+			}
+		}
 		return super.visit(node);
 	}
 
@@ -264,12 +295,20 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 			{
 				afterprerun = true;
 			}
-			AddFirstOrderTask(new FirstOrderTask(node.getExpression(), postnode, node, afterprerun) {
-				@Override
-				public void run() {
-					TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-				}
-			});
+			ASTNode expr = node.getExpression();
+			if (expr != null)
+			{
+				AddFirstOrderTask(new FirstOrderTask(expr, postnode, node, afterprerun) {
+					@Override
+					public void run() {
+						TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+					}
+				});
+			}
+			else
+			{
+				TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			}
 		}
 		return super.visit(node);
 	}
