@@ -1,7 +1,5 @@
 package cn.yyx.research.language.JDTManager;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-
 public class GCodeMetaInfo {
 	
 	public static String ArrayInitial = "@ARI";
