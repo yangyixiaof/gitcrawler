@@ -266,6 +266,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			while (itr.hasNext())
 			{
 				ASTNode para = itr.next();
+				AddNodeHasUsed(para, true);
 				AddReferenceUpdateHint(para, ReferenceHintLibrary.DataDeclare);
 			}
 		}
@@ -290,7 +291,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			while (itr.hasNext())
 			{
 				ASTNode para = itr.next();
-				AddNodeHasUsed(para, true);
 				String str = para.toString();
 				String[] decs = str.split(" ");
 				if (decs.length == 1)
@@ -398,6 +398,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(Assignment node) {
 		AddReferenceUpdateHint(node.getLeftHandSide(), ReferenceHintLibrary.DataUpdate);
+		ASTNode left = node.getLeftHandSide();
+		if (!GetNodeHasOccupiedOneLine(left))
+		{
+			AddNodeHasUsed(left, true);
+		}
 		return super.visit(node);
 	}
 	
@@ -407,7 +412,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		ASTNode left = node.getLeftHandSide();
 		if (!GetNodeHasOccupiedOneLine(left))
 		{
-			AddNodeHasUsed(left, true);
 			code = GetNodeCode(left)+node.getOperator().toString();
 			AddNodeInMultipleLineWhenRemainIsContentHolder(node.getRightHandSide(), node);
 		}
@@ -625,6 +629,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			AddNodeType(expr, NodeTypeLibrary.comphole);
 		}
 		String code = "for" + GCodeMetaInfo.WhiteSpaceReplacer + node.getParameter().getType().toString() + ":" + exprcode;
+		AddNodeHasUsed(node.getParameter(), true);
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		
