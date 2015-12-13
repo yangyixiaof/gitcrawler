@@ -5,6 +5,6 @@ public class TodoList {
 	// TODO test 3 or 2 dimension array.
 	
 	// Declaration Code should be more compact. The handles of content holder are not right. Solved.
-	// TODO Some GetDataOffset doesn't call DataNewlyUsed. Some should but some should not.
-	// TODO Some level offset is not right.
+	// Some GetDataOffset doesn't call DataNewlyUsed. Some should but some should not. Solved.
+	// Some level offset is not right. Solved.
 }

@@ -187,7 +187,6 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		{
 			System.err.println(node);
 		}*/
-		
 		String nodecode = GetNodeCode(node) + GCodeMetaInfo.CommonSplitter + OperationType.GetTypeDescriptionId(node.getClass());
 		nodecode += "%" + HandleNodeType(node) + "/";
 		omc.AddOneLineCode(nodecode, level, hasContentHolder);

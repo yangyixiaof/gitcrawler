@@ -69,7 +69,7 @@ public class NodeCode {
 
 	public void AppendLast(String firstcode) {
 		int idx = codelist.size() - 1;
-		String lastcode = codelist.get(idx).replaceAll(GCodeMetaInfo.ContentHolder, firstcode);
+		String lastcode = codelist.get(idx).replace(GCodeMetaInfo.ContentHolder, firstcode);
 		codelist.set(idx, lastcode);
 	}
 

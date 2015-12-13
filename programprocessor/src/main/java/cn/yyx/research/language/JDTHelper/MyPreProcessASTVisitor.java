@@ -145,10 +145,6 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	// If doesn't know the kind, just set one as random. The one must be the big kind you want.
 	protected String GetDataOffset(String data, String kind) {
 		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind), kind);
-		if (code != null)
-		{
-			DataNewlyUsed(data, kind, false, false);
-		}
 		return code;
 	}
 	
@@ -330,7 +326,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	protected void MethodInvocationAddHint(List<ASTNode> args)
 	{
 		for (ASTNode arg : args) {
-			AddReferenceUpdateHint(arg, ReferenceHintLibrary.DataUpdate);
+			AddReferenceUpdateHint(arg, ReferenceHintLibrary.DataUse);
 		}
 	}
 	

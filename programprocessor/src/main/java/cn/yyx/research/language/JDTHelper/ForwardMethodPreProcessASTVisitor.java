@@ -103,7 +103,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	// if nothing found in data pool, should return first declared. Solved.
 	// check the call of DataNewlyUsed function and the call of AddDataReferenceHint.
-	// The DataNewlyUsed function is called in the end of GetDataOffset.
 	
 	// set node type map in NodeCodeManager. Solved.
 	// set node used map in NodeCodeManager. Solved.
@@ -610,7 +609,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		EnterBlock(node, false);
 		AddEquivalentScope(node, node.getBody());
 		ASTNode expr = node.getExpression();
-		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
+		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUse);
 		return super.visit(node);
 	}
 	
@@ -1072,6 +1071,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("SimpleType:" + node);
 		NoVisit(node.getName());
 		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
+		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
 		return super.visit(node);
 	}
 	
@@ -1080,6 +1080,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("QualifiedType:"+node);
 		NoVisit(node.getName());
 		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
+		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
 		return super.visit(node);
 	}
 	
@@ -1327,7 +1328,13 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public boolean visit(QualifiedName node) {
-		AddReferenceUpdateHint(node.getQualifier(), ReferenceHintLibrary.DataUpdate);
+		//check
+		if (GetReferenceUpdateHint(node) == null)
+		{
+			System.err.println("Wrong Situation. No Hint for QualifiedName.");
+			System.exit(1);
+		}
+		AddReferenceUpdateHint(node.getQualifier(), GetReferenceUpdateHint(node));
 		SimpleName name = node.getName();
 		NoVisit(name);
 		return super.visit(node);
@@ -1358,7 +1365,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			String data = node.toString();
 			switch (hint) {
 			case ReferenceHintLibrary.DataUse:
-				hasCorrespond = true;
+			case ReferenceHintLibrary.FieldUse:
+				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
 				break;
 			case ReferenceHintLibrary.DataDeclare:
 				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, false, true);
@@ -1367,9 +1375,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			case ReferenceHintLibrary.DataUpdate:
 			case ReferenceHintLibrary.FieldUpdate:
 				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
-				break;
-			case ReferenceHintLibrary.FieldUse:
-				hasCorrespond = true;
+				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, false, false);
 				break;
 			case ReferenceHintLibrary.FieldDeclare:
 				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, true, false);
@@ -1381,6 +1387,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				break;
 			case ReferenceHintLibrary.LabelUse:
 				code = GetDataOffset(node.toString(), VLabelPoolManager.LabelPool);
+				DataNewlyUsed(node.toString(), VLabelPoolManager.LabelPool, false, false);
 				break;
 			default:
 				break;
