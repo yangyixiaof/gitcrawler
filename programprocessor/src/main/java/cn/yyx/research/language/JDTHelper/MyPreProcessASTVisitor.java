@@ -137,10 +137,18 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		equivalentScope.put(node2.hashCode(), node1.hashCode());
 	}
 	
+	protected void RemoveEquivalentScope(ASTNode node1, ASTNode node2)
+	{
+		equivalentScope.remove(node2.hashCode());
+	}
+	
 	// If doesn't know the kind, just set one as random. The one must be the big kind you want.
 	protected String GetDataOffset(String data, String kind) {
 		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind), kind);
-		DataNewlyUsed(data, kind, false, false);
+		if (code != null)
+		{
+			DataNewlyUsed(data, kind, false, false);
+		}
 		return code;
 	}
 	

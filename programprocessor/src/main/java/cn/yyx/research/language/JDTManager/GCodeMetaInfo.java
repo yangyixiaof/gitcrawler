@@ -1,5 +1,7 @@
 package cn.yyx.research.language.JDTManager;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 public class GCodeMetaInfo {
 	
 	public static String ArrayInitial = "@ARI";
@@ -9,6 +11,7 @@ public class GCodeMetaInfo {
 	public static String NumberHolder = "@NUB";
 	
 	public static String NoStatement = "nu#";
+	public static String NullLiteral = "@NUL";
 	public static String CommonSplitter = "#";
 	
 	public static String NoDeclaredType = "@NT";

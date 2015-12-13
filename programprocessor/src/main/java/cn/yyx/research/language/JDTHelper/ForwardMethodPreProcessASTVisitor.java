@@ -249,6 +249,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean visit(LambdaExpression node) {
 		// System.out.println("LambdaExpressionBegin:");
 		// System.out.println("LambdaExpression:"+node);
@@ -258,17 +259,16 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("LambdaExpressionEnd.");
 		EnterBlock(node, false);
 		AddEquivalentScope(node, node.getBody());
-		// EnterLambdaParam(node);
-		// OneTextOneLine(OperationType.LambdaExpression + "#", (node.hasParentheses() ? 1 : 0) + "#");
-		/*AddFirstOrderTask(new FirstOrderTask(lastdec, node.getBody(), node, false) {
-			@Override
-			public void run() {
-				// ExitLambdaParam(node);
-				int line = VisitLineOccupy(node);
-				String code = OperationType.LambdaExpression + "#";
-				EndVisitReplaceLineOccupyWithRealContent(line, node, code);
+		List<ASTNode> params = node.parameters();
+		if (params!=null && params.size() > 0)
+		{
+			Iterator<ASTNode> itr = params.iterator();
+			while (itr.hasNext())
+			{
+				ASTNode para = itr.next();
+				AddReferenceUpdateHint(para, ReferenceHintLibrary.DataDeclare);
 			}
-		});*/
+		}
 		return super.visit(node);
 	}
 	
@@ -296,18 +296,18 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				if (decs.length == 1)
 				{
 					cnt.append(GCodeMetaInfo.NoDeclaredType).append(",");
-					AddReferenceUpdateHint(para, ReferenceHintLibrary.DataDeclare);
 				}
 				else if (decs.length == 2)
 				{
 					cnt.append(decs[0]).append(",");
-					AddReferenceUpdateHint(para, ReferenceHintLibrary.DataDeclare);
 				}
 				else
 				{
 					System.err.println("What Lambda Param? Serious error: over two modules in a param. The program will exit.");
 					System.exit(1);
 				}
+				
+				DeleteReferenceUpdateHint(para);
 			}
 			cnt.deleteCharAt(cnt.length()-1);
 		}
@@ -319,6 +319,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		
+		RemoveEquivalentScope(node, node.getBody());
 		ExitBlock();
 	}
 	
@@ -391,7 +392,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		AddNodeCode(node, code);
 		
-		DeleteReferenceUpdateHint(node);
+		DeleteReferenceUpdateHint(node.getArray());
 	}
 	
 	@Override
@@ -421,7 +422,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		
-		DeleteReferenceUpdateHint(node);
+		DeleteReferenceUpdateHint(left);
 	}
 
 	@Override
@@ -449,7 +450,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		
-		DeleteReferenceUpdateHint(node);
+		if (label != null)
+		{
+			DeleteReferenceUpdateHint(label);
+		}
 	}
 	
 	@Override
@@ -469,7 +473,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		
-		DeleteReferenceUpdateHint(node);
+		if (label != null)
+		{
+			DeleteReferenceUpdateHint(node);
+		}
 	}
 	
 	@Override
@@ -598,6 +605,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("EnhancedForStatementBody:"+node.getBody());
 		EnterBlock(node, false);
 		AddEquivalentScope(node, node.getBody());
+		ASTNode expr = node.getExpression();
+		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
 		return super.visit(node);
 	}
 	
@@ -619,6 +628,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		
+		RemoveEquivalentScope(node, node.getBody());
 		ExitBlock();
 	}
 
@@ -674,7 +684,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		AddNodeCode(node, code);
 		
-		DeleteReferenceUpdateHint(node);
+		DeleteReferenceUpdateHint(node.getName());
 	}
 
 	@Override
@@ -710,6 +720,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodInvocation node) {
 		MethodInvocationAddHint(node.arguments());
+		ASTNode expr = node.getExpression();
+		if (expr != null)
+		{
+			AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
+		}
 		NoVisit(node.getName());
 		return super.visit(node);
 	}
@@ -737,16 +752,22 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
+		
+		if (expr != null)
+		{
+			DeleteReferenceUpdateHint(expr);
+		}
+		
 		MethodInvocationDeleteHint(node.arguments());
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public boolean visit(ForStatement node) {
 		EnterBlock(node, false);
 		AddEquivalentScope(node, node.getBody());
 		
-		List<ASTNode> inis = node.initializers();
+		/*List<ASTNode> inis = node.initializers();
 		for (ASTNode ininode : inis)
 		{
 			AddReferenceUpdateHint(ininode, ReferenceHintLibrary.DataUpdate);
@@ -755,7 +776,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		for (ASTNode upnode : ups)
 		{
 			AddReferenceUpdateHint(upnode, ReferenceHintLibrary.DataUpdate);
-		}
+		}*/
 		return super.visit(node);
 	}
 	
@@ -779,6 +800,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			DeleteReferenceUpdateHint(upnode);
 		}
 		
+		RemoveEquivalentScope(node, node.getBody());
 		ExitBlock();
 	}
 	
@@ -934,6 +956,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
+	public void endVisit(LabeledStatement node) {
+		DeleteReferenceUpdateHint(node.getLabel());
+	}
+	
+	@Override
 	public void endVisit(ParenthesizedExpression node) {
 		// System.out.println("ParenthesizedExpression:"+node);
 		// System.out.println("ParenthesizedExpression:"+node.getExpression());
@@ -943,7 +970,14 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(NullLiteral node) {
 		// System.out.println("NullLiteral:"+node);
-		AddNodeCode(node, node.toString());
+		AddNodeCode(node, GCodeMetaInfo.NullLiteral);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(PostfixExpression node) {
+		ASTNode expr = node.getOperand();
+		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
 		return super.visit(node);
 	}
 	
@@ -954,8 +988,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("PostfixExpressionOperand:"+node.getOperand());
 		String exprcode = "";
 		ASTNode expr = node.getOperand();
-		
-		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
 		
 		if (GetNodeInMultipleLine(expr))
 		{
@@ -971,6 +1003,15 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String code = exprcode + node.getOperator();
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
+		
+		DeleteReferenceUpdateHint(expr);
+	}
+	
+	@Override
+	public boolean visit(PrefixExpression node) {
+		ASTNode expr = node.getOperand();
+		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
+		return super.visit(node);
 	}
 	
 	@Override
@@ -980,8 +1021,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("PrefixExpressionOperand:"+node.getOperand());
 		String exprcode = "";
 		ASTNode expr = node.getOperand();
-		
-		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
 		
 		if (GetNodeInMultipleLine(expr))
 		{
@@ -997,6 +1036,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String code = node.getOperator() + exprcode;
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
+		
+		DeleteReferenceUpdateHint(expr);
 	}
 	
 	@Override
@@ -1191,7 +1232,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(SingleVariableDeclaration node) {
 		// System.out.println("SingleVariableDeclaration:"+node);
 		// System.out.println("SingleVariableDeclarationType:"+node.getType());
-		AddReferenceUpdateHint(node, ReferenceHintLibrary.DataDeclare);
+		AddReferenceUpdateHint(node.getName(), ReferenceHintLibrary.DataDeclare);
 		return super.visit(node);
 	}
 	
@@ -1199,6 +1240,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public void endVisit(SingleVariableDeclaration node) {
 		String code = node.getType().toString();
 		AddNodeCode(node, code);
+		
+		DeleteReferenceUpdateHint(node.getName());
 	}
 	
 	@Override
@@ -1228,6 +1271,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
 		ResetDLM();
 		EnterBlock(node, false);
+		AddEquivalentScope(node, node.getBody());
 		NoVisit(node.getName());
 		return super.visit(node);
 	}
@@ -1254,6 +1298,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);
 		
+		RemoveEquivalentScope(node, node.getBody());
 		ExitBlock();
 	}
 	
@@ -1277,13 +1322,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public boolean visit(QualifiedName node) {
+		AddReferenceUpdateHint(node.getQualifier(), ReferenceHintLibrary.DataUpdate);
 		SimpleName name = node.getName();
 		NoVisit(name);
-		Name qualifier = node.getQualifier();
-		if (qualifier instanceof SimpleName)
-		{
-			NoVisit(qualifier);
-		}
 		return super.visit(node);
 	}
 	
@@ -1292,11 +1333,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		SimpleName name = node.getName();
 		Name qualifier = node.getQualifier();
 		String qualifiercode = GetNodeCode(qualifier);
-		if (qualifier instanceof SimpleName)
-		{
-			qualifiercode = qualifier.toString();
-		}
 		AddNodeCode(node, qualifiercode + "." + name.toString());
+		
+		DeleteReferenceUpdateHint(qualifier);
 	}
 	
 	@Override
@@ -1306,9 +1345,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			DeleteNoVisit(node);
 			return;
 		}
-		// System.out.println("SimpleName:" + node);
 		Integer hint = GetReferenceUpdateHint(node);
-		if (hint != null)
+		if (hint != ReferenceHintLibrary.NoHint)
 		{
 			String code = null;
 			boolean hasCorrespond = false;
@@ -1387,6 +1425,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);
 		
+		RemoveEquivalentScope(node, node.getBody());
 		ExitBlock();
 	}
 	

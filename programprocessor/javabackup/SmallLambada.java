@@ -1,10 +1,8 @@
-package LambadaTest;
+package cn.yyx.research.language.Utility;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import Utility.CommonLibrary;
 
 public class SmallLambada {
 	

@@ -152,6 +152,10 @@ public class OperationType {
 		{
 			return VariableDeclarationStatement;
 		}
+		if (org.eclipse.jdt.core.dom.SingleVariableDeclaration.class == ASTClass)
+		{
+			return SingleVariableDeclaration;
+		}
 		// NearlyCommonText escaped;
 		// BlockCommand escaped.
 		if (org.eclipse.jdt.core.dom.ExpressionMethodReference.class == ASTClass)

@@ -150,7 +150,7 @@ public class ScopeDataManager {
 			}
 		}
 		AddDataNewlyUsed(data, kind, false, true);
-		return GCodeMetaInfo.FirstDeclaredData;
+		return null;
 	}
 	
 	public void EnterBlock(int scopeid, boolean isclass)
