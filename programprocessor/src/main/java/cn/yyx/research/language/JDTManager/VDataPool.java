@@ -1,5 +1,6 @@
 package cn.yyx.research.language.JDTManager;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,10 +11,6 @@ public class VDataPool {
 	public void AScopeCreated(OneScope scope)
 	{
 		int id = scope.getID();
-		
-		// testing
-		// System.out.println("newly created scope id:"+id);
-		
 		JCScope jscope = new JCScope(id, scope.getLevel());
 		scopes.put(id, jscope);
 	}
@@ -24,25 +21,21 @@ public class VDataPool {
 		scopes.remove(id);
 	}
 	
-	public void NewlyAssignedData(OneScope scope, String data)
+	public void NewlyAssignedData(OneScope scope, String data, String type)
 	{
 		JCScope dataScope = GetDataScope(scope);
-		dataScope.PushNewlyAssignedData(data);
+		dataScope.PushNewlyAssignedData(data, type);
 	}
 	
-	public Integer GetExactDataOffsetInDataOwnScope(OneScope scope, String data)
+	public Integer GetExactDataOffsetInDataOwnScope(OneScope scope, String data, String type)
 	{
 		JCScope dataScope = GetDataScope(scope);
-		return dataScope.GetExactOffset(data);
+		return dataScope.GetExactOffset(data, type);
 	}
 	
-	public void ResetClassScope(OneScope scope) {
+	public void ResetClassScope(OneScope scope, LinkedList<String> orderedData, LinkedList<String> orderedType) {
 		JCScope dataScope = GetDataScope(scope);
-		if (dataScope instanceof JClassScope)
-		{
-			JClassScope jcscope = (JClassScope)dataScope;
-			jcscope.ResetScope();
-		}
+		dataScope.ResetScope(orderedData, orderedType);
 	}
 	
 	private JCScope GetDataScope(OneScope scope)

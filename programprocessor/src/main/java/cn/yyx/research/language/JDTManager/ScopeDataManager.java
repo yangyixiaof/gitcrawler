@@ -8,199 +8,290 @@ import java.util.TreeMap;
 public class ScopeDataManager {
 	
 	//LinkedList<Integer> is reverse order.
-	Map<String, LinkedList<OneScope>> mDataScopeMap = new TreeMap<String, LinkedList<OneScope>>();
+	Map<String, LinkedList<DataScopeInfo>> mDataScopeMap = new TreeMap<String, LinkedList<DataScopeInfo>>();
 	//LinkedList<Integer> is reverse order.
 	//Map<String, LinkedList<Integer>> mDataLineMap = new TreeMap<String, LinkedList<Integer>>();
 	//LinkedList<Integer> is formal order.
-	Map<OneScope, LinkedList<String>> mScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
-	TreeMap<OneScope, TreeMap<String, Integer>> mScopeDataKindMap = new TreeMap<OneScope, TreeMap<String, Integer>>();
+	Map<OneScope, LinkedList<String>> mFieldScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
+	Map<OneScope, LinkedList<String>> mFinalFieldScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
+	
+	Map<OneScope, LinkedList<String>> mCommonScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
+	Map<OneScope, LinkedList<String>> mFinalCommonScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
+	
+	Map<OneScope, LinkedList<String>> mFieldScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
+	Map<OneScope, LinkedList<String>> mFinalFieldScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
+	
+	Map<OneScope, LinkedList<String>> mCommonScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
+	Map<OneScope, LinkedList<String>> mFinalCommonScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
+	// TreeMap<OneScope, TreeMap<String, Integer>> mScopeDataKindMap = new TreeMap<OneScope, TreeMap<String, Integer>>();
 	
 	//No scope data, just record raw string and its corresponding line.
-	//Map<String, Integer> mRawStringDataLineMap = new TreeMap<String, Integer>();
+	// Map<String, Integer> mRawStringDataLineMap = new TreeMap<String, Integer>();
 	
-	EnteredScopeStack blockstack = new EnteredScopeStack();
 	EnteredScopeStack classstack = new EnteredScopeStack();
 	
-	VHiddenClassPoolManager vhcpm = new VHiddenClassPoolManager();
-	VLabelPoolManager vlpm = new VLabelPoolManager();
-	VVarObjPoolManager vvopm = new VVarObjPoolManager();
+	// VHiddenClassPoolManager vhcpm = new VHiddenClassPoolManager();
+	// VLabelPoolManager vlpm = new VLabelPoolManager();
+	// VVarObjPoolManager vvopm = new VVarObjPoolManager();
+	
+	VDataPool fvdp = new VDataPool();
+	VDataPool cvdp = new VDataPool();
+	
+	VDataPool ffvdp = new VDataPool();
+	VDataPool fcvdp = new VDataPool();
 	
 	public ScopeDataManager() {
 	}
 	
-	public void AddDataNewlyUsed(String data, String kind, boolean isfielddeclare, boolean iscommondeclare) {
-		VDataPoolManager vdpm = KindLibrary.ChooseManagerAccordingToKind(kind, vhcpm, vlpm, vvopm);
-		OneScope oscope = null;
-		boolean newthing = false;
-		boolean mustbefield = false;
-		if (isfielddeclare)
+	private void CheckTypeNotNull(String type)
+	{
+		if (type == null)
 		{
-			oscope = classstack.peek();
-			newthing = true;
-		}
-		else
-		{
-			if (iscommondeclare)
-			{
-				oscope = blockstack.peek();
-				newthing = true;
-			}
-			else
-			{
-				//is access.
-				if (data.startsWith("this."))
-				{
-					mustbefield = true;
-					data = data.substring("this.".length());
-				}
-				IndexValuePair ivp = null;
-				if (mustbefield)
-				{
-					ivp = GetLastClassIdInList(data);
-				}
-				else
-				{
-					ivp = GetLastIdInList(data);
-				}
-				if (ivp != null)
-				{
-					oscope = ivp.getScope();
-					// sindex = ivp.getIndex();
-				}
-				else
-				{
-					oscope = null;
-					// sindex = null;
-				}
-			}
-		}
-		if (newthing)
-		{
-			if (mScopeDataMap.get(oscope) == null)
-			{
-				mScopeDataMap.put(oscope, new LinkedList<String>());
-			}
-			mScopeDataMap.get(oscope).add(data);
-			if (mScopeDataKindMap.get(oscope) == null)
-			{
-				mScopeDataKindMap.put(oscope, new TreeMap<String, Integer>());
-			}
-			Integer kindval = mScopeDataKindMap.get(oscope).get(data);
-			if (kindval == null)
-			{
-				kindval = 0;
-			}
-			kindval |= KindLibrary.GetKindRepresentation(kind);
-			mScopeDataKindMap.get(oscope).put(data, kindval);
-			//, kind
-			if (mDataScopeMap.get(data) == null)
-			{
-				mDataScopeMap.put(data, new LinkedList<OneScope>());
-			}
-			mDataScopeMap.get(data).add(0, oscope);
-			//data line map
-			vdpm.AddData(kind, oscope, data);
-		}
-		else
-		{
-			if (oscope != null)
-			{
-				vdpm.AddData(kind, oscope, data);
-			}
-			else
-			{
-				// Other scope declared data such as 'System.in'. Not problem.
-				// System.err.println("Warning : Undeclared variable or object. The program will not exit.");
-				// System.err.println("Warning : WarningrData:"+data+";isFielddec:"+isfielddeclare+";iscommondec:"+iscommondeclare+";isfield:"+mustbefield);
-				// new Exception().printStackTrace();
-				// System.exit(1);
-				// mRawStringDataLineMap.put(data, line);
-			}
+			System.err.println("The type in AddDataNewlyUsed must not be null, serious error. The system will exit.");
+			System.exit(1);
 		}
 	}
 	
-	public String GetDataAssignOffsetInfo(String data, KindHint hintkind, String kind) {
-		boolean isfield = false;
-		if (data.startsWith("this."))
+	private void CheckTypeMustNull(String type)
+	{
+		if (type != null)
 		{
-			isfield = true;
-			data = data.substring("this.".length());
+			System.err.println("The type in AddDataNewlyUsed must be null, serious error. The system will exit.");
+			System.exit(1);
 		}
-		if (isfield)
+	}
+	
+	private void DataScopeAndScopeDataMapCode(String data, String type, boolean isfinal, OneScope oscope, boolean isfield, Map<OneScope, LinkedList<String>> fieldScopeDataMap, Map<OneScope, LinkedList<String>> fieldScopeTypeMap)
+	{
+		LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+		if (list == null)
 		{
-			IndexValuePair ivp = GetLastClassIdInList(data);
-			if (ivp != null)
+			list = new LinkedList<DataScopeInfo>();
+			mDataScopeMap.put(data, list);
+		}
+		list.add(new DataScopeInfo(oscope, data, type, isfinal, isfield));
+		LinkedList<String> datalist = fieldScopeDataMap.get(oscope);
+		if (datalist == null)
+		{
+			datalist = new LinkedList<String>();
+			fieldScopeDataMap.put(oscope, datalist);
+		}
+		datalist.add(data);
+		LinkedList<String> typelist = fieldScopeTypeMap.get(oscope);
+		if (typelist == null)
+		{
+			typelist = new LinkedList<String>();
+			fieldScopeTypeMap.put(oscope, typelist);
+		}
+		typelist.add(type);
+	}
+	
+	public void AddDataNewlyUsed(String data, String type, boolean isfinal, boolean isfielddeclare, boolean iscommondeclare, boolean isFieldUpdate, boolean isCommonUpdate) {
+		// VDataPoolManager vdpm = KindLibrary.ChooseManagerAccordingToKind(kind, vhcpm, vlpm, vvopm);
+		OneScope oscope = null;
+		VDataPool use = null;
+		if (isfinal)
+		{
+			if (isfielddeclare)
 			{
-				OneScope dataScope = ivp.getScope();
-				return GetDataExactOffset(dataScope, data, hintkind);
+				oscope = classstack.peek();
+				CheckTypeNotNull(type);
+				use = ffvdp;
+				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mFinalFieldScopeDataMap, mFinalFieldScopeTypeMap);
 			}
-			else
+			if (iscommondeclare)
+			{
+				oscope = classstack.peek();
+				CheckTypeNotNull(type);
+				use = fcvdp;
+				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mFinalCommonScopeDataMap, mFinalCommonScopeTypeMap);
+			}
+			if (isFieldUpdate)
+			{
+				use = ffvdp;
+			}
+			if (isCommonUpdate)
+			{
+				use = fcvdp;
+			}
+		}
+		else
+		{
+			if (isfielddeclare)
+			{
+				oscope = classstack.peek();
+				CheckTypeNotNull(type);
+				use = fvdp;
+				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mFieldScopeDataMap, mFieldScopeTypeMap);
+			}
+			if (iscommondeclare)
+			{
+				oscope = classstack.peek();
+				CheckTypeNotNull(type);
+				use = cvdp;
+				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mCommonScopeDataMap, mCommonScopeTypeMap);
+			}
+			if (isFieldUpdate)
+			{
+				use = fvdp;
+			}
+			if (isCommonUpdate)
+			{
+				use = cvdp;
+			}
+		}
+		if (use == null)
+		{
+			LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+			if (list == null || list.size() == 0)
 			{
 				System.err.println("Not declared field? The program will exit.");
 				System.exit(1);
 			}
+			else
+			{
+				Iterator<DataScopeInfo> itr = list.iterator();
+				while (itr.hasNext())
+				{
+					DataScopeInfo dscopeinfo = itr.next();
+					if (dscopeinfo.isFinal() != isfinal)
+					{
+						continue;
+					}
+					use = GetRealUseDataPool(dscopeinfo);
+					oscope = dscopeinfo.getOscope();
+					CheckTypeMustNull(type);
+					type = dscopeinfo.getType();
+					break;
+				}
+			}
+		}
+		use.NewlyAssignedData(oscope, data, type);
+	}
+	
+	public String GetDataOffsetInfo(String data, boolean isFieldUseOrUpdate, boolean isCommonUseOrUpdate) {
+		DataScopeInfo firstinfo = GetLastClassIdInList(data);
+		if (firstinfo != null)
+		{
+			LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+			VDataPool use = null;
+			DataScopeInfo nowinfo = null;
+			Iterator<DataScopeInfo> itr = list.iterator();
+			while (itr.hasNext())
+			{
+				nowinfo = itr.next();
+				if (isFieldUseOrUpdate)
+				{
+					if (nowinfo.isField() == false)
+					{
+						continue;
+					}
+				}
+				if (isCommonUseOrUpdate)
+				{
+					if (nowinfo.isField() == true)
+					{
+						continue;
+					}
+				}
+				use = GetRealUseDataPool(nowinfo);
+				break;
+			}
+			OneScope dataScope = nowinfo.getOscope();
+			String type = nowinfo.getType();
+			Integer exactoffset = use.GetExactDataOffsetInDataOwnScope(dataScope, data, type);
+			if (exactoffset == null || classstack.getSize() == 0)
+			{
+				if (classstack.getSize() == 0)
+				{
+					System.err.println("What the fuck, data does not have scope? The system will exit.");
+					System.exit(1);
+				}
+				return null;
+			}
+			OneScope currentscope = classstack.getScope(classstack.getSize()-1);
+			return "$" + Math.abs(dataScope.getLevel() - currentscope.getLevel()) + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(exactoffset);
 		}
 		else
 		{
-			IndexValuePair ivp = GetLastIdInList(data);
-			if (ivp != null)
-			{
-				OneScope dataScope = ivp.getScope();
-				return GetDataExactOffset(dataScope, data, hintkind);
-			}
+			System.err.println("Not declared field? The program will exit.");
+			System.exit(1);
 		}
-		AddDataNewlyUsed(data, kind, false, true);
 		return null;
 	}
 	
-	public void EnterBlock(int scopeid, boolean isclass)
+	private VDataPool GetRealUseDataPool(DataScopeInfo firstinfo)
 	{
-		int level = blockstack.getSize();
-		blockstack.push(scopeid, isclass, level);
-		if (isclass)
+		VDataPool use = null;
+		if (firstinfo.isField() && firstinfo.isFinal())
 		{
-			classstack.push(scopeid, isclass, level);
+			use = ffvdp;
 		}
+		if (firstinfo.isField() && !firstinfo.isFinal())
+		{
+			use = fvdp;
+		}
+		if (!firstinfo.isField() && firstinfo.isFinal())
+		{
+			use = fcvdp;
+		}
+		if (!firstinfo.isField() && !firstinfo.isFinal())
+		{
+			use = cvdp;
+		}
+		return use;
+	}
+	
+	public void EnterBlock(int scopeid)
+	{
+		int level = classstack.getSize();
+		OneScope oscope = classstack.PushBack(scopeid, level);
 		
-		OneScope oscope = blockstack.peek();
-		vhcpm.AScopeCreated(oscope);
-		vlpm.AScopeCreated(oscope);
-		vvopm.AScopeCreated(oscope);
+		fvdp.AScopeCreated(oscope);
+		cvdp.AScopeCreated(oscope);
+		
+		ffvdp.AScopeCreated(oscope);
+		fcvdp.AScopeCreated(oscope);
 	}
 	
 	public void ExitBlock()
 	{
-		OneScope oscope = blockstack.pop();
-		int scopeid = oscope.getID();
-		boolean isclass = oscope.isIsclass();
-		if (isclass)
-		{
-			classstack.pop();
-		}
+		// Map<OneScope, LinkedList<String>> mFieldScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
+		// Map<OneScope, LinkedList<String>> mFinalFieldScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
 		
-		vhcpm.AScopeDestroyed(oscope);
-		vlpm.AScopeDestroyed(oscope);
-		vvopm.AScopeDestroyed(oscope);
+		// Map<OneScope, LinkedList<String>> mCommonScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
+		// Map<OneScope, LinkedList<String>> mFinalCommonScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
 		
-		LinkedList<String> datalist = mScopeDataMap.get(oscope);
-		if (datalist != null)
+		OneScope oscope = classstack.pop();
+		
+		fvdp.AScopeDestroyed(oscope);
+		cvdp.AScopeDestroyed(oscope);
+		
+		ffvdp.AScopeDestroyed(oscope);
+		fcvdp.AScopeDestroyed(oscope);
+		
+		LinkedList<String> datalist = null;
+		datalist = mFieldScopeDataMap.remove(oscope);
+		DeleteDataScopeOfScope(oscope, datalist);
+		datalist = mFinalFieldScopeDataMap.remove(oscope);
+		DeleteDataScopeOfScope(oscope, datalist);
+		datalist = mCommonScopeDataMap.remove(oscope);
+		DeleteDataScopeOfScope(oscope, datalist);
+		datalist = mFinalCommonScopeDataMap.remove(oscope);
+		DeleteDataScopeOfScope(oscope, datalist);
+	}
+	
+	private void DeleteDataScopeOfScope(OneScope oscope, LinkedList<String> datalist)
+	{
+		Iterator<String> itr = datalist.iterator();
+		while (itr.hasNext())
 		{
-			Iterator<String> itr = datalist.iterator();
-			while (itr.hasNext())
+			String data = itr.next();
+			LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+			while (list.size() > 0 && list.get(0).getOscope().getLevel() == oscope.getLevel())
 			{
-				String data = itr.next();
-				// mDataLineMap.get(data).removeFirst();
-				OneScope storedscope = mDataScopeMap.get(data).removeFirst();
-				if (storedscope.getID() != scopeid)
-				{
-					System.err.println("Inconsist scope id. The program will exit.");
-					System.err.println("storedscopeid:"+storedscope.getID()+";scopeid:"+scopeid+";isclass:"+isclass+";");
-					new Exception("Inconsist scope id").printStackTrace();
-					System.exit(1);
-				}
+				list.removeFirst();
 			}
-			mScopeDataMap.remove(oscope);
-			mScopeDataKindMap.remove(oscope);
 		}
 	}
 	
@@ -211,82 +302,30 @@ public class ScopeDataManager {
 		//testing
 		//TestUtil.PrintEnteredScopeStack(classstack);
 		
-		vvopm.ResetClassScope(classscope);
-	}
-	
-	private String GetDataExactOffset(OneScope dataScope, String data, KindHint hintkind)
-	{
-		Integer kinds = mScopeDataKindMap.get(dataScope).get(data);
-		Integer kind = KindLibrary.ExtractKindAccordingToHint(kinds, hintkind);
-		String kindstr = KindLibrary.GetCorrespondKindString(kind);
-		VDataPoolManager vdpm = KindLibrary.ChooseManagerAccordingToKind(kindstr, vhcpm, vlpm, vvopm);
-		Integer exactoffset = vdpm.GetDataExactOffset(kindstr, dataScope, data);
-		if (exactoffset == null || blockstack.getSize() == 0)
-		{
-			if (blockstack.getSize() == 0)
-			{
-				System.err.println("What the fuck, data does not have scope? The system will exit.");
-				System.exit(1);
-			}
-			return null;
-		}
-		OneScope currentscope = blockstack.getScope(blockstack.getSize()-1);
-		return "$" + (dataScope.getLevel() - currentscope.getLevel())+"/"+OffsetLibrary.GetOffsetDescription(exactoffset);
-	}
-	
-	private IndexValuePair GetLastIdInList(String data)
-	{
-		//testing
-		/*if (mDataScopeMap.get(data) == null)
-		{
-			System.out.println("ERROR DATA IN GET LAST ID:"+data);
-		}*/
-		LinkedList<OneScope> list = mDataScopeMap.get(data);
-		if (list == null || list.size() == 0)
-		{
-			return null;
-		}
-		return new IndexValuePair(list.getFirst());
+		VDataPool fvdp = new VDataPool();
+		VDataPool ffvdp = new VDataPool();
+		
+		fvdp.ResetClassScope(classscope, mFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
+		ffvdp.ResetClassScope(classscope, mFinalFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
 	}
 	
 	//Due to list is reverse order, so which means first.
-	private IndexValuePair GetLastClassIdInList(String data)
+	private DataScopeInfo GetLastClassIdInList(String data)
 	{
-		LinkedList<OneScope> list = mDataScopeMap.get(data);
-		Iterator<OneScope> itr = list.iterator();
-		while (itr.hasNext())
+		LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+		if (list != null && list.size() > 0)
 		{
-			OneScope temp = itr.next();
-			if (temp.isIsclass())
-			{
-				return new IndexValuePair(temp);
-			}
+			return list.get(0);
 		}
 		return null;
 	}
 	
-	private class IndexValuePair {
-		private OneScope scope = null;
-		public IndexValuePair(OneScope scope)
-		{
-			this.scope = scope;
-		}
-		public OneScope getScope() {
-			return scope;
-		}
-	}
-
 	public boolean ContainsScope(Integer equid) {
-		return blockstack.isIdContained(equid);
-	}
-
-	public int GetFirstClassId() {
-		return classstack.getScope(0).getID();
+		return classstack.isIdContained(equid);
 	}
 	
-	public int GetCurrentLevel()
-	{
-		return blockstack.getSize()-1;
+	public int GetFirstClassId() {
+		return classstack.getScope(0).getID();
 	}
 	
 }

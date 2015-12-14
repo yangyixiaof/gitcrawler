@@ -3,21 +3,11 @@ package cn.yyx.research.language.JDTManager;
 public class OneScope implements Comparable<OneScope>{
 	
 	private Integer ID = -1;
-	private boolean isclass = false;
 	private Integer level = -1;
 	
-	public OneScope(int ID, boolean isclass, int level) {
+	public OneScope(int ID, int level) {
 		this.setID(ID);
-		this.setIsclass(isclass);
 		this.setLevel(level);
-	}
-
-	public boolean isIsclass() {
-		return isclass;
-	}
-
-	public void setIsclass(boolean isclass) {
-		this.isclass = isclass;
 	}
 	
 	public Integer getID() {

@@ -19,10 +19,12 @@ public class EnteredScopeStack {
 		return getStack().remove(getStack().size()-1);
 	}
 	
-	public void push(int blockid, boolean isclass, int level)
+	public OneScope PushBack(int blockid, int level)
 	{
 		// System.out.println("pushed id: block : "+blockid);
-		getStack().add(new OneScope(blockid, isclass, level));
+		OneScope oscope = new OneScope(blockid, level);
+		getStack().add(oscope);
+		return oscope;
 	}
 	
 	public int getSize()

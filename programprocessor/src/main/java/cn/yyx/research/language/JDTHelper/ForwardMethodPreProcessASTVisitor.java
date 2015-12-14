@@ -42,7 +42,6 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.MethodRef;
 import org.eclipse.jdt.core.dom.MethodRefParameter;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NullLiteral;
@@ -73,7 +72,6 @@ import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.TypeMethodReference;
-import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -84,9 +82,6 @@ import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
 import cn.yyx.research.language.JDTManager.ReferenceHint;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
-import cn.yyx.research.language.JDTManager.VHiddenClassPoolManager;
-import cn.yyx.research.language.JDTManager.VLabelPoolManager;
-import cn.yyx.research.language.JDTManager.VVarObjPoolManager;
 
 public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
@@ -201,18 +196,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(Modifier node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
-	}
-	
-	@Override
-	public boolean visit(TypeParameter node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
-	}
-	
-	@Override
 	public boolean visit(SuperMethodReference node) {
 		// TODO Auto-generated method stub
 		return super.visit(node);
@@ -256,8 +239,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("LambdaExpressionParameters:"+node.parameters());
 		// System.out.println("LambdaExpressionBody:"+node.getBody());
 		// System.out.println("LambdaExpressionEnd.");
-		EnterBlock(node, false);
-		AddEquivalentScope(node, node.getBody());
 		List<ASTNode> params = node.parameters();
 		if (params!=null && params.size() > 0)
 		{
@@ -317,9 +298,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		code = PushBackContentHolder(code, node);
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
-		
-		RemoveEquivalentScope(node, node.getBody());
-		ExitBlock();
 	}
 	
 	@Override
@@ -612,8 +590,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("EnhancedForStatementParameter:"+node.getParameter());
 		// System.out.println("EnhancedForStatementExpr:"+node.getExpression());
 		// System.out.println("EnhancedForStatementBody:"+node.getBody());
-		EnterBlock(node, false);
-		AddEquivalentScope(node, node.getBody());
 		ASTNode expr = node.getExpression();
 		AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUse);
 		return super.visit(node);
@@ -637,9 +613,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeHasUsed(node.getParameter(), true);
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
-		
-		RemoveEquivalentScope(node, node.getBody());
-		ExitBlock();
 	}
 
 	@Override
@@ -671,7 +644,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			else
 			{
 				NoVisit(node.getName());
-				AddReferenceUpdateHint(node.getName(), rh != null ? rh.GetOverAllHint() : ReferenceHintLibrary.DataUpdate);
+				// AddReferenceUpdateHint(node.getName(), rh != null ? rh.GetOverAllHint() : ReferenceHintLibrary.DataUpdate);
 			}
 		}
 		else
@@ -798,9 +771,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	//@SuppressWarnings("unchecked")
 	public boolean visit(ForStatement node) {
-		EnterBlock(node, false);
-		AddEquivalentScope(node, node.getBody());
-		
 		/*List<ASTNode> inis = node.initializers();
 		for (ASTNode ininode : inis)
 		{
@@ -833,9 +803,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			DeleteReferenceUpdateHint(upnode);
 		}
-		
-		RemoveEquivalentScope(node, node.getBody());
-		ExitBlock();
 	}
 	
 	@Override
@@ -843,6 +810,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(VariableDeclarationExpression node) {
 		// System.out.println("VariableDeclarationExpression:" + node);
 		// for (int i=0,j=0;...) 's int i=0,j=0
+		SetVeryRecentDeclaredType(node.getType().toString());
+		
 		ReferenceHint rh = ReferenceHintLibrary.ParseReferenceHint(GetReferenceUpdateHint(node));
 		VariableDeclarationReferenceHint(node.fragments(), rh != null ? rh.getDataType() | ReferenceHintLibrary.Declare : ReferenceHintLibrary.DataDeclare);
 		return super.visit(node);
@@ -851,6 +820,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(VariableDeclarationExpression node) {
+		SetVeryRecentDeclaredType(null);
+		
 		String type = node.getType().toString();
 		List<VariableDeclarationFragment> fs = node.fragments();
 		VariableDeclarationCode(node, fs, type);
@@ -862,7 +833,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("IfStatementExpr:"+node.getExpression());
 		// System.out.println("IfStatementThen:"+node.getThenStatement());
 		// System.out.println("IfStatementElse:"+node.getThenStatement());
-		EnterBlock(node, false);
 		return super.visit(node);
 	}
 
@@ -881,8 +851,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String elsecode = node.getElseStatement() == null ? GCodeMetaInfo.NoStatement
 				: GetRefCode(node.getElseStatement(), line);
 		String code = OperationType.IfStatement + "#" + GetRefCode(node.getExpression(), line) + thencode + elsecode;*/
-		
-		ExitBlock();
 	}
 	
 	@Override
@@ -1109,8 +1077,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(SimpleType node) {
 		// System.out.println("SimpleType:" + node);
 		NoVisit(node.getName());
-		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
-		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
+		// TODO
+		 AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
+		 DataNewlyUsed(node.toString(), null, VHiddenClassPoolManager.ClassHiddenPool, false, false, false, false);
 		return super.visit(node);
 	}
 	
@@ -1118,8 +1087,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(QualifiedType node) {
 		// System.out.println("QualifiedType:"+node);
 		NoVisit(node.getName());
-		AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
-		DataNewlyUsed(node.toString(), VHiddenClassPoolManager.ClassHiddenPool, false, false);
+		// TODO
+		 AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
+		 DataNewlyUsed(node.toString(), null, VHiddenClassPoolManager.ClassHiddenPool, false, false, false, false);
 		return super.visit(node);
 	}
 	
@@ -1163,7 +1133,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("SwitchStatement:"+node);
 		// System.out.println("SwitchStatementExpr:"+node.getExpression());
 		// blockstack.push(node.hashCode());
-		EnterBlock(node, false);
 		return super.visit(node);
 	}
 	
@@ -1180,8 +1149,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);
-		
-		ExitBlock();
 	}
 	
 	@Override
@@ -1277,12 +1244,16 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(SingleVariableDeclaration node) {
 		// System.out.println("SingleVariableDeclaration:"+node);
 		// System.out.println("SingleVariableDeclarationType:"+node.getType());
+		SetVeryRecentDeclaredType(node.getType().toString());
+		
 		AddReferenceUpdateHint(node.getName(), ReferenceHintLibrary.DataDeclare);
 		return super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(SingleVariableDeclaration node) {
+		SetVeryRecentDeclaredType(null);
+		
 		String code = node.getType().toString();
 		AddNodeCode(node, code);
 		
@@ -1299,6 +1270,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			// System.out.println("FieldDeclarationFragmentName:"+f.getName());
 			dlm.AddDataLineInfo(f.getName().toString(), GCodeMetaInfo.IsField, true, false);
 		}*/
+		SetVeryRecentDeclaredType(node.getType().toString());
+		
 		VariableDeclarationReferenceHint(node.fragments(), ReferenceHintLibrary.FieldDeclare);
 		return super.visit(node);
 	}
@@ -1306,6 +1279,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(FieldDeclaration node) {
+		SetVeryRecentDeclaredType(null);
+		
 		String type = node.getType().toString();
 		List<VariableDeclarationFragment> fs = node.fragments();
 		VariableDeclarationCode(node, fs, type);
@@ -1315,8 +1290,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(MethodDeclaration node) {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
 		ResetDLM();
-		EnterBlock(node, false);
-		AddEquivalentScope(node, node.getBody());
 		NoVisit(node.getName());
 		return super.visit(node);
 	}
@@ -1342,9 +1315,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);
-		
-		RemoveEquivalentScope(node, node.getBody());
-		ExitBlock();
 	}
 	
 	@Override
@@ -1352,6 +1322,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(VariableDeclarationStatement node) {
 		// System.out.println("VariableDeclarationStatement:"+node);
 		// System.out.println("VariableDeclarationStatementType:"+node.getType());
+		SetVeryRecentDeclaredType(node.getType().toString());
+		
 		ReferenceHint rh = ReferenceHintLibrary.ParseReferenceHint(GetReferenceUpdateHint(node));
 		VariableDeclarationReferenceHint(node.fragments(), rh != null ? rh.getDataType() | ReferenceHintLibrary.Declare : ReferenceHintLibrary.DataDeclare);
 		return super.visit(node);
@@ -1360,6 +1332,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(VariableDeclarationStatement node) {
+		SetVeryRecentDeclaredType(null);
+		
 		String type = node.getType().toString();
 		List<VariableDeclarationFragment> fs = node.fragments();
 		VariableDeclarationCode(node, fs, type);
@@ -1390,6 +1364,30 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(WhileStatement node) {
+		// System.out.println("WhileStatement:"+node);
+		// System.out.println("WhileStatementExpr:"+node.getExpression());
+		// System.out.println("WhileStatementBody:"+node.getBody());
+		
+		// this should register nlm.
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(WhileStatement node) {
+		ASTNode expr = node.getExpression();
+		String exprcode = GetNodeCode(expr);
+		if (GetNodeInMultipleLine(expr))
+		{
+			exprcode = GCodeMetaInfo.ContentHolder;
+		}
+		String code = "while" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
+		AddNodeCode(node, code);
+		AddNodeHasOccupiedOneLine(node, true);
+		AddNodeInMultipleLine(node, true);
+	}
+	
+	@Override
 	public void endVisit(SimpleName node) {
 		if (!ShouldVisit(node))
 		{
@@ -1404,29 +1402,45 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			String data = node.toString();
 			switch (hint) {
 			case ReferenceHintLibrary.DataUse:
+				code = GetDataOffset(data, false, true);
 			case ReferenceHintLibrary.FieldUse:
-				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
+				code = GetDataOffset(data, true, false);
 				break;
-			case ReferenceHintLibrary.DataDeclare:
-				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, false, true);
-				hasCorrespond = true;
-				return;
 			case ReferenceHintLibrary.DataUpdate:
+				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
+				DataNewlyUsed(data, null, VVarObjPoolManager.VarOrObjPool, false, false, false, true);
+				break;
 			case ReferenceHintLibrary.FieldUpdate:
 				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
-				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, false, false);
+				DataNewlyUsed(data, null, VVarObjPoolManager.VarOrObjPool, false, false, true, false);
 				break;
+			case ReferenceHintLibrary.DataDeclare:
+				String declaredtype = GetVeryRecentDeclaredType();
+				if (declaredtype == null)
+				{
+					System.err.println("No Declared Type? The system will exit.");
+					System.exit(1);
+				}
+				DataNewlyUsed(data, declaredtype, VVarObjPoolManager.VarOrObjPool, false, true, false, false);
+				hasCorrespond = true;
+				return;
 			case ReferenceHintLibrary.FieldDeclare:
-				DataNewlyUsed(data, VVarObjPoolManager.VarOrObjPool, true, false);
+				String declaredtype2 = GetVeryRecentDeclaredType();
+				if (declaredtype2 == null)
+				{
+					System.err.println("No Declared Type? The system will exit.");
+					System.exit(1);
+				}
+				DataNewlyUsed(data, declaredtype2, VVarObjPoolManager.VarOrObjPool, true, false, false, false);
 				hasCorrespond = true;
 				return;
 			case ReferenceHintLibrary.LabelDeclare:
-				DataNewlyUsed(node.toString(), VLabelPoolManager.LabelPool, false, false);
+				DataNewlyUsed(node.toString(), null, VLabelPoolManager.LabelPool, false, false, false, false);
 				hasCorrespond = true;
 				break;
 			case ReferenceHintLibrary.LabelUse:
 				code = GetDataOffset(node.toString(), VLabelPoolManager.LabelPool);
-				DataNewlyUsed(node.toString(), VLabelPoolManager.LabelPool, false, false);
+				DataNewlyUsed(node.toString(), null, VLabelPoolManager.LabelPool, false, false, false, false);
 				break;
 			default:
 				break;
@@ -1449,35 +1463,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			AddNodeCode(node, node.toString());
 			System.err.println("Warning: just for debugging and testing. The simple name does not have hint:" + node);
 		}
-	}
-	
-	@Override
-	public boolean visit(WhileStatement node) {
-		// System.out.println("WhileStatement:"+node);
-		// System.out.println("WhileStatementExpr:"+node.getExpression());
-		// System.out.println("WhileStatementBody:"+node.getBody());
-		
-		// this should register nlm.
-		EnterBlock(node, false);
-		AddEquivalentScope(node, node.getBody());
-		return super.visit(node);
-	}
-	
-	@Override
-	public void endVisit(WhileStatement node) {
-		ASTNode expr = node.getExpression();
-		String exprcode = GetNodeCode(expr);
-		if (GetNodeInMultipleLine(expr))
-		{
-			exprcode = GCodeMetaInfo.ContentHolder;
-		}
-		String code = "while" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
-		AddNodeCode(node, code);
-		AddNodeHasOccupiedOneLine(node, true);
-		AddNodeInMultipleLine(node, true);
-		
-		RemoveEquivalentScope(node, node.getBody());
-		ExitBlock();
 	}
 	
 }

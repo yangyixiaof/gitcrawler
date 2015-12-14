@@ -2,7 +2,6 @@ package cn.yyx.research.language.JDTManager;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class JCScope {
@@ -12,10 +11,10 @@ public class JCScope {
 	Integer Level = -1;
 	
 	// real data in sequential order.
-	LinkedList<String> dataInOrder = new LinkedList<String>();
+	TreeMap<String, LinkedList<String>> dataInOrder = new TreeMap<String, LinkedList<String>>();
 	
 	// records the order of the data. To speed up the search.
-	Map<String, Integer> dataOrder = new TreeMap<String, Integer>();
+	TreeMap<String, TreeMap<String, Integer>> dataOrder = new TreeMap<String, TreeMap<String, Integer>>();
 	
 	// To speed up search.
 	int allDataNum = -1;
@@ -26,19 +25,31 @@ public class JCScope {
 		allDataNum = 0;
 	}
 	
-	public void PushNewlyAssignedData(String data)
+	public void PushNewlyAssignedData(String data, String type)
 	{
-		Integer dorder = dataOrder.get(data);
+		TreeMap<String, Integer> dataorder = dataOrder.get(type);
+		if (dataorder == null)
+		{
+			dataorder = new TreeMap<String, Integer>();
+			dataOrder.put(type, dataorder);
+		}
+		Integer dorder = dataorder.get(data);
+		LinkedList<String> datainorder = dataInOrder.get(type);
+		if (datainorder == null)
+		{
+			datainorder = new LinkedList<String>();
+			dataInOrder.put(type, datainorder);
+		}
 		if (dorder == null)
 		{
 			// newly added data, not exists before.
-			dataInOrder.add(data);
-			dataOrder.put(data, allDataNum);
+			datainorder.add(data);
+			dataorder.put(data, allDataNum);
 			allDataNum++;
 		}
 		else
 		{
-			Iterator<String> itr = dataInOrder.iterator();
+			Iterator<String> itr = datainorder.iterator();
 			boolean beginDec = false;
 			int idx = -1;
 			while (itr.hasNext())
@@ -46,7 +57,7 @@ public class JCScope {
 				if (beginDec)
 				{
 					String idata = itr.next();
-					dataOrder.put(idata, dataOrder.get(idata)-1);
+					dataorder.put(idata, dataorder.get(idata)-1);
 				}
 				idx++;
 				if (idx == dorder)
@@ -54,15 +65,21 @@ public class JCScope {
 					beginDec = true;
 				}
 			}
-			dataOrder.put(data, allDataNum-1);
-			dataInOrder.remove(dorder);
-			dataInOrder.add(data);
+			dataorder.put(data, allDataNum-1);
+			datainorder.remove(dorder);
+			datainorder.add(data);
 		}
 	}
 	
-	public Integer GetExactOffset(String data)
+	public Integer GetExactOffset(String data, String type)
 	{
-		Integer order = dataOrder.get(data);
+		TreeMap<String, Integer> dataorder = dataOrder.get(type);
+		if (dataorder == null)
+		{
+			System.err.println("Warning data: the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			return null;
+		}
+		Integer order = dataorder.get(data);
 		if (order == null)
 		{
 			System.err.println("Warning data: the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
@@ -76,6 +93,18 @@ public class JCScope {
 	{
 		dataInOrder.clear();
 		dataOrder.clear();
+	}
+	
+	public void ResetScope(LinkedList<String> orderedData, LinkedList<String> orderedType) {
+		ClearAll();
+		Iterator<String> itr = orderedData.iterator();
+		Iterator<String> typeitr = orderedType.iterator();
+		while (itr.hasNext())
+		{
+			String key = itr.next();
+			String type = typeitr.next();
+			PushNewlyAssignedData(key, type);
+		}
 	}
 	
 }

@@ -2,7 +2,8 @@ package cn.yyx.research.language.JDTManager;
 
 public class GCodeMetaInfo {
 	
-	public static String ArrayInitial = "@ARI";
+	public static final String ArrayInitial = "@ARI";
+	
 	public static String ArrayCreation = "@ARC";
 	
 	public static String StringHolder = "@STR";
@@ -19,9 +20,13 @@ public class GCodeMetaInfo {
 	// The white space in code is replaced with '!'.
 	public static String WhiteSpaceReplacer = "!";
 	
+	public static String OffsetSpiliter = "?";
+	
 	public static String ContentHolder = "<!%CH!>";
 	
 	public static String DataRefIndicator = "$";
+	
+	public static String HackedNoType = "<$NT$>";
 	
 	public static int OutofScopeVarOrObject = -10;
 	public static String FirstDeclaredData = "$FDC";

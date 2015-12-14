@@ -1,13 +1,10 @@
 package cn.yyx.research.language.JDTHelper;
 
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
-import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -17,7 +14,6 @@ import cn.yyx.research.language.JDTManager.DebugNodeCorrespondingCode;
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
-import cn.yyx.research.language.JDTManager.KindLibrary;
 import cn.yyx.research.language.JDTManager.NoVisitNodeManager;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
@@ -42,7 +38,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	// private Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	// a node is only equivalent to one node.
-	private Map<Integer, Integer> equivalentScope = new TreeMap<Integer, Integer>();
+	// private Map<Integer, Integer> equivalentScope = new TreeMap<Integer, Integer>();
+	
+	private String VeryRecentDeclaredType = null;
 	
 	@Override
 	public void postVisit(ASTNode node) {
@@ -67,7 +65,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		// System.out.println("TypeDeclaration End");
 		// classstack.push(node.hashCode());
 		// blockstack.push(node.hashCode());
-		EnterBlock(node, true);
+		EnterBlock(node);
 		NoVisit(node.getName());
 		return super.visit(node);
 	}
@@ -82,42 +80,13 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		// System.out.println("AnonymousClassDeclaration Begin");
 		// System.out.println(node);
 		// System.out.println("AnonymousClassDeclaration End");
-		EnterBlock(node, true);
+		EnterBlock(node);
 		return super.visit(node);
 	}
 
 	@Override
 	public void endVisit(AnonymousClassDeclaration node) {
 		ExitBlock();
-	}
-	
-	@Override
-	public boolean visit(Block node) {
-		// System.out.println("Block:"+node);
-		int id = node.hashCode();
-		Integer equivalentScopeId = equivalentScope.get(id);
-		if (equivalentScopeId == null) // || !ContainsScope(equivalentScopeId) this judgment could not exist.
-		{
-			EnterBlock(node, false);
-		}
-		
-		// int line = VisitLineOccupy(node);
-		// String code = OperationType.BlockCommand + "#" + "ENTER#";
-		// EndVisitReplaceLineOccupyWithRealContent(line, node, code);
-		return super.visit(node);
-	}
-	
-	@Override
-	public void endVisit(Block node) {
-		// System.out.println("node:"+node);
-		// System.out.println("node id:"+node.hashCode());
-		// OneTextOneLine(OperationType.BlockCommand + "#", "EXIT#");
-		int id = node.hashCode();
-		Integer equivalentScopeId = equivalentScope.get(id);
-		if (equivalentScopeId == null) // || !ContainsScope(equivalentScopeId) this judgment could not exist.
-		{
-			ExitBlock();
-		}
 	}
 	
 	@Override
@@ -132,19 +101,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		// GiveLinkBetweenNodes(node, node.getExpression());
 	}
 	
-	protected void AddEquivalentScope(ASTNode node1, ASTNode node2)
-	{
-		equivalentScope.put(node2.hashCode(), node1.hashCode());
-	}
-	
-	protected void RemoveEquivalentScope(ASTNode node1, ASTNode node2)
-	{
-		equivalentScope.remove(node2.hashCode());
-	}
-	
 	// If doesn't know the kind, just set one as random. The one must be the big kind you want.
-	protected String GetDataOffset(String data, String kind) {
-		String code = getSdm().GetDataAssignOffsetInfo(data, KindLibrary.GetManagerLevelHintForKind(kind), kind);
+	protected String GetDataOffset(String data, boolean isFieldUseOrUpdate, boolean isCommonUseOrUpdate) {
+		String code = getSdm().GetDataOffsetInfo(data, isFieldUseOrUpdate, isCommonUseOrUpdate);
 		return code;
 	}
 	
@@ -161,9 +120,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		return false;
 	}
 	
-	protected void EnterBlock(ASTNode node, boolean isclass) {
+	protected void EnterBlock(ASTNode node) {
 		// System.out.println("Hashcode:"+node.hashCode()+";node:"+node);
-		getSdm().EnterBlock(node.hashCode(), isclass);
+		getSdm().EnterBlock(node.hashCode());
 	}
 	
 	protected void ExitBlock() {
@@ -209,9 +168,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		this.sdm = sdm;
 	}
 	
-	protected void DataNewlyUsed(String data, String kind, boolean isFieldDeclare, boolean isCommonDeclare)
+	protected void DataNewlyUsed(String data, String type, boolean isfianl, boolean isFieldDeclare, boolean isCommonDeclare, boolean isFieldUseOrDeclare, boolean isCommonUseOrDeclare)
 	{
-		sdm.AddDataNewlyUsed(data, kind, isFieldDeclare, isCommonDeclare);
+		sdm.AddDataNewlyUsed(data, type, isfianl, isFieldDeclare, isCommonDeclare, isFieldUseOrDeclare, isCommonUseOrDeclare);
 	}
 	
 	protected void AddNodeCode(ASTNode node, String code)
@@ -428,10 +387,13 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	{
 		nvnm.DeleteNoVisit(node.hashCode());
 	}
-	
-	protected void PrintLevelInfo()
-	{
-		System.out.println("Current Level:" + sdm.GetCurrentLevel());
+
+	public String GetVeryRecentDeclaredType() {
+		return VeryRecentDeclaredType;
+	}
+
+	public void SetVeryRecentDeclaredType(String veryRecentDeclaredType) {
+		VeryRecentDeclaredType = veryRecentDeclaredType;
 	}
 	
 }

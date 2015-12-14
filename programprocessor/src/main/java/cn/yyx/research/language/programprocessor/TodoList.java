@@ -7,6 +7,7 @@ public class TodoList {
 	// Declaration Code should be more compact. The handles of content holder are not right. Solved.
 	// Some GetDataOffset doesn't call DataNewlyUsed. Some should but some should not. Solved.
 	// Some level offset is not right. Solved.
-	// TODO when mutiple ContentHolder, how to solve it.
+	// TODO when multiple ContentHolder, how to solve it.
 	// TODO array access in complex situation is not handled.
+	// TODO the field access should be more compact.
 }
