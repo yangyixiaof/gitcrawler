@@ -16,16 +16,17 @@ public class JCScope {
 	TreeMap<String, TreeMap<String, Integer>> dataOrder = new TreeMap<String, TreeMap<String, Integer>>();
 	
 	// To speed up search.
-	int allDataNum = -1;
+	TreeMap<String, Integer> allDataNum = new TreeMap<String, Integer>();
+	// int allDataNum = -1;
 	
 	public JCScope() {
-		allDataNum = 0;
+		// allDataNum = 0;
 	}
 	
 	public JCScope(int id, int level) {
 		// this.ID = id;
 		// this.Level = level;
-		allDataNum = 0;
+		// allDataNum = 0;
 	}
 	
 	public void PushNewlyAssignedData(String data, String type)
@@ -43,12 +44,19 @@ public class JCScope {
 			datainorder = new LinkedList<String>();
 			dataInOrder.put(type, datainorder);
 		}
+		Integer anum = allDataNum.get(type);
+		if (anum == null)
+		{
+			anum = 0;
+			allDataNum.put(type, anum);
+		}
 		if (dorder == null)
 		{
 			// newly added data, not exists before.
 			datainorder.add(data);
-			dataorder.put(data, allDataNum);
-			allDataNum++;
+			dataorder.put(data, anum);
+			anum++;
+			allDataNum.put(type, anum);
 		}
 		else
 		{
@@ -68,7 +76,7 @@ public class JCScope {
 					beginDec = true;
 				}
 			}
-			dataorder.put(data, allDataNum-1);
+			dataorder.put(data, anum-1);
 			datainorder.remove(dorder);
 			datainorder.add(data);
 		}
@@ -79,16 +87,16 @@ public class JCScope {
 		TreeMap<String, Integer> dataorder = dataOrder.get(type);
 		if (dataorder == null)
 		{
-			System.err.println("Warning data: the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			System.err.println("Warning data " + data + " : the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
 			return null;
 		}
 		Integer order = dataorder.get(data);
 		if (order == null)
 		{
-			System.err.println("Warning data: the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			System.err.println("Warning data: " + data + " : the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
 			return null;
 		}
-		int maxOffset = allDataNum-1;
+		int maxOffset = allDataNum.get(type)-1;
 		return order-maxOffset;
 	}
 	
@@ -96,10 +104,42 @@ public class JCScope {
 	{
 		dataInOrder.clear();
 		dataOrder.clear();
+		// set all num to 0.
+		// allDataNum = 0;
+		allDataNum.clear();
+	}
+	
+	private boolean CheckTwoListMustBeBothNullOrNotNull(LinkedList<String> A, LinkedList<String> B)
+	{
+		boolean error = false;
+		if (A == null && B != null)
+		{
+			error = true;
+		}
+		if (A != null && B == null)
+		{
+			error = true;
+		}
+		if (error)
+		{
+			System.err.println("The two list must be both null or not null.");
+			System.exit(1);
+		}
+		boolean shouldrun = true;
+		if (A == null)
+		{
+			shouldrun = false;
+		}
+		return shouldrun;
 	}
 	
 	public void ResetScope(LinkedList<String> orderedData, LinkedList<String> orderedType) {
 		ClearAll();
+		boolean shouldcontinue = CheckTwoListMustBeBothNullOrNotNull(orderedData, orderedType);
+		if (!shouldcontinue)
+		{
+			return;
+		}
 		Iterator<String> itr = orderedData.iterator();
 		Iterator<String> typeitr = orderedType.iterator();
 		while (itr.hasNext())

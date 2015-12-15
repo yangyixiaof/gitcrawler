@@ -7,14 +7,14 @@ public class TestA<T, M> extends Test {
 		b = null;
 	} // this is comment
 
-	public TestA(Map<Integer, String> a) {
+	/*public TestA(Map<Integer, String> a) {
 		this.a = a;
 		super.q.b = null;
 		super.p.c();
 		super.g(foo()).h = null;
 		super(a);
 		final int d = 3;
-	}
+	}*/
 
 	/*public POI foo() {
 		return new POI();

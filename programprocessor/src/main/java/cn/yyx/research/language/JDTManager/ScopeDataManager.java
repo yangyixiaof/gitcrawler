@@ -7,11 +7,11 @@ import java.util.TreeMap;
 
 public class ScopeDataManager {
 	
-	//LinkedList<Integer> is reverse order.
+	//DataScope is reverse order.
 	Map<String, LinkedList<DataScopeInfo>> mDataScopeMap = new TreeMap<String, LinkedList<DataScopeInfo>>();
-	//LinkedList<Integer> is reverse order.
 	//Map<String, LinkedList<Integer>> mDataLineMap = new TreeMap<String, LinkedList<Integer>>();
-	//LinkedList<Integer> is formal order.
+	
+	//All Scope Data is positive order.
 	Map<OneScope, LinkedList<String>> mFieldScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
 	Map<OneScope, LinkedList<String>> mFinalFieldScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
 	
@@ -61,6 +61,7 @@ public class ScopeDataManager {
 		}
 	}
 	
+	// only declare add new things call this method.
 	private void DataScopeAndScopeDataMapCode(String data, String type, boolean isfinal, OneScope oscope, boolean isfield, Map<OneScope, LinkedList<String>> fieldScopeDataMap, Map<OneScope, LinkedList<String>> fieldScopeTypeMap)
 	{
 		LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
@@ -69,7 +70,16 @@ public class ScopeDataManager {
 			list = new LinkedList<DataScopeInfo>();
 			mDataScopeMap.put(data, list);
 		}
-		list.add(new DataScopeInfo(oscope, data, type, isfinal, isfield));
+		if (list.size() > 0)
+		{
+			DataScopeInfo firstone = list.get(0);
+			if (firstone.getOscope().getID() == oscope.getID() && firstone.isField() == isfield && firstone.isFinal() == isfinal)
+			{
+				return;
+			}
+		}
+		
+		list.add(0, new DataScopeInfo(oscope, data, type, isfinal, isfield));
 		LinkedList<String> datalist = fieldScopeDataMap.get(oscope);
 		if (datalist == null)
 		{
@@ -108,10 +118,20 @@ public class ScopeDataManager {
 			}
 			if (isFieldUpdate)
 			{
+				LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+				DataScopeInfo dscopeinfo = GetDataScopeInfoBySearch(list, true, true, true);
+				oscope = dscopeinfo.getOscope();
+				CheckTypeMustNull(type);
+				type = dscopeinfo.getType();
 				use = ffvdp;
 			}
 			if (isCommonUpdate)
 			{
+				LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+				DataScopeInfo dscopeinfo = GetDataScopeInfoBySearch(list, true, false, true);
+				oscope = dscopeinfo.getOscope();
+				CheckTypeMustNull(type);
+				type = dscopeinfo.getType();
 				use = fcvdp;
 			}
 		}
@@ -133,10 +153,20 @@ public class ScopeDataManager {
 			}
 			if (isFieldUpdate)
 			{
+				LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+				DataScopeInfo dscopeinfo = GetDataScopeInfoBySearch(list, false, true, true);
+				oscope = dscopeinfo.getOscope();
+				CheckTypeMustNull(type);
+				type = dscopeinfo.getType();
 				use = fvdp;
 			}
 			if (isCommonUpdate)
 			{
+				LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+				DataScopeInfo dscopeinfo = GetDataScopeInfoBySearch(list, false, false, true);
+				oscope = dscopeinfo.getOscope();
+				CheckTypeMustNull(type);
+				type = dscopeinfo.getType();
 				use = cvdp;
 			}
 		}
@@ -150,23 +180,37 @@ public class ScopeDataManager {
 			}
 			else
 			{
-				Iterator<DataScopeInfo> itr = list.iterator();
-				while (itr.hasNext())
-				{
-					DataScopeInfo dscopeinfo = itr.next();
-					if (dscopeinfo.isFinal() != isfinal)
-					{
-						continue;
-					}
-					use = GetRealUseDataPool(dscopeinfo);
-					oscope = dscopeinfo.getOscope();
-					CheckTypeMustNull(type);
-					type = dscopeinfo.getType();
-					break;
-				}
+				DataScopeInfo dscopeinfo = GetDataScopeInfoBySearch(list, false, false, false);
+				use = GetRealUseDataPool(dscopeinfo);
+				oscope = dscopeinfo.getOscope();
+				CheckTypeMustNull(type);
+				type = dscopeinfo.getType();
 			}
 		}
+		// System.err.println("newly added data: " + data);
 		use.NewlyAssignedData(oscope, data, type);
+	}
+	
+	public DataScopeInfo GetDataScopeInfoBySearch(LinkedList<DataScopeInfo> list, boolean isfinal, boolean isfield, boolean fieldMust)
+	{
+		Iterator<DataScopeInfo> itr = list.iterator();
+		while (itr.hasNext())
+		{
+			DataScopeInfo dscopeinfo = itr.next();
+			if (dscopeinfo.isFinal() != isfinal)
+			{
+				continue;
+			}
+			if (fieldMust)
+			{
+				if (dscopeinfo.isField() != isfield)
+				{
+					continue;
+				}
+			}
+			return dscopeinfo;
+		}
+		return null;
 	}
 	
 	public String GetDataOffsetInfo(String data, boolean isFieldUseOrUpdate, boolean isCommonUseOrUpdate) {
@@ -279,10 +323,19 @@ public class ScopeDataManager {
 		DeleteDataScopeOfScope(oscope, datalist);
 		datalist = mFinalCommonScopeDataMap.remove(oscope);
 		DeleteDataScopeOfScope(oscope, datalist);
+		
+		datalist = mFieldScopeTypeMap.remove(oscope);
+		datalist = mFinalFieldScopeTypeMap.remove(oscope);
+		datalist = mCommonScopeTypeMap.remove(oscope);
+		datalist = mFinalCommonScopeTypeMap.remove(oscope);
 	}
 	
 	private void DeleteDataScopeOfScope(OneScope oscope, LinkedList<String> datalist)
 	{
+		if (datalist == null)
+		{
+			return;
+		}
 		Iterator<String> itr = datalist.iterator();
 		while (itr.hasNext())
 		{
@@ -303,7 +356,7 @@ public class ScopeDataManager {
 		//TestUtil.PrintEnteredScopeStack(classstack);
 		
 		fvdp.ResetClassScope(classscope, mFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
-		ffvdp.ResetClassScope(classscope, mFinalFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
+		ffvdp.ResetClassScope(classscope, mFinalFieldScopeDataMap.get(classscope), mFinalFieldScopeTypeMap.get(classscope));
 	}
 	
 	//Due to list is reverse order, so which means first.

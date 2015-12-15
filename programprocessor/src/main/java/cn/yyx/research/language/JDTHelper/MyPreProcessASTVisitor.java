@@ -427,9 +427,19 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	}
 
 	public void SetVeryRecentDeclaredFinal(List<ASTNode> modifiers) {
+		VeryRecentDeclaredFinal = false;
+		if (modifiers == null || modifiers.size() == 0)
+		{
+			return;
+		}
 		for (ASTNode modifier : modifiers)
 		{
-			System.err.println(modifier);
+			if (modifier.toString().equals("this"))
+			{
+				VeryRecentDeclaredFinal = true;
+				return;
+			}
+			// System.out.println("modifier:" + modifier);
 		}
 		// VeryRecentDeclaredFinal = veryRecentDeclaredFinal;
 	}

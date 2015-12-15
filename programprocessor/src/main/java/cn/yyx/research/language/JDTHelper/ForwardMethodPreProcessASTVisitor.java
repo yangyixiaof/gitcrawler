@@ -623,6 +623,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			}
 			if (exprstr.equals("this"))
 			{
+				
+				System.out.println("this:" + node + " wayuse" + rh.getWayUse() + " overAllHint:" + overAllHint);
+				
 				AddReferenceUpdateHint(node.getName(), rh != null ? ReferenceHintLibrary.Field | rh.getWayUse() : ReferenceHintLibrary.DataUpdate);
 			}
 			else
@@ -806,6 +809,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public void endVisit(VariableDeclarationExpression node) {
 		SetVeryRecentDeclaredType(null);
+		SetVeryRecentDeclaredFinal(null);
 		
 		String type = node.getType().toString();
 		List<VariableDeclarationFragment> fs = node.fragments();
@@ -941,7 +945,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("LabeledStatement:"+node);
 		ASTNode label = node.getLabel();
 		String labelstr = label.toString();
-		ljcs.PushNewlyAssignedData(labelstr, GCodeMetaInfo.HackedNoType);
+		LabelNewlyAssigned(labelstr);
 		
 		AddNodeCode(node, labelstr);
 		AddNodeHasOccupiedOneLine(node, true);
@@ -1231,10 +1235,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean visit(SingleVariableDeclaration node) {
 		// System.out.println("SingleVariableDeclaration:"+node);
 		// System.out.println("SingleVariableDeclarationType:"+node.getType());
 		SetVeryRecentDeclaredType(node.getType().toString());
+		SetVeryRecentDeclaredFinal(node.modifiers());
 		
 		AddReferenceUpdateHint(node.getName(), ReferenceHintLibrary.DataDeclare);
 		return super.visit(node);
@@ -1243,6 +1249,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public void endVisit(SingleVariableDeclaration node) {
 		SetVeryRecentDeclaredType(null);
+		SetVeryRecentDeclaredFinal(null);
 		
 		String code = node.getType().toString();
 		AddNodeCode(node, code);
@@ -1261,6 +1268,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			dlm.AddDataLineInfo(f.getName().toString(), GCodeMetaInfo.IsField, true, false);
 		}*/
 		SetVeryRecentDeclaredType(node.getType().toString());
+		SetVeryRecentDeclaredFinal(node.modifiers());
 		
 		VariableDeclarationReferenceHint(node.fragments(), ReferenceHintLibrary.FieldDeclare);
 		return super.visit(node);
@@ -1270,6 +1278,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public void endVisit(FieldDeclaration node) {
 		SetVeryRecentDeclaredType(null);
+		SetVeryRecentDeclaredFinal(null);
 		
 		String type = node.getType().toString();
 		List<VariableDeclarationFragment> fs = node.fragments();
@@ -1279,6 +1288,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
+		// There is no need to add hint to MethodDeclaration.
 		if (isFirstLevelASTNode(node))
 		{
 			ResetDLM();
@@ -1317,6 +1327,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("VariableDeclarationStatement:"+node);
 		// System.out.println("VariableDeclarationStatementType:"+node.getType());
 		SetVeryRecentDeclaredType(node.getType().toString());
+		SetVeryRecentDeclaredFinal(node.modifiers());
 		
 		ReferenceHint rh = ReferenceHintLibrary.ParseReferenceHint(GetReferenceUpdateHint(node));
 		VariableDeclarationReferenceHint(node.fragments(), rh != null ? rh.getDataType() | ReferenceHintLibrary.Declare : ReferenceHintLibrary.DataDeclare);
@@ -1327,6 +1338,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public void endVisit(VariableDeclarationStatement node) {
 		SetVeryRecentDeclaredType(null);
+		SetVeryRecentDeclaredFinal(null);
 		
 		String type = node.getType().toString();
 		List<VariableDeclarationFragment> fs = node.fragments();
@@ -1396,6 +1408,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			String data = node.toString();
 			switch (hint) {
 			case ReferenceHintLibrary.DataUse:
+				
+				if (data.equals("a"))
+				{
+					System.out.println("data use now.");
+				}
+				
 				code = GetDataOffset(data, false, false);
 			case ReferenceHintLibrary.FieldUse:
 				code = GetDataOffset(data, true, false);

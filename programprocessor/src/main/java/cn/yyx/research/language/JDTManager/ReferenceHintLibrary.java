@@ -2,7 +2,8 @@ package cn.yyx.research.language.JDTManager;
 
 public class ReferenceHintLibrary {
 	
-	public static final int Mask = 1 << 6 - 1;
+	public static final int MaskLength = 5;
+	public static final int Mask = (1 << 6) - 1;
 	
 	public static final int Declare = 1 << 1;
 	public static final int Update = 1 << 2;
@@ -29,8 +30,8 @@ public class ReferenceHintLibrary {
 		{
 			return null;
 		}
-		byte wayUse = (byte) (overAllType | Mask);
-		byte dataType = (byte) ((overAllType >> Mask) | Mask);
+		byte wayUse = (byte) (overAllType & Mask);
+		byte dataType = (byte) ((overAllType >> MaskLength) & Mask);
 		return new ReferenceHint(dataType, wayUse);
 	}
 	
