@@ -178,8 +178,10 @@ public class ScopeDataManager {
 			LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
 			if (list == null || list.size() == 0)
 			{
-				System.err.println("Not declared field? The program will exit.");
-				System.exit(1);
+				System.err.println("Warning: Not declared field? data is:" + data);
+				// new Exception().printStackTrace();
+				// System.exit(1);
+				return;
 			}
 			else
 			{
@@ -266,8 +268,9 @@ public class ScopeDataManager {
 		}
 		else
 		{
-			System.err.println("Not declared field? The program will exit.");
-			System.exit(1);
+			System.err.println("Warning: Not declared field? data is:" + data + " ;isFieldUseOrUpdate:" + isFieldUseOrUpdate + " ;isCommonUseOrUpdate:" + isCommonUseOrUpdate);
+			// new Exception().printStackTrace();
+			// System.exit(1);
 		}
 		return null;
 	}

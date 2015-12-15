@@ -102,7 +102,14 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 	
 	@Override
 	public void endVisit(Initializer node) {
-		FlushCode();
+		if (isFirstLevelASTNode(node))
+		{
+			FlushCode();
+		}
+		else
+		{
+			OneSentenceEnd();
+		}
 		// dlm.ClearRawStringDataLineInfo();
 	}
 	

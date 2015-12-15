@@ -10,5 +10,6 @@ public class TodoList {
 	// TODO when multiple ContentHolder, how to solve it.
 	// TODO array access in complex situation is not handled.
 	// TODO the field access should be more compact.
-	// TODO need to change allnum in JCScope to map.
+	// need to change allnum in JCScope to map. Solved.
+	// instanceof and cast have peoblems. Solved.
 }

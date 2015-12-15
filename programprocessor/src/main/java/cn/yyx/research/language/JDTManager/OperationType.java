@@ -25,22 +25,23 @@ public class OperationType {
 	public static final int SynchronizedStatement = 22;
 	public static final int SwitchStatement = 23;
 	public static final int SwitchCase = 24;
-	public static final int SuperConstructorInvocation = 25;
-	public static final int ThrowStatement = 26;
-	public static final int CatchClause = 27;
-	public static final int VariableDeclarationStatement = 28;
-	public static final int SingleVariableDeclaration = 29;
-	public static final int VariableDeclarationExpression = 30;
-	public static final int NearlyCommonText = 31;
-	public static final int BlockCommand = 32;
-	public static final int ExpressionMethodReference = 33;
-	public static final int LambdaExpression = 34;
-	public static final int LambdaParam = 35;
-	public static final int MethodDeclaration = 36;
-	public static final int EnumDeclaration = 37;
-	public static final int EnumConstant = 38;
-	public static final int DoRawCode = 39;
-	public static final int LabeledStatement = 40;
+	public static final int BreakStatement = 25;
+	public static final int SuperConstructorInvocation = 26;
+	public static final int ThrowStatement = 27;
+	public static final int CatchClause = 28;
+	public static final int VariableDeclarationStatement = 29;
+	public static final int SingleVariableDeclaration = 30;
+	public static final int VariableDeclarationExpression = 31;
+	public static final int NearlyCommonText = 32;
+	public static final int BlockCommand = 33;
+	public static final int ExpressionMethodReference = 34;
+	public static final int LambdaExpression = 35;
+	public static final int LambdaParam = 36;
+	public static final int MethodDeclaration = 37;
+	public static final int EnumDeclaration = 38;
+	public static final int EnumConstant = 39;
+	public static final int DoRawCode = 40;
+	public static final int LabeledStatement = 41;
 	
 	public static int GetTypeDescriptionId(Class<?> ASTClass)
 	{
@@ -141,6 +142,10 @@ public class OperationType {
 		if (org.eclipse.jdt.core.dom.SwitchCase.class == ASTClass)
 		{
 			return SwitchCase;
+		}
+		if (org.eclipse.jdt.core.dom.BreakStatement.class == ASTClass)
+		{
+			return BreakStatement;
 		}
 		if (org.eclipse.jdt.core.dom.SuperConstructorInvocation.class == ASTClass)
 		{

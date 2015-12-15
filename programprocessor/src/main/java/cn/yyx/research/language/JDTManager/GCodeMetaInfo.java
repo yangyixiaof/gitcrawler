@@ -8,6 +8,7 @@ public class GCodeMetaInfo {
 	
 	public static String StringHolder = "@STR";
 	public static String NumberHolder = "@NUB";
+	public static String CharHolder = "@Chr";
 	
 	public static String NoStatement = "nu#";
 	public static String NullLiteral = "@NUL";

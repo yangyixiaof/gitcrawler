@@ -1,8 +1,16 @@
+package cn.yyx.research.language.Utility;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+
+import cn.yyx.research.language.programprocessor.Test;
+
 public class TestA<T, M> extends Test {
 	Map<Integer, String> a, b;
 	T tt;
 
-	static {
+	{
 		a = null;
 		b = null;
 	} // this is comment
@@ -21,10 +29,10 @@ public class TestA<T, M> extends Test {
 	}
 
 	public int foo(int b, ArrayList<Object> t) {
-		a.put("ABC", "POD");
+		a.put(1, "POD");
 		Set<?> s;
 		int ty = 0;
-		synchronized (ty >= 0) {
+		synchronized (s) {
 			ty--;
 		}
 		do {
@@ -38,7 +46,7 @@ public class TestA<T, M> extends Test {
 		}
 		Map<Integer, String> ppt;
 		int[] pt = new int[] { 1, 2, 3 };
-		/*for (int pppt : pt) {
+		for (int pppt : pt) {
 			System.out.println(pppt);
 		}
 		int d = 3 + 6;
@@ -90,7 +98,6 @@ public class TestA<T, M> extends Test {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		*/
 		return (5 + 6) / 10;
 	}
 }

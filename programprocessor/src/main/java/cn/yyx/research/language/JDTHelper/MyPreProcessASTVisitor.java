@@ -120,7 +120,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	protected String GetClassOffset(String type)
 	{
-		return "$C" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(cjcs.GetExactOffset(type, GCodeMetaInfo.HackedNoType));
+		return "$K" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(cjcs.GetExactOffset(type, GCodeMetaInfo.HackedNoType));
 	}
 	
 	protected void LabelNewlyAssigned(String label)
@@ -278,14 +278,6 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	protected Integer GetReferenceUpdateHint(ASTNode node)
 	{
 		return voorm.GetReferenceUpdateHint(node);
-	}
-	
-	protected void AddNodeInMultipleLineWhenRemainIsContentHolder(ASTNode remain, ASTNode container)
-	{
-		if (GetNodeInMultipleLine(remain) || GetNodeHasContentHolder(remain))
-		{
-			AddNodeInMultipleLine(container, true);
-		}
 	}
 	
 	// v means virtual, r means real.

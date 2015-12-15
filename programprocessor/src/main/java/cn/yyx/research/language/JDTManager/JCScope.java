@@ -9,7 +9,7 @@ public class JCScope {
 	// Integer ID = -1;
 	// Integer Level = -1;
 	
-	// real data in sequential order.
+	// real data in reverse order.
 	TreeMap<String, LinkedList<String>> dataInOrder = new TreeMap<String, LinkedList<String>>();
 	
 	// records the order of the data. To speed up the search.
@@ -53,33 +53,56 @@ public class JCScope {
 		if (dorder == null)
 		{
 			// newly added data, not exists before.
-			datainorder.add(data);
+			datainorder.add(0, data);
 			dataorder.put(data, anum);
 			anum++;
 			allDataNum.put(type, anum);
 		}
 		else
 		{
-			Iterator<String> itr = datainorder.iterator();
-			boolean beginDec = false;
-			int idx = -1;
-			while (itr.hasNext())
+			/*if (type.equals("int"))
 			{
-				if (beginDec)
+				System.out.println("prebegin:now used data:"+data);
+				System.out.println("all num of type int:" + allDataNum.get(type));
+				Set<String> keys = dataorder.keySet();
+				Iterator<String> itr = keys.iterator();
+				while (itr.hasNext())
 				{
-					String idata = itr.next();
-					dataorder.put(idata, dataorder.get(idata)-1);
+					String dta = itr.next();
+					System.out.println("data:" + dta + "; order:" + dataorder.get(dta));
 				}
+				System.out.println("preend.");
+			}*/
+			
+			int allnum = allDataNum.get(type);
+			Iterator<String> itr = datainorder.iterator();
+			int idx = 0;
+			int dindex = allnum - dorder - 1;
+			while (itr.hasNext() && idx != dindex)
+			{
+				String idata = itr.next();
+				dataorder.put(idata, dataorder.get(idata)-1);
 				idx++;
-				if (idx == dorder)
-				{
-					beginDec = true;
-				}
 			}
 			dataorder.put(data, anum-1);
-			datainorder.remove(dorder);
-			datainorder.add(data);
+			datainorder.remove(dindex);
+			datainorder.add(0, data);
+			
+			/*if (type.equals("int"))
+			{
+				System.out.println("postbegin:now used data:"+data);
+				System.out.println("all num of type int:" + allDataNum.get(type));
+				Set<String> keys = dataorder.keySet();
+				Iterator<String> itr2 = keys.iterator();
+				while (itr2.hasNext())
+				{
+					String dta = itr2.next();
+					System.out.println("data:" + dta + "; order:" + dataorder.get(dta));
+				}
+				System.out.println("postend.");
+			}*/
 		}
+		
 	}
 	
 	public Integer GetExactOffset(String data, String type)
