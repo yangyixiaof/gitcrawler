@@ -302,9 +302,6 @@ public class ScopeDataManager {
 		//testing
 		//TestUtil.PrintEnteredScopeStack(classstack);
 		
-		VDataPool fvdp = new VDataPool();
-		VDataPool ffvdp = new VDataPool();
-		
 		fvdp.ResetClassScope(classscope, mFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
 		ffvdp.ResetClassScope(classscope, mFinalFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
 	}

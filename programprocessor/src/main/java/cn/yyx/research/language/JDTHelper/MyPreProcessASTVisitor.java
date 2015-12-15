@@ -14,9 +14,11 @@ import cn.yyx.research.language.JDTManager.DebugNodeCorrespondingCode;
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
+import cn.yyx.research.language.JDTManager.JCScope;
 import cn.yyx.research.language.JDTManager.NoVisitNodeManager;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
+import cn.yyx.research.language.JDTManager.OffsetLibrary;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.JDTManager.VarOrObjReferenceManager;
@@ -40,7 +42,11 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	// a node is only equivalent to one node.
 	// private Map<Integer, Integer> equivalentScope = new TreeMap<Integer, Integer>();
 	
+	JCScope cjcs = new JCScope();
+	JCScope ljcs = new JCScope();
+	
 	private String VeryRecentDeclaredType = null;
+	private boolean VeryRecentDeclaredFinal = false;
 	
 	@Override
 	public void postVisit(ASTNode node) {
@@ -105,6 +111,26 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	protected String GetDataOffset(String data, boolean isFieldUseOrUpdate, boolean isCommonUseOrUpdate) {
 		String code = getSdm().GetDataOffsetInfo(data, isFieldUseOrUpdate, isCommonUseOrUpdate);
 		return code;
+	}
+	
+	protected void ClassNewlyAssigned(String type)
+	{
+		cjcs.PushNewlyAssignedData(type, GCodeMetaInfo.HackedNoType);
+	}
+	
+	protected String GetClassOffset(String type)
+	{
+		return "$" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(cjcs.GetExactOffset(type, GCodeMetaInfo.HackedNoType));
+	}
+	
+	protected void LabelNewlyAssigned(String label)
+	{
+		ljcs.PushNewlyAssignedData(label, GCodeMetaInfo.HackedNoType);
+	}
+	
+	protected String GetLabelOffset(String label)
+	{
+		return "$" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(ljcs.GetExactOffset(label, GCodeMetaInfo.HackedNoType));
 	}
 	
 	protected void ResetDLM() {
@@ -394,6 +420,33 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 
 	public void SetVeryRecentDeclaredType(String veryRecentDeclaredType) {
 		VeryRecentDeclaredType = veryRecentDeclaredType;
+	}
+
+	public boolean GetVeryRecentDeclaredFinal() {
+		return VeryRecentDeclaredFinal;
+	}
+
+	public void SetVeryRecentDeclaredFinal(List<ASTNode> modifiers) {
+		for (ASTNode modifier : modifiers)
+		{
+			System.err.println(modifier);
+		}
+		// VeryRecentDeclaredFinal = veryRecentDeclaredFinal;
+	}
+	
+	protected void CheckVeryRecentDeclaredTypeMustNotNull(String declaredtype)
+	{
+		if (declaredtype == null)
+		{
+			System.err.println("No Declared Type? The system will exit.");
+			System.exit(1);
+		}
+	}
+	
+	protected void ClearClassAndLabelInfo()
+	{
+		cjcs.ClearAll();
+		ljcs.ClearAll();
 	}
 	
 }

@@ -13,6 +13,7 @@ public class TestA<T, M> extends Test {
 		super.p.c();
 		super.g(foo()).h = null;
 		super(a);
+		final int d = 3;
 	}
 
 	/*public POI foo() {

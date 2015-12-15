@@ -6,9 +6,8 @@ import java.util.TreeMap;
 
 public class JCScope {
 	
-	Integer ID = -1;
-	
-	Integer Level = -1;
+	// Integer ID = -1;
+	// Integer Level = -1;
 	
 	// real data in sequential order.
 	TreeMap<String, LinkedList<String>> dataInOrder = new TreeMap<String, LinkedList<String>>();
@@ -19,9 +18,13 @@ public class JCScope {
 	// To speed up search.
 	int allDataNum = -1;
 	
+	public JCScope() {
+		allDataNum = 0;
+	}
+	
 	public JCScope(int id, int level) {
-		this.ID = id;
-		this.Level = level;
+		// this.ID = id;
+		// this.Level = level;
 		allDataNum = 0;
 	}
 	

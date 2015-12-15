@@ -419,51 +419,35 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(BreakStatement node) {
-		ASTNode label = node.getLabel();
-		if (label != null)
-		{
-			AddReferenceUpdateHint(label, ReferenceHintLibrary.LabelUse);
-		}
-		return super.visit(node);
-	}
-	
-	@Override
 	public void endVisit(BreakStatement node) {
 		// System.out.println("BreakStatement:"+node);
 		// System.out.println(node.getLabel());
 		ASTNode label = node.getLabel();
-		String code = "break" + label == null ? "" : GCodeMetaInfo.WhiteSpaceReplacer+GetNodeCode(label);
+		String labelcode = "";
+		if (label != null)
+		{
+			String labelstr = label.toString();
+			labelcode = GetLabelOffset(labelstr);
+			ljcs.PushNewlyAssignedData(labelstr, GCodeMetaInfo.HackedNoType);
+		}
+		String code = "break" + label == null ? "" : GCodeMetaInfo.WhiteSpaceReplacer + labelcode;
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
-		
-		if (label != null)
-		{
-			DeleteReferenceUpdateHint(label);
-		}
-	}
-	
-	@Override
-	public boolean visit(ContinueStatement node) {
-		ASTNode label = node.getLabel();
-		if (label != null)
-		{
-			AddReferenceUpdateHint(label, ReferenceHintLibrary.LabelUse);
-		}
-		return super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(ContinueStatement node) {
 		ASTNode label = node.getLabel();
-		String code = "continue" + label == null ? "" : GCodeMetaInfo.WhiteSpaceReplacer+GetNodeCode(label);
-		AddNodeCode(node, code);
-		AddNodeHasOccupiedOneLine(node, true);
-		
+		String labelcode = "";
 		if (label != null)
 		{
-			DeleteReferenceUpdateHint(node);
+			String labelstr = label.toString();
+			labelcode = GetLabelOffset(labelstr);
+			ljcs.PushNewlyAssignedData(labelstr, GCodeMetaInfo.HackedNoType);
 		}
+		String code = "continue" + label == null ? "" : GCodeMetaInfo.WhiteSpaceReplacer + labelcode;
+		AddNodeCode(node, code);
+		AddNodeHasOccupiedOneLine(node, true);
 	}
 	
 	@Override
@@ -811,6 +795,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("VariableDeclarationExpression:" + node);
 		// for (int i=0,j=0;...) 's int i=0,j=0
 		SetVeryRecentDeclaredType(node.getType().toString());
+		SetVeryRecentDeclaredFinal(node.modifiers());
 		
 		ReferenceHint rh = ReferenceHintLibrary.ParseReferenceHint(GetReferenceUpdateHint(node));
 		VariableDeclarationReferenceHint(node.fragments(), rh != null ? rh.getDataType() | ReferenceHintLibrary.Declare : ReferenceHintLibrary.DataDeclare);
@@ -913,7 +898,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(Initializer node) {
 		// Do nothing now.
 		// System.out.println("Initializer:"+node);
-		ResetDLM();
+		if (isFirstLevelASTNode(node))
+		{
+			ResetDLM();
+		}
 		// PrintLevelInfo();
 		return super.visit(node);
 	}
@@ -951,7 +939,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(LabeledStatement node) {
 		// System.out.println("LabeledStatement:"+node);
-		AddNodeCode(node, node.getLabel().toString());
+		ASTNode label = node.getLabel();
+		String labelstr = label.toString();
+		ljcs.PushNewlyAssignedData(labelstr, GCodeMetaInfo.HackedNoType);
+		
+		AddNodeCode(node, labelstr);
 		AddNodeHasOccupiedOneLine(node, true);
 		
 		AddReferenceUpdateHint(node.getLabel(), ReferenceHintLibrary.LabelDeclare);
@@ -1076,21 +1068,19 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(SimpleType node) {
 		// System.out.println("SimpleType:" + node);
-		NoVisit(node.getName());
-		// TODO
-		 AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
-		 DataNewlyUsed(node.toString(), null, VHiddenClassPoolManager.ClassHiddenPool, false, false, false, false);
-		return super.visit(node);
+		String type = node.toString();
+		AddNodeCode(node, GetClassOffset(type));
+		ClassNewlyAssigned(type);
+		return false;
 	}
 	
 	@Override
 	public boolean visit(QualifiedType node) {
 		// System.out.println("QualifiedType:"+node);
-		NoVisit(node.getName());
-		// TODO
-		 AddNodeCode(node, GetDataOffset(node.toString(), VHiddenClassPoolManager.ClassHiddenPool));
-		 DataNewlyUsed(node.toString(), null, VHiddenClassPoolManager.ClassHiddenPool, false, false, false, false);
-		return super.visit(node);
+		String type = node.toString();
+		AddNodeCode(node, GetClassOffset(type));
+		ClassNewlyAssigned(type);
+		return false;
 	}
 	
 	@Override
@@ -1289,7 +1279,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
-		ResetDLM();
+		if (isFirstLevelASTNode(node))
+		{
+			ResetDLM();
+		}
+		ClearClassAndLabelInfo();
 		NoVisit(node.getName());
 		return super.visit(node);
 	}
@@ -1402,46 +1396,30 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			String data = node.toString();
 			switch (hint) {
 			case ReferenceHintLibrary.DataUse:
-				code = GetDataOffset(data, false, true);
+				code = GetDataOffset(data, false, false);
 			case ReferenceHintLibrary.FieldUse:
 				code = GetDataOffset(data, true, false);
 				break;
 			case ReferenceHintLibrary.DataUpdate:
-				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
-				DataNewlyUsed(data, null, VVarObjPoolManager.VarOrObjPool, false, false, false, true);
+				code = GetDataOffset(data, false, false);
+				DataNewlyUsed(data, null, GetVeryRecentDeclaredFinal(), false, false, false, false);
 				break;
 			case ReferenceHintLibrary.FieldUpdate:
-				code = GetDataOffset(data, VVarObjPoolManager.VarOrObjPool);
-				DataNewlyUsed(data, null, VVarObjPoolManager.VarOrObjPool, false, false, true, false);
+				code = GetDataOffset(data, true, false);
+				DataNewlyUsed(data, null, GetVeryRecentDeclaredFinal(), false, false, true, false);
 				break;
 			case ReferenceHintLibrary.DataDeclare:
 				String declaredtype = GetVeryRecentDeclaredType();
-				if (declaredtype == null)
-				{
-					System.err.println("No Declared Type? The system will exit.");
-					System.exit(1);
-				}
-				DataNewlyUsed(data, declaredtype, VVarObjPoolManager.VarOrObjPool, false, true, false, false);
+				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype);
+				DataNewlyUsed(data, declaredtype, GetVeryRecentDeclaredFinal(), false, true, false, false);
 				hasCorrespond = true;
 				return;
 			case ReferenceHintLibrary.FieldDeclare:
 				String declaredtype2 = GetVeryRecentDeclaredType();
-				if (declaredtype2 == null)
-				{
-					System.err.println("No Declared Type? The system will exit.");
-					System.exit(1);
-				}
-				DataNewlyUsed(data, declaredtype2, VVarObjPoolManager.VarOrObjPool, true, false, false, false);
+				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
+				DataNewlyUsed(data, declaredtype2, GetVeryRecentDeclaredFinal(), true, false, false, false);
 				hasCorrespond = true;
 				return;
-			case ReferenceHintLibrary.LabelDeclare:
-				DataNewlyUsed(node.toString(), null, VLabelPoolManager.LabelPool, false, false, false, false);
-				hasCorrespond = true;
-				break;
-			case ReferenceHintLibrary.LabelUse:
-				code = GetDataOffset(node.toString(), VLabelPoolManager.LabelPool);
-				DataNewlyUsed(node.toString(), null, VLabelPoolManager.LabelPool, false, false, false, false);
-				break;
 			default:
 				break;
 			}

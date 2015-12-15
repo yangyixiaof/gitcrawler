@@ -4,12 +4,14 @@ public class OffsetLibrary {
 	
 	public static final int OffsetBlock = 1;
 	
-	public static String GetOffsetDescription(int offset)
+	public static String GetOffsetDescription(Integer offset)
 	{
 		//"$" + 
-		String pre = (offset < 0 ? "-" : "");
-		offset = Math.abs(offset);
-		String result = pre + offset;
+		String result = GCodeMetaInfo.FirstDeclaredData;
+		if (offset != null)
+		{
+			result = Math.abs(offset)+"";
+		}
 		//(offset <= 1 ? "aj#" : (offset/OffsetBlock)+"#")
 		return result;
 	}
