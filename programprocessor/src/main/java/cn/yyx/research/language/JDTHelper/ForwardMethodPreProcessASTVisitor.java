@@ -1050,8 +1050,16 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			}
 			else
 			{
-				exprcode = GetNodeCode(expr);
-				AddNodeHasUsed(expr, true);
+				if (GetNodeHasOccupiedOneLine(expr))
+				{
+					exprcode = GCodeMetaInfo.ContentHolder;
+					AddNodeHasContentHolder(node, true);
+				}
+				else
+				{
+					exprcode = GetNodeCode(expr);
+					AddNodeHasUsed(expr, true);
+				}
 			}
 		}
 		String code = "return" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
@@ -1405,25 +1413,51 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			String data = node.toString();
 			switch (hint) {
 			case ReferenceHintLibrary.DataUse:
+				/*if (data.equals("a"))
+				{
+					System.out.println("DataUse");
+				}*/
 				code = GetDataOffset(data, false, false);
+				break;
 			case ReferenceHintLibrary.FieldUse:
+				/*if (data.equals("a"))
+				{
+					System.out.println("FieldUse");
+				}*/
 				code = GetDataOffset(data, true, false);
 				break;
 			case ReferenceHintLibrary.DataUpdate:
+				/*if (data.equals("a"))
+				{
+					System.out.println("DataUpdate");
+				}*/
 				code = GetDataOffset(data, false, false);
 				DataNewlyUsed(data, null, GetVeryRecentDeclaredFinal(), false, false, false, false);
 				break;
 			case ReferenceHintLibrary.FieldUpdate:
+				/*if (data.equals("a"))
+				{
+					System.out.println("FieldUpdate");
+				}*/
 				code = GetDataOffset(data, true, false);
 				DataNewlyUsed(data, null, GetVeryRecentDeclaredFinal(), false, false, true, false);
 				break;
 			case ReferenceHintLibrary.DataDeclare:
+				/*if (data.equals("a"))
+				{
+					System.out.println("DataDeclare");
+				}*/
 				String declaredtype = GetVeryRecentDeclaredType();
+				// System.out.println("common declaredtype:" + declaredtype + "; and data is:" + data + "; and is final:" + GetVeryRecentDeclaredFinal());
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype);
 				DataNewlyUsed(data, declaredtype, GetVeryRecentDeclaredFinal(), false, true, false, false);
 				hasCorrespond = true;
 				return;
 			case ReferenceHintLibrary.FieldDeclare:
+				/*if (data.equals("a"))
+				{
+					System.out.println("FieldDeclare");
+				}*/
 				String declaredtype2 = GetVeryRecentDeclaredType();
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
 				DataNewlyUsed(data, declaredtype2, GetVeryRecentDeclaredFinal(), true, false, false, false);

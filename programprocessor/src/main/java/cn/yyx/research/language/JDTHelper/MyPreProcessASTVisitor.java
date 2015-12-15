@@ -120,7 +120,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	protected String GetClassOffset(String type)
 	{
-		return "$" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(cjcs.GetExactOffset(type, GCodeMetaInfo.HackedNoType));
+		return "$C" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(cjcs.GetExactOffset(type, GCodeMetaInfo.HackedNoType));
 	}
 	
 	protected void LabelNewlyAssigned(String label)
@@ -130,7 +130,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	protected String GetLabelOffset(String label)
 	{
-		return "$" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(ljcs.GetExactOffset(label, GCodeMetaInfo.HackedNoType));
+		return "$L" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(ljcs.GetExactOffset(label, GCodeMetaInfo.HackedNoType));
 	}
 	
 	protected void ResetDLM() {

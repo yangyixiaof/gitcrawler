@@ -16,11 +16,11 @@ public class TestA<T, M> extends Test {
 		final int d = 3;
 	}
 
-	/*public POI foo() {
+	public POI foo() {
 		return new POI();
 	}
 
-	public int foo(int b, ArrayList<Object> t) {
+	/*public int foo(int b, ArrayList<Object> t) {
 		a.put("ABC", "POD");
 		Set<?> s;
 		int ty = 0;

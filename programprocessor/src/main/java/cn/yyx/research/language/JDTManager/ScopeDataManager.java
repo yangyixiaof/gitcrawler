@@ -65,6 +65,12 @@ public class ScopeDataManager {
 	private void DataScopeAndScopeDataMapCode(String data, String type, boolean isfinal, OneScope oscope, boolean isfield, Map<OneScope, LinkedList<String>> fieldScopeDataMap, Map<OneScope, LinkedList<String>> fieldScopeTypeMap)
 	{
 		LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
+		
+		/*if (data.equals("a"))
+		{
+			System.out.println("a's list:" + list + " " + (list != null ? list.size() : 0) + " type:" + type);
+		}*/
+		
 		if (list == null)
 		{
 			list = new LinkedList<DataScopeInfo>();
@@ -73,6 +79,12 @@ public class ScopeDataManager {
 		if (list.size() > 0)
 		{
 			DataScopeInfo firstone = list.get(0);
+			
+			/*if (type.equals("Map<Integer,String>") && data.equals("a"))
+			{
+				System.out.println("firstone.getOscope().getID() == oscope.getID():" + (firstone.getOscope().getID() == oscope.getID()) + "isfinal:"+isfinal + "isfield:" + isfield + " firstone.isField():"+firstone.isField());
+			}*/
+			
 			if (firstone.getOscope().getID() == oscope.getID() && firstone.isField() == isfield && firstone.isFinal() == isfinal)
 			{
 				return;
@@ -217,6 +229,10 @@ public class ScopeDataManager {
 		DataScopeInfo firstinfo = GetLastClassIdInList(data);
 		if (firstinfo != null)
 		{
+			/*if (data.equals("a"))
+			{
+				System.out.println("Get a:isFieldUseOrUpdate:" + isFieldUseOrUpdate+" isCommonUseOrUpdate:"+isCommonUseOrUpdate);
+			}*/
 			LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
 			VDataPool use = null;
 			DataScopeInfo nowinfo = null;
@@ -254,7 +270,8 @@ public class ScopeDataManager {
 				return null;
 			}
 			OneScope currentscope = classstack.getScope(classstack.getSize()-1);
-			return "$" + Math.abs(dataScope.getLevel() - currentscope.getLevel()) + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(exactoffset);
+			String indicator = nowinfo.isFinal() ? (nowinfo.isField() ? "D" : "X" ) : (nowinfo.isField() ? "F" : "C" );
+			return "$" + indicator + Math.abs(dataScope.getLevel() - currentscope.getLevel()) + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(exactoffset);
 		}
 		else
 		{
