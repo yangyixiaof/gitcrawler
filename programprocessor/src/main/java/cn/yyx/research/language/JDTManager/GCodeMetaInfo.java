@@ -41,5 +41,6 @@ public class GCodeMetaInfo {
 	public static String EnumCorpus = "BigEnumDetail";
 	public static String NumberCorpus = "BigNumberDetail";
 	public static String StringCorpus = "BigStringDetail";
+	public static String CharCorpus = "BigCharDetail";
 	public static String LogicCorpus = "BigClassDetail";
 }
