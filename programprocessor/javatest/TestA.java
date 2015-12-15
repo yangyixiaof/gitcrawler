@@ -20,7 +20,7 @@ public class TestA<T, M> extends Test {
 		return new POI();
 	}
 
-	/*public int foo(int b, ArrayList<Object> t) {
+	public int foo(int b, ArrayList<Object> t) {
 		a.put("ABC", "POD");
 		Set<?> s;
 		int ty = 0;
@@ -38,7 +38,7 @@ public class TestA<T, M> extends Test {
 		}
 		Map<Integer, String> ppt;
 		int[] pt = new int[] { 1, 2, 3 };
-		for (int pppt : pt) {
+		/*for (int pppt : pt) {
 			System.out.println(pppt);
 		}
 		int d = 3 + 6;
@@ -90,6 +90,7 @@ public class TestA<T, M> extends Test {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
 		return (5 + 6) / 10;
-	}*/
+	}
 }

@@ -216,15 +216,15 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 			RegistLastNodeBeforeIncreaseingElement(node.getExpression());
 			RegistFirstNodeAfterDecreasingElement(node.getBody());
 			RegistLastNodeBeforeIncreaseingElement(node.getBody());
+			
+			AddFirstOrderTask(new FirstOrderTask(node.getBody(), node.getExpression(), node, false) {
+				@Override
+				public void run() {
+					TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+				}
+			});
 		}
 		return super.visit(node);
-	}
-
-	@Override
-	public void endVisit(DoStatement node) {
-		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		}
 	}
 
 	@Override

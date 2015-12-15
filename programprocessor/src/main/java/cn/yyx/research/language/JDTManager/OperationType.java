@@ -30,16 +30,17 @@ public class OperationType {
 	public static final int CatchClause = 27;
 	public static final int VariableDeclarationStatement = 28;
 	public static final int SingleVariableDeclaration = 29;
-	public static final int NearlyCommonText = 30;
-	public static final int BlockCommand = 31;
-	public static final int ExpressionMethodReference = 32;
-	public static final int LambdaExpression = 33;
-	public static final int LambdaParam = 34;
-	public static final int MethodDeclaration = 35;
-	public static final int EnumDeclaration = 36;
-	public static final int EnumConstant = 37;
-	public static final int DoRawCode = 38;
-	public static final int LabeledStatement = 39;
+	public static final int VariableDeclarationExpression = 30;
+	public static final int NearlyCommonText = 31;
+	public static final int BlockCommand = 32;
+	public static final int ExpressionMethodReference = 33;
+	public static final int LambdaExpression = 34;
+	public static final int LambdaParam = 35;
+	public static final int MethodDeclaration = 36;
+	public static final int EnumDeclaration = 37;
+	public static final int EnumConstant = 38;
+	public static final int DoRawCode = 39;
+	public static final int LabeledStatement = 40;
 	
 	public static int GetTypeDescriptionId(Class<?> ASTClass)
 	{
@@ -160,6 +161,10 @@ public class OperationType {
 		if (org.eclipse.jdt.core.dom.SingleVariableDeclaration.class == ASTClass)
 		{
 			return SingleVariableDeclaration;
+		}
+		if (org.eclipse.jdt.core.dom.VariableDeclarationExpression.class == ASTClass)
+		{
+			return VariableDeclarationExpression;
 		}
 		// NearlyCommonText escaped;
 		// BlockCommand escaped.

@@ -9,7 +9,6 @@ public class ScopeDataManager {
 	
 	//DataScope is reverse order.
 	Map<String, LinkedList<DataScopeInfo>> mDataScopeMap = new TreeMap<String, LinkedList<DataScopeInfo>>();
-	//Map<String, LinkedList<Integer>> mDataLineMap = new TreeMap<String, LinkedList<Integer>>();
 	
 	//All Scope Data is positive order.
 	Map<OneScope, LinkedList<String>> mFieldScopeDataMap = new TreeMap<OneScope, LinkedList<String>>();
@@ -23,16 +22,8 @@ public class ScopeDataManager {
 	
 	Map<OneScope, LinkedList<String>> mCommonScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
 	Map<OneScope, LinkedList<String>> mFinalCommonScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
-	// TreeMap<OneScope, TreeMap<String, Integer>> mScopeDataKindMap = new TreeMap<OneScope, TreeMap<String, Integer>>();
-	
-	//No scope data, just record raw string and its corresponding line.
-	// Map<String, Integer> mRawStringDataLineMap = new TreeMap<String, Integer>();
 	
 	EnteredScopeStack classstack = new EnteredScopeStack();
-	
-	// VHiddenClassPoolManager vhcpm = new VHiddenClassPoolManager();
-	// VLabelPoolManager vlpm = new VLabelPoolManager();
-	// VVarObjPoolManager vvopm = new VVarObjPoolManager();
 	
 	VDataPool fvdp = new VDataPool();
 	VDataPool cvdp = new VDataPool();
@@ -349,6 +340,11 @@ public class ScopeDataManager {
 	
 	private void DeleteDataScopeOfScope(OneScope oscope, LinkedList<String> datalist)
 	{
+		DeleteDataScopeOfScope(oscope, datalist, false);
+	}
+	
+	private void DeleteDataScopeOfScope(OneScope oscope, LinkedList<String> datalist, boolean deleteOnlyCommon)
+	{
 		if (datalist == null)
 		{
 			return;
@@ -360,6 +356,13 @@ public class ScopeDataManager {
 			LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
 			while (list.size() > 0 && list.get(0).getOscope().getLevel() == oscope.getLevel())
 			{
+				if (deleteOnlyCommon)
+				{
+					if (list.get(0).isField() == true)
+					{
+						break;
+					}
+				}
 				list.removeFirst();
 			}
 		}
@@ -369,13 +372,35 @@ public class ScopeDataManager {
 	{
 		OneScope classscope = classstack.peek();
 		
-		//testing
-		//TestUtil.PrintEnteredScopeStack(classstack);
+		// just check now only one size.
+		CheckOnlyOneSize(mCommonScopeDataMap);
 		
+		// remove commons in datascope list, then clear common data map..
+		LinkedList<String> datalist = null;
+		datalist = mCommonScopeDataMap.remove(classscope);
+		DeleteDataScopeOfScope(classscope, datalist, true);
+		datalist = mFinalCommonScopeDataMap.remove(classscope);
+		DeleteDataScopeOfScope(classscope, datalist, true);
+		
+		// then clear common type map.
+		mCommonScopeTypeMap.clear();
+		mFinalCommonScopeTypeMap.clear();
+		
+		cvdp.ClearAll();
+		fcvdp.ClearAll();
 		fvdp.ResetClassScope(classscope, mFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
 		ffvdp.ResetClassScope(classscope, mFinalFieldScopeDataMap.get(classscope), mFinalFieldScopeTypeMap.get(classscope));
 	}
 	
+	private void CheckOnlyOneSize(Map<OneScope, LinkedList<String>> scopeDataMap) {
+		if (scopeDataMap.size() > 1)
+		{
+			System.err.println("ScopeData size:"+scopeDataMap.size()+". What the fuck, in first level method has two class levels? Serious error, the system will exit.");
+			new Exception().printStackTrace();
+			System.exit(1);
+		}
+	}
+
 	//Due to list is reverse order, so which means first.
 	private DataScopeInfo GetLastClassIdInList(String data)
 	{

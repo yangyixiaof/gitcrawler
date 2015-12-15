@@ -560,8 +560,16 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		else
 		{
-			exprcode = GetNodeCode(expr);
-			AddNodeHasUsed(expr, true);
+			if (GetNodeHasOccupiedOneLine(expr))
+			{
+				exprcode = GCodeMetaInfo.ContentHolder;
+				AddNodeHasContentHolder(node, true);
+			}
+			else
+			{
+				exprcode = GetNodeCode(expr);
+				AddNodeHasUsed(expr, true);
+			}
 		}
 		String code = "while"+ GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
 		// this expr needs to register level.
@@ -839,6 +847,14 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String code = OperationType.IfStatement + "#" + GetRefCode(node.getExpression(), line) + thencode + elsecode;*/
 	}
 	
+	public boolean visit(InfixExpression node) {
+		ASTNode left = node.getLeftOperand();
+		AddReferenceUpdateHint(left, ReferenceHintLibrary.DataUse);
+		ASTNode right = node.getRightOperand();
+		AddReferenceUpdateHint(right, ReferenceHintLibrary.DataUse);
+		return super.visit(node);
+	}
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(InfixExpression node) {
@@ -882,6 +898,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			AddNodeInMultipleLine(node, true);
 		}
+		
+		DeleteReferenceUpdateHint(left);
+		DeleteReferenceUpdateHint(right);
 		/*
 		 * System.out.println("=========传说中的分割线==开始==========");
 		 * System.out.println("InfixExpression:"+node);
@@ -1183,8 +1202,16 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		else
 		{
-			exprcode = GetNodeCode(expr);
-			AddNodeHasUsed(expr, true);
+			if (GetNodeHasOccupiedOneLine(expr))
+			{
+				exprcode = GCodeMetaInfo.ContentHolder;
+				AddNodeHasContentHolder(node, true);
+			}
+			else
+			{
+				exprcode = GetNodeCode(expr);
+				AddNodeHasUsed(expr, true);
+			}
 		}
 		String code = "synchronized" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
 		
@@ -1388,9 +1415,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public void endVisit(WhileStatement node) {
 		ASTNode expr = node.getExpression();
 		String exprcode = GetNodeCode(expr);
-		if (GetNodeInMultipleLine(expr))
+		if (GetNodeInMultipleLine(expr) || GetNodeHasOccupiedOneLine(expr))
 		{
 			exprcode = GCodeMetaInfo.ContentHolder;
+			AddNodeHasContentHolder(node, true);
 		}
 		String code = "while" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
 		AddNodeCode(node, code);
@@ -1450,6 +1478,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				String declaredtype = GetVeryRecentDeclaredType();
 				// System.out.println("common declaredtype:" + declaredtype + "; and data is:" + data + "; and is final:" + GetVeryRecentDeclaredFinal());
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype);
+				// System.err.println("data is:" + data + " declaredtype:"+declaredtype);
 				DataNewlyUsed(data, declaredtype, GetVeryRecentDeclaredFinal(), false, true, false, false);
 				hasCorrespond = true;
 				return;

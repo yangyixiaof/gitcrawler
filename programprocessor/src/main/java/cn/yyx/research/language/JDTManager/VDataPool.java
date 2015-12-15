@@ -1,7 +1,9 @@
 package cn.yyx.research.language.JDTManager;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class VDataPool {
@@ -49,6 +51,27 @@ public class VDataPool {
 			System.exit(1);
 		}
 		return scopes.get(scopeid);
+	}
+	
+	public void ClearAll()
+	{
+		Set<Integer> keys = scopes.keySet();
+		Iterator<Integer> itr = keys.iterator();
+		int allitrs = 0;
+		while (itr.hasNext())
+		{
+			allitrs++;
+			Integer key = itr.next();
+			JCScope jcs = scopes.get(key);
+			jcs.ClearAll();
+		}
+		// must invoked in first level.
+		if (allitrs > 1)
+		{
+			System.err.println("VDataPool's ClearAll method must be called in first level.");
+			new Exception().printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 }
