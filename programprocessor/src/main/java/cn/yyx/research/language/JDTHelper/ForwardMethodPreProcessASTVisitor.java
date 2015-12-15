@@ -623,9 +623,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			}
 			if (exprstr.equals("this"))
 			{
-				
-				System.out.println("this:" + node + " wayuse" + rh.getWayUse() + " overAllHint:" + overAllHint);
-				
 				AddReferenceUpdateHint(node.getName(), rh != null ? ReferenceHintLibrary.Field | rh.getWayUse() : ReferenceHintLibrary.DataUpdate);
 			}
 			else
@@ -1408,12 +1405,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			String data = node.toString();
 			switch (hint) {
 			case ReferenceHintLibrary.DataUse:
-				
-				if (data.equals("a"))
-				{
-					System.out.println("data use now.");
-				}
-				
 				code = GetDataOffset(data, false, false);
 			case ReferenceHintLibrary.FieldUse:
 				code = GetDataOffset(data, true, false);
