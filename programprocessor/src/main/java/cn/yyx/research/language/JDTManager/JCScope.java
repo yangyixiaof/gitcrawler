@@ -110,7 +110,7 @@ public class JCScope {
 		TreeMap<String, Integer> dataorder = dataOrder.get(type);
 		if (dataorder == null)
 		{
-			System.err.println("Warning data " + data + " : the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			System.err.println("Warning data: " + data + " : the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
 			return null;
 		}
 		Integer order = dataorder.get(data);

@@ -11,14 +11,5 @@ public class TodoList {
 	// need to change allnum in JCScope to map. Solved.
 	// instanceof and cast have peoblems. Solved.
 	
-	// Not having tested elements.
-	// LambdaExpression. Solved.
-	// Array access in complex situation is not tested. test 3 or 2 dimension array. Solved.
-	// continue and break label. Solved.
-	// common for's multiple situation. Solved.
-	// ConstructorInvocation. Solved.
-	// SuperMethodInvocation. Solved.
-	// SuperConstructorInvocation. Solved.
-	// IfStatement. Solved.
-	// while (a = file.readLine() != null). Solved.
+	// TODO InfixExpression should be improved, case AlgThread.
 }

@@ -393,17 +393,53 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 
 	// Initializers in for is null. Solved.
 	// Array initializer is null and there are many other nulls. Solved.
-
+	
 	@Override
-	public void endVisit(ArrayInitializer node) {
+	@SuppressWarnings("unchecked")
+	public boolean visit(ArrayInitializer node) {
 		// System.out.println("ArrayInitializer:"+node);
+		List<Expression> inilist = node.expressions();
+		for (Expression ini : inilist)
+		{
+			AddReferenceUpdateHint(ini, ReferenceHintLibrary.DataUse);
+			// System.out.println("ArrayCreation's Initializer:" + ini);
+		}
 		AddNodeCode(node, GCodeMetaInfo.ArrayInitial);
+		return super.visit(node);
 	}
 	
 	@Override
-	public void endVisit(ArrayCreation node) {
+	@SuppressWarnings("unchecked")
+	public void endVisit(ArrayInitializer node) {
+		List<Expression> inilist = node.expressions();
+		for (Expression ini : inilist)
+		{
+			DeleteReferenceUpdateHint(ini);
+		}
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(ArrayCreation node) {
 		// System.out.println("ArrayCreation:"+node);
+		List<Expression> dimenlist = node.dimensions();
+		for (Expression dimen : dimenlist)
+		{
+			AddReferenceUpdateHint(dimen, ReferenceHintLibrary.DataUse);
+			// System.out.println("ArrayCreation's Dimension:" + dimen);
+		}
 		AddNodeCode(node, GCodeMetaInfo.ArrayCreation);
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(ArrayCreation node) {
+		List<Expression> dimenlist = node.dimensions();
+		for (Expression dimen : dimenlist)
+		{
+			DeleteReferenceUpdateHint(dimen);
+		}
 	}
 	
 	@Override
@@ -443,6 +479,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(ArrayAccess node) {
 		AddReferenceUpdateHint(node.getArray(), ReferenceHintLibrary.DataUpdate);
+		AddReferenceUpdateHint(node.getIndex(), ReferenceHintLibrary.DataUse);
 		return super.visit(node);
 	};
 	
@@ -462,6 +499,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		
 		DeleteReferenceUpdateHint(node.getArray());
+		DeleteReferenceUpdateHint(node.getIndex());
 	}
 	
 	@Override
@@ -832,6 +870,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		{
 			if (GetNodeHasOccupiedOneLine(expr))
 			{
+				exprcode = ".";
 				AddNodeType(node, NodeTypeLibrary.adjacent);
 				AddNodeInMultipleLine(node, true);
 			}
@@ -924,6 +963,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("IfStatementExpr:"+node.getExpression());
 		// System.out.println("IfStatementThen:"+node.getThenStatement());
 		// System.out.println("IfStatementElse:"+node.getThenStatement());
+		AddReferenceUpdateHint(node.getExpression(), ReferenceHintLibrary.DataUse);
+		
 		return super.visit(node);
 	}
 
@@ -936,6 +977,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);
 		
+		DeleteReferenceUpdateHint(node.getExpression());
+		
 		/*int line = GetOccupiedLine(node);
 		String thencode = node.getThenStatement() == null ? GCodeMetaInfo.NoStatement
 				: GetRefCode(node.getThenStatement(), line);
@@ -946,6 +989,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@SuppressWarnings("unchecked")
 	public boolean visit(InfixExpression node) {
+		
+		// System.out.println("InfixExpression:" + node);
+		
 		ASTNode left = node.getLeftOperand();
 		AddReferenceUpdateHint(left, ReferenceHintLibrary.DataUse);
 		ASTNode right = node.getRightOperand();
@@ -1004,6 +1050,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		
 		DeleteReferenceUpdateHint(left);
 		DeleteReferenceUpdateHint(right);
+		for (ASTNode op : ops)
+		{
+			DeleteReferenceUpdateHint(op);
+		}
 		/*
 		 * System.out.println("=========传说中的分割线==开始==========");
 		 * System.out.println("InfixExpression:"+node);
@@ -1159,6 +1209,16 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(ReturnStatement node) {
+		ASTNode expr = node.getExpression();
+		if (expr != null)
+		{
+			AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUse);	
+		}
+		return super.visit(node);
+	}
+	
+	@Override
 	public void endVisit(ReturnStatement node) {
 		ASTNode expr = node.getExpression();
 		String exprcode = "";
@@ -1187,6 +1247,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String code = "return" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
+		
+		if (expr != null)
+		{
+			DeleteReferenceUpdateHint(expr);
+		}
 	}
 	
 	@Override
@@ -1654,14 +1719,14 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				if (!hasCorrespond)
 				{
 					AddNodeCode(node, node.toString());
-					System.err.println("Debugging : No corresponding data offset. Maybe data use or others. Data is : "+node);
+					System.err.println("Debugging Data: " + node + "; No corresponding data offset. Maybe data use or others.");
 				}
 			}
 		}
 		else
 		{
 			AddNodeCode(node, node.toString());
-			System.err.println("Warning: just for debugging and testing. The simple name does not have hint:" + node);
+			System.err.println("Warning Data: " + node + "; just for debugging and testing. The simple name does not have hint.");
 		}
 	}
 	

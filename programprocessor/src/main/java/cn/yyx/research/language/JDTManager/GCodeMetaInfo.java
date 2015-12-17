@@ -30,7 +30,7 @@ public class GCodeMetaInfo {
 	public static String HackedNoType = "<$NT$>";
 	
 	public static int OutofScopeVarOrObject = -10;
-	public static String FirstDeclaredData = "$FDC";
+	public static String FirstDeclaredData = "F";
 	//public static String OutofScopeDesc = "$INF";
 	
 	//for field only which means data only.
