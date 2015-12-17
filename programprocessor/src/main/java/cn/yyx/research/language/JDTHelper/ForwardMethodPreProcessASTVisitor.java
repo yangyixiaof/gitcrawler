@@ -234,11 +234,36 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@SuppressWarnings("unchecked")
 	public void endVisit(Block node) {
 		List<ASTNode> statements = node.statements();
+		if (statements.size() > 1)
+		{
+			AddNodeInMultipleLine(node, true);
+		}
 		if (statements != null && statements.size() > 0)
 		{
 			DirectLinkCode(node, statements.get(0));
 		}
 		super.endVisit(node);
+	}
+	
+	@Override
+	public boolean visit(VariableDeclarationFragment node)
+	{
+		Integer hint = GetReferenceUpdateHint(node);
+		if (hint != ReferenceHintLibrary.NoHint)
+		{
+			AddReferenceUpdateHint(node.getName(), hint);
+		}
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(VariableDeclarationFragment node)
+	{
+		Integer hint = GetReferenceUpdateHint(node);
+		if (hint != ReferenceHintLibrary.NoHint)
+		{
+			DeleteReferenceUpdateHint(node.getName());
+		}
 	}
 	
 	@Override
@@ -258,6 +283,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			{
 				ASTNode para = itr.next();
 				AddNodeHasUsed(para, true);
+				String str = para.toString();
+				String[] decs = str.split(" ");
+				if (decs.length == 1)
+				{
+					SetVeryRecentDeclaredType(GCodeMetaInfo.NoDeclaredType);
+				}
 				AddReferenceUpdateHint(para, ReferenceHintLibrary.DataDeclare);
 			}
 		}
@@ -286,6 +317,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				String[] decs = str.split(" ");
 				if (decs.length == 1)
 				{
+					SetVeryRecentDeclaredType(null);
 					cnt.append(GCodeMetaInfo.NoDeclaredType).append(",");
 				}
 				else if (decs.length == 2)
@@ -304,16 +336,20 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		String code = pre + cnt.toString() + post + "->";
 		ASTNode body = node.getBody();
-		AddNodeType(body, NodeTypeLibrary.adjacent);
 		if (!GetNodeHasOccupiedOneLine(body))
 		{
 			code += GetNodeCode(body);
+			AddNodeHasUsed(body, true);
 		}
 		else
 		{
 			if (GetNodeInMultipleLine(body))
 			{
 				AddNodeInMultipleLine(node, true);
+				AddNodeType(body, NodeTypeLibrary.adjacent);
+			}
+			else
+			{
 				code = PushBackContentHolder(code, node);
 			}
 		}
@@ -893,11 +929,17 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		String code = OperationType.IfStatement + "#" + GetRefCode(node.getExpression(), line) + thencode + elsecode;*/
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean visit(InfixExpression node) {
 		ASTNode left = node.getLeftOperand();
 		AddReferenceUpdateHint(left, ReferenceHintLibrary.DataUse);
 		ASTNode right = node.getRightOperand();
 		AddReferenceUpdateHint(right, ReferenceHintLibrary.DataUse);
+		List<ASTNode> ops = node.extendedOperands();
+		for (ASTNode op : ops)
+		{
+			AddReferenceUpdateHint(op, ReferenceHintLibrary.DataUse);
+		}
 		return super.visit(node);
 	}
 	

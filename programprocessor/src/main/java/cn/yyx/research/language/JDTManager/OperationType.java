@@ -13,35 +13,38 @@ public class OperationType {
 	public static final int EnhancedForStatement = 10;
 	public static final int ForStatement = 11;
 	public static final int IfStatement = 12;
-	public static final int FieldAccess = 13;
-	public static final int FieldDeclaration = 14;
-	public static final int MethodInvocation = 15;
-	public static final int SuperMethodInvocation = 16;
-	public static final int InstanceofExpression = 17;
-	public static final int ReturnStatement = 18;
-	public static final int PostfixExpression = 19;
-	public static final int PrefixExpression = 20;
-	public static final int StringLiteral = 21;
-	public static final int SynchronizedStatement = 22;
-	public static final int SwitchStatement = 23;
-	public static final int SwitchCase = 24;
-	public static final int BreakStatement = 25;
-	public static final int SuperConstructorInvocation = 26;
-	public static final int ThrowStatement = 27;
-	public static final int CatchClause = 28;
-	public static final int VariableDeclarationStatement = 29;
-	public static final int SingleVariableDeclaration = 30;
-	public static final int VariableDeclarationExpression = 31;
-	public static final int NearlyCommonText = 32;
-	public static final int BlockCommand = 33;
-	public static final int ExpressionMethodReference = 34;
-	public static final int LambdaExpression = 35;
-	public static final int LambdaParam = 36;
-	public static final int MethodDeclaration = 37;
-	public static final int EnumDeclaration = 38;
-	public static final int EnumConstant = 39;
-	public static final int DoRawCode = 40;
-	public static final int LabeledStatement = 41;
+	public static final int ElseStatement = 13;
+	public static final int FieldAccess = 14;
+	public static final int FieldDeclaration = 15;
+	public static final int MethodInvocation = 16;
+	public static final int SuperMethodInvocation = 17;
+	public static final int InstanceofExpression = 18;
+	public static final int ReturnStatement = 19;
+	public static final int PostfixExpression = 20;
+	public static final int PrefixExpression = 21;
+	public static final int StringLiteral = 22;
+	public static final int SynchronizedStatement = 23;
+	public static final int SwitchStatement = 24;
+	public static final int SwitchCase = 25;
+	public static final int BreakStatement = 26;
+	public static final int ContinueStatement = 27;
+	public static final int ConstructorInvocation = 28;
+	public static final int SuperConstructorInvocation = 29;
+	public static final int ThrowStatement = 30;
+	public static final int CatchClause = 31;
+	public static final int VariableDeclarationStatement = 32;
+	public static final int SingleVariableDeclaration = 33;
+	public static final int VariableDeclarationExpression = 34;
+	public static final int NearlyCommonText = 35;
+	public static final int BlockCommand = 36;
+	public static final int ExpressionMethodReference = 37;
+	public static final int LambdaExpression = 38;
+	public static final int LambdaParam = 39;
+	public static final int MethodDeclaration = 40;
+	public static final int EnumDeclaration = 41;
+	public static final int EnumConstant = 42;
+	public static final int DoRawCode = 43;
+	public static final int LabeledStatement = 44;
 	
 	public static int GetTypeDescriptionId(Class<?> ASTClass)
 	{
@@ -146,6 +149,14 @@ public class OperationType {
 		if (org.eclipse.jdt.core.dom.BreakStatement.class == ASTClass)
 		{
 			return BreakStatement;
+		}
+		if (org.eclipse.jdt.core.dom.ContinueStatement.class == ASTClass)
+		{
+			return ContinueStatement;
+		}
+		if (org.eclipse.jdt.core.dom.ConstructorInvocation.class == ASTClass)
+		{
+			return ConstructorInvocation;
 		}
 		if (org.eclipse.jdt.core.dom.SuperConstructorInvocation.class == ASTClass)
 		{

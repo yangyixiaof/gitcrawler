@@ -385,6 +385,16 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 			}
 
 			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			
+			AddFirstOrderTask(new FirstOrderTask(node.getThenStatement(), node.getElseStatement(), node, true) {
+				@Override
+				public void run() {
+					if (getPost() != null)
+					{
+						TrulyGenerateOneLine("else", OperationType.ElseStatement, 'b', GetNodeLevel(node), GetNodeHasContentHolder(node));
+					}
+				}
+			});
 		}
 		return super.visit(node);
 	}

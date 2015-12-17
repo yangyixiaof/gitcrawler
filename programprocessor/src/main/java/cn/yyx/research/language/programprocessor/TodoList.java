@@ -2,14 +2,23 @@ package cn.yyx.research.language.programprocessor;
 
 public class TodoList {
 	// TODO 1. how to distinguish anti-pair and similar-pair.
-	// TODO test 3 or 2 dimension array.
 	
 	// Declaration Code should be more compact. The handles of content holder are not right. Solved.
 	// Some GetDataOffset doesn't call DataNewlyUsed. Some should but some should not. Solved.
 	// Some level offset is not right. Solved.
-	// TODO when multiple ContentHolder, how to solve it.
-	// TODO array access in complex situation is not handled.
-	// TODO the field access should be more compact.
+	// when multiple ContentHolder, how to solve it? Only to append recursively.
+	// the field access should be more compact. Solved. Just so so.
 	// need to change allnum in JCScope to map. Solved.
 	// instanceof and cast have peoblems. Solved.
+	
+	// Not having tested elements.
+	// LambdaExpression. Solved.
+	// Array access in complex situation is not tested. test 3 or 2 dimension array. Solved.
+	// continue and break label. Solved.
+	// common for's multiple situation. Solved.
+	// ConstructorInvocation. Solved.
+	// SuperMethodInvocation. Solved.
+	// SuperConstructorInvocation. Solved.
+	// IfStatement. Solved.
+	// while (a = file.readLine() != null). Solved.
 }

@@ -14,8 +14,12 @@ public class SmallLambada {
 		List<String> names = Arrays.asList("peter", "anna", "mike", "xenia");
 		CommonLibrary.PrintList(names);
 		System.out.println("==================spliter line in legend==================");
-		Collections.sort(names, (a, b) -> {
-		    return b.compareTo(a);
+		String t = "lab";
+		int a = 0;
+		Collections.sort(names, (c, b) -> {
+			System.out.println(t);
+			System.out.println("Collections.sort:" + a);
+		    return b.compareTo(c);
 		});
 		CommonLibrary.PrintList(names);
 	}

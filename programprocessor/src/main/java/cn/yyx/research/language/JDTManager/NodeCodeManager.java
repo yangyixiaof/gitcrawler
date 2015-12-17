@@ -75,6 +75,11 @@ public class NodeCodeManager {
 	
 	public boolean GetAstNodeInMultipleLine(ASTNode astnode)
 	{
+		int astnodecode = astnode.hashCode();
+		if (mNodeInMutipleLineMap.get(astnodecode) != null)
+		{
+			return true;
+		}
 		int astnodehashcode = GetRealNode(astnode);
 		Boolean inMutipleLine = mNodeInMutipleLineMap.get(astnodehashcode);
 		if (inMutipleLine == null)
