@@ -239,7 +239,6 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	public boolean visit(ArrayAccess node) {
 		// do nothing.
-		// TODO
 		return super.visit(node);
 	};
 
