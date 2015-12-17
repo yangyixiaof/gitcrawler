@@ -348,6 +348,23 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	{
 		for (VariableDeclarationFragment vdf : fs) {
 			AddReferenceUpdateHint(vdf.getName(), overAllHint);
+			Expression iniliazer = vdf.getInitializer();
+			if (iniliazer != null)
+			{
+				AddReferenceUpdateHint(iniliazer, ReferenceHintLibrary.DataUse);
+			}
+		}
+	}
+	
+	private void VariableDeclarationReferenceHintDeletion(List<VariableDeclarationFragment> fs)
+	{
+		for (VariableDeclarationFragment vdf : fs) {
+			DeleteReferenceUpdateHint(vdf.getName());
+			Expression iniliazer = vdf.getInitializer();
+			if (iniliazer != null)
+			{
+				DeleteReferenceUpdateHint(iniliazer);
+			}
 		}
 	}
 	
@@ -386,9 +403,7 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		}
 		AddNodeCode(node, code.toString());
 		
-		for (VariableDeclarationFragment vdf : fs) {
-			DeleteReferenceUpdateHint(vdf);
-		}
+		VariableDeclarationReferenceHintDeletion(fs);
 	}
 	
 	protected void NoVisit(ASTNode node)

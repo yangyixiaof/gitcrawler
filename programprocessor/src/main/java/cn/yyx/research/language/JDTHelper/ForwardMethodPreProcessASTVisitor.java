@@ -252,6 +252,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		if (hint != ReferenceHintLibrary.NoHint)
 		{
 			AddReferenceUpdateHint(node.getName(), hint);
+			Expression iniliazer = node.getInitializer();
+			if (iniliazer != null)
+			{
+				AddReferenceUpdateHint(iniliazer, ReferenceHintLibrary.DataUse);
+			}
 		}
 		return super.visit(node);
 	}
@@ -263,6 +268,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		if (hint != ReferenceHintLibrary.NoHint)
 		{
 			DeleteReferenceUpdateHint(node.getName());
+			Expression iniliazer = node.getInitializer();
+			if (iniliazer != null)
+			{
+				DeleteReferenceUpdateHint(iniliazer);
+			}
 		}
 	}
 	
@@ -717,13 +727,18 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			}
 			else
 			{
+				// System.err.println("This should never happen. node string is:" + node);
+				// new Exception().printStackTrace();
+				// System.exit(1);
 				NoVisit(node.getName());
 				// AddReferenceUpdateHint(node.getName(), rh != null ? rh.GetOverAllHint() : ReferenceHintLibrary.DataUpdate);
 			}
 		}
 		else
 		{
-			NoVisit(node.getName());
+			System.err.println("This should never happen. node string is:" + node);
+			new Exception().printStackTrace();
+			System.exit(1);
 		}
 		return super.visit(node);
 	}
@@ -1517,6 +1532,9 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			System.err.println("Wrong Situation. No Hint for QualifiedName.");
 			System.exit(1);
 		}
+		
+		// System.out.println("qualifier:"+node.getQualifier() + "; hint:" + GetReferenceUpdateHint(node));
+		
 		AddReferenceUpdateHint(node.getQualifier(), GetReferenceUpdateHint(node));
 		SimpleName name = node.getName();
 		NoVisit(name);
