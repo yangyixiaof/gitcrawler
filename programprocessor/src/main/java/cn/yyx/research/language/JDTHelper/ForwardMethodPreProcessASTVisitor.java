@@ -168,6 +168,34 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(SuperMethodReference node) {
+		// TODO Auto-generated method stub
+		 System.out.println("SuperMethodReference:"+node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeMethodReference node) {
+		// TODO Auto-generated method stub
+		 System.out.println("TypeMethodReference:"+node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(MethodRef node) {
+		// TODO Auto-generated method stub
+		 System.out.println("MethodRef:"+node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(MethodRefParameter node) {
+		// TODO Auto-generated method stub
+		 System.out.println("MethodRefParameter:"+node);
+		return super.visit(node);
+	}
+	
+	@Override
 	public boolean visit(ImportDeclaration node) {
 		return false;
 	}
@@ -200,30 +228,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(MarkerAnnotation node) {
 		return false;
-	}
-	
-	@Override
-	public boolean visit(SuperMethodReference node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
-	}
-	
-	@Override
-	public boolean visit(TypeMethodReference node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
-	}
-	
-	@Override
-	public boolean visit(MethodRef node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
-	}
-	
-	@Override
-	public boolean visit(MethodRefParameter node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
 	}
 	
 	@Override
