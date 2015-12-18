@@ -12,7 +12,7 @@ public class TodoList {
 	// instanceof and cast have peoblems. Solved.
 	
 	// InfixExpression should be improved, case AlgThread. Solved.
-	// Field access should be more compact. Solved.
+	// TODO Field access should be more compact. 
 	// comphole should be removed at maximum cancellation. Solved.
 	// a mechanism which append some extra type hint is needed.
 }
