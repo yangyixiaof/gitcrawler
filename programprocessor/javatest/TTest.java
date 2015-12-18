@@ -2,20 +2,27 @@ package cn.yyx.research.language.Utility;
 
 public class TTest extends ParentTest{
 	
-	public TTest t = null;
+	public AlgAnimFrame frame;
+	public DrawingPanel drawingPanel;
+	
+	/*public TTest t = null;
 	
 	public TTest()
 	{
 		super(0);
 		this.t = null;
-	}
+	}*/
 	
-	public TTest(TTest t) {
-		this();
-		this.t = t;
+	public AlgThread(AlgAnimFrame frame) {
+		this.frame = frame;
+		this.drawingPanel = frame.getDrawingPanel();
+		if (frame != null && frame.getAlg() != null && 
+				frame.getAlg().drawingPanel != null) {
+		}
 	}
+}
 	
-	public void PrintInfo()
+	/*public void PrintInfo()
 	{
 		lab:
 		while (true)
@@ -38,6 +45,6 @@ public class TTest extends ParentTest{
 			System.out.println(p+" haha "+k);
 			continue lab2;
 		}
-	}
+	}*/
 	
 }

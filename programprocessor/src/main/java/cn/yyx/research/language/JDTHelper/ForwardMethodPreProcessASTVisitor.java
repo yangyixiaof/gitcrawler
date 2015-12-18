@@ -801,14 +801,13 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			}
 			else
 			{
+				AddNodeHasUsed(expr, true);
+				code = GetNodeCode(expr)+"."+node.getName().toString();
 				if (GetNodeHasOccupiedOneLine(expr))
 				{
+					// AddNodeType(node, NodeTypeLibrary.adjacent);
+					// code = "."+node.getName().toString();
 					AddNodeHasOccupiedOneLine(node, true);
-				}
-				else
-				{
-					AddNodeHasUsed(expr, true);
-					code = GetNodeCode(expr)+"."+node.getName().toString();
 				}
 			}
 		}
@@ -996,9 +995,15 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddReferenceUpdateHint(left, ReferenceHintLibrary.DataUse);
 		ASTNode right = node.getRightOperand();
 		AddReferenceUpdateHint(right, ReferenceHintLibrary.DataUse);
+		
+		// System.out.println("left:" + left);
+		// System.out.println("right:" + right);
+		
 		List<ASTNode> ops = node.extendedOperands();
 		for (ASTNode op : ops)
 		{
+			// System.out.println("extend op:" + op);
+			
 			AddReferenceUpdateHint(op, ReferenceHintLibrary.DataUse);
 		}
 		return super.visit(node);
@@ -1017,8 +1022,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		else
 		{
-			leftcode = GCodeMetaInfo.CodeHole;
-			AddNodeType(left, NodeTypeLibrary.comphole);
 			inMultipleLine = true;
 		}
 		String rightcode = "";
@@ -1030,9 +1033,11 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		else
 		{
-			rightcode = GCodeMetaInfo.CodeHole;
-			AddNodeType(right, NodeTypeLibrary.comphole);
-			inMultipleLine = true;
+			if (GetNodeInMultipleLine(right))
+			{
+				inMultipleLine = true;
+			}
+			rightcode = PushBackContentHolder(rightcode, node);
 		}
 		String code = leftcode + node.getOperator().toString() + rightcode;
 		List<Expression> ops = node.extendedOperands();

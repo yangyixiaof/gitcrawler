@@ -402,10 +402,17 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@SuppressWarnings("unchecked")
 	public boolean visit(InfixExpression node) {
 		int nodelevel = GetNodeLevel(node);
+		ASTNode left = node.getLeftOperand();
+		ASTNode right = node.getRightOperand();
 		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, nodelevel, GetNodeHasContentHolder(node));
+			AddFirstOrderTask(new FirstOrderTask(left, right, node, false) {
+				@Override
+				public void run() {
+					TrulyGenerateOneLine(node, nodelevel, GetNodeHasContentHolder(node));
+				}
+			});
 		}
-		ASTNode pre = node.getRightOperand();
+		ASTNode pre = right;
 		String operatorcode = node.getOperator().toString();
 		List<ASTNode> extendops = node.extendedOperands();
 		for (ASTNode op : extendops) {

@@ -313,6 +313,11 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 		return ncm.GetRealNode(node);
 	}
 	
+	protected void AddNodeHasUsed(ASTNode node, boolean used)
+	{
+		ncm.AddNodeHasUsed(node, used);
+	}
+	
 	protected boolean ShouldExecute(ASTNode node)
 	{
 		if (GetNodeHasUsed(node))

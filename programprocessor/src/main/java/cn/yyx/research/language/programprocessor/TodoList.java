@@ -11,5 +11,7 @@ public class TodoList {
 	// need to change allnum in JCScope to map. Solved.
 	// instanceof and cast have peoblems. Solved.
 	
-	// TODO InfixExpression should be improved, case AlgThread.
+	// InfixExpression should be improved, case AlgThread. Solved.
+	// Field access should be more compact. Solved.
+	// TODO comphole should be removed at maximum cancellation.
 }
