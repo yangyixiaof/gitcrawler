@@ -439,7 +439,12 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	public boolean visit(InstanceofExpression node) {
 		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			AddFirstOrderTask(new FirstOrderTask(node.getLeftOperand(), null, node, true) {
+				@Override
+				public void run() {
+					TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+				}
+			});
 		}
 		return super.visit(node);
 	}
@@ -455,7 +460,12 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	@Override
 	public boolean visit(PostfixExpression node) {
 		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			AddFirstOrderTask(new FirstOrderTask(node.getOperand(), null, node, true) {
+				@Override
+				public void run() {
+					TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+				}
+			});
 		}
 		return super.visit(node);
 	}

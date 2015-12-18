@@ -13,5 +13,6 @@ public class TodoList {
 	
 	// InfixExpression should be improved, case AlgThread. Solved.
 	// Field access should be more compact. Solved.
-	// TODO comphole should be removed at maximum cancellation.
+	// comphole should be removed at maximum cancellation. Solved.
+	// a mechanism which append some extra type hint is needed.
 }

@@ -36,7 +36,7 @@ public class NodeCode {
 
 	// code has b/leixing#......, only need to add info of lines.
 	public void AddOneLineCode(String code, int level, boolean hasContentHolder) {
-		code = code + (IsEmpty() ? 0 : (level - lastCodeLevel));
+		// code = code + (IsEmpty() ? 0 : (level - lastCodeLevel));
 		lastCodeLevel = level;
 		if (lastHasContentHolder) {
 			AppendLast(code);

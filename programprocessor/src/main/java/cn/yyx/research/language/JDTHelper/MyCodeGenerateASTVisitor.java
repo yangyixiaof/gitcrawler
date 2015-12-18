@@ -199,13 +199,13 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor{
 			System.err.println(node);
 		}*/
 		String nodecode = GetNodeCode(node) + GCodeMetaInfo.CommonSplitter + OperationType.GetTypeDescriptionId(node.getClass());
-		nodecode += "%" + HandleNodeType(node) + "/";
+		// nodecode += "%" + HandleNodeType(node) + "/";
 		omc.AddOneLineCode(nodecode, level, hasContentHolder);
 	}
 	
 	protected void TrulyGenerateOneLine(String rawtext, Integer astNodeType, Character relativeNodeType, int level, boolean hasContentHolder) {
 		String nodecode = rawtext + GCodeMetaInfo.CommonSplitter + astNodeType;
-		nodecode += "%" + relativeNodeType + "/";
+		// nodecode += "%" + relativeNodeType + "/";
 		omc.AddOneLineCode(nodecode, level, hasContentHolder);
 	}
 	
