@@ -110,13 +110,19 @@ public class JCScope {
 		TreeMap<String, Integer> dataorder = dataOrder.get(type);
 		if (dataorder == null)
 		{
-			System.err.println("Warning data: " + data + " : the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			if (Character.isLowerCase(data.charAt(0))==true)
+			{
+				System.err.println("Warning data: " + data + " : the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			}
 			return null;
 		}
 		Integer order = dataorder.get(data);
 		if (order == null)
 		{
-			System.err.println("Warning data: " + data + " : the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			if (Character.isLowerCase(data.charAt(0))==true)
+			{
+				System.err.println("Warning data: " + data + " : the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+			}
 			return null;
 		}
 		int maxOffset = allDataNum.get(type)-1;

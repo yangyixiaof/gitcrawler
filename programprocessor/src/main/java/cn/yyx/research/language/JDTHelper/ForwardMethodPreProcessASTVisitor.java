@@ -137,7 +137,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	@Override
 	public boolean visit(Dimension node) {
 		// []
-		System.out.println("Dimension:" + node);
+		// System.out.println("Dimension:" + node);
 		return super.visit(node);
 	}
 	
@@ -1009,6 +1009,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public void endVisit(IfStatement node) {
 		// blockstack.pop();
 		StringBuilder code = new StringBuilder("if");
+		ASTNode expr = node.getExpression();
+		if (!GetNodeHasOccupiedOneLine(expr))
+		{
+			code.append(GCodeMetaInfo.CommonSplitter + GetNodeCode(expr));
+			AddNodeHasUsed(expr, true);
+		}
 		
 		AddNodeCode(node, code.toString());
 		AddNodeHasOccupiedOneLine(node, true);
@@ -1127,6 +1133,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// System.out.println("InstanceofExpression:"+node);
 		// System.out.println("InstanceofExpressionLeft:"+node.getLeftOperand());
 		// System.out.println("InstanceofExpressionRight:"+node.getRightOperand());
+		ASTNode left = node.getLeftOperand();
+		AddReferenceUpdateHint(left, ReferenceHintLibrary.DataUse);
 		return super.visit(node);
 	}
 	
@@ -1150,6 +1158,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
+		
+		DeleteReferenceUpdateHint(left);
 	}
 	
 	@Override
@@ -1763,15 +1773,23 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			{
 				if (!hasCorrespond)
 				{
-					AddNodeCode(node, node.toString());
-					System.err.println("Debugging Data: " + node + "; No corresponding data offset. Maybe data use or others.");
+					String nodestr = node.toString();
+					AddNodeCode(node, nodestr);
+					if (Character.isLowerCase(nodestr.charAt(0))==true)
+					{
+						System.err.println("Debugging Data: " + node + "; No corresponding data offset. Maybe data use or others.");
+					}
 				}
 			}
 		}
 		else
 		{
-			AddNodeCode(node, node.toString());
-			System.err.println("Warning Data: " + node + "; just for debugging and testing. The simple name does not have hint.");
+			String nodestr = node.toString();
+			AddNodeCode(node, nodestr);
+			if (Character.isLowerCase(nodestr.charAt(0))==true)
+			{
+				System.err.println("Warning Data: " + node + "; just for debugging and testing. The simple name does not have hint.");
+			}
 		}
 	}
 	
