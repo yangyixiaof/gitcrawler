@@ -4,10 +4,8 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import cn.yyx.research.language.JDTManager.DebugNodeCorrespondingCode;
@@ -30,27 +28,38 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	// private LineManager lm = new LineManager();
 	// private LineCodeManager lcm = new LineCodeManager();
 	private NodeCodeManager ncm = new NodeCodeManager();
-	
 	private ScopeDataManager sdm = new ScopeDataManager();
 	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
-	
-	VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
-	
-	NoVisitNodeManager nvnm = new NoVisitNodeManager();
-	
+	private VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
+	private NoVisitNodeManager nvnm = new NoVisitNodeManager();
 	// private Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	// a node is only equivalent to one node.
 	// private Map<Integer, Integer> equivalentScope = new TreeMap<Integer, Integer>();
-	
-	JCScope cjcs = new JCScope();
-	JCScope ljcs = new JCScope();
+	private JCScope cjcs = new JCScope();
+	private JCScope ljcs = new JCScope();
 	
 	private String VeryRecentDeclaredType = null;
 	private boolean VeryRecentDeclaredFinal = false;
 	
+	public MyPreProcessASTVisitor(MyPreProcessASTVisitor mppast)
+	{
+		ncm = mppast.getNcm();
+		sdm = mppast.getSdm();
+		fotp = mppast.getFotp();
+		voorm = mppast.getVoorm();
+		nvnm = mppast.getNvnm();
+		cjcs = mppast.getCjcs();
+		ljcs = mppast.getLjcs();
+		VeryRecentDeclaredFinal = mppast.GetVeryRecentDeclaredFinal();
+		VeryRecentDeclaredType = mppast.GetVeryRecentDeclaredType();
+	}
+	
+	public MyPreProcessASTVisitor() {
+	}
+	
 	@Override
 	public void postVisit(ASTNode node) {
-		fotp.PreIsOver(node);
+		getFotp().PreIsOver(node);
 		super.postVisit(node);
 	}
 	
@@ -59,40 +68,8 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		// debuging
 		DebugNodeCorrespondingCode.AddIdNodePair(node);
 		
-		fotp.PostIsBegin(node);
+		getFotp().PostIsBegin(node);
 		super.preVisit(node);
-	}
-	
-	@Override
-	public boolean visit(TypeDeclaration node) {
-		// Do nothing now.
-		// System.out.println("TypeDeclaration Begin");
-		// System.out.println(node.hashCode());
-		// System.out.println("TypeDeclaration End");
-		// classstack.push(node.hashCode());
-		// blockstack.push(node.hashCode());
-		EnterBlock(node);
-		NoVisit(node.getName());
-		return super.visit(node);
-	}
-
-	@Override
-	public void endVisit(TypeDeclaration node) {
-		ExitBlock();
-	}
-	
-	@Override
-	public boolean visit(AnonymousClassDeclaration node) {
-		// System.out.println("AnonymousClassDeclaration Begin");
-		// System.out.println(node);
-		// System.out.println("AnonymousClassDeclaration End");
-		EnterBlock(node);
-		return super.visit(node);
-	}
-
-	@Override
-	public void endVisit(AnonymousClassDeclaration node) {
-		ExitBlock();
 	}
 	
 	@Override
@@ -115,22 +92,22 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	protected void ClassNewlyAssigned(String type)
 	{
-		cjcs.PushNewlyAssignedData(type, GCodeMetaInfo.HackedNoType);
+		getCjcs().PushNewlyAssignedData(type, GCodeMetaInfo.HackedNoType);
 	}
 	
 	protected String GetClassOffset(String type)
 	{
-		return "$K" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(cjcs.GetExactOffset(type, GCodeMetaInfo.HackedNoType));
+		return "$K" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(getCjcs().GetExactOffset(type, GCodeMetaInfo.HackedNoType));
 	}
 	
 	protected void LabelNewlyAssigned(String label)
 	{
-		ljcs.PushNewlyAssignedData(label, GCodeMetaInfo.HackedNoType);
+		getLjcs().PushNewlyAssignedData(label, GCodeMetaInfo.HackedNoType);
 	}
 	
 	protected String GetLabelOffset(String label)
 	{
-		return "$L" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(ljcs.GetExactOffset(label, GCodeMetaInfo.HackedNoType));
+		return "$L" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(getLjcs().GetExactOffset(label, GCodeMetaInfo.HackedNoType));
 	}
 	
 	protected void ResetDLM() {
@@ -267,17 +244,17 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	protected void AddReferenceUpdateHint(ASTNode node, Integer hint)
 	{
-		voorm.AddReferenceUpdateHint(node, hint);
+		getVoorm().AddReferenceUpdateHint(node, hint);
 	}
 	
 	protected void DeleteReferenceUpdateHint(ASTNode node)
 	{
-		voorm.DeleteReferenceUpdateHint(node);
+		getVoorm().DeleteReferenceUpdateHint(node);
 	}
 	
 	protected Integer GetReferenceUpdateHint(ASTNode node)
 	{
-		return voorm.GetReferenceUpdateHint(node);
+		return getVoorm().GetReferenceUpdateHint(node);
 	}
 	
 	// v means virtual, r means real.
@@ -408,17 +385,17 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	protected void NoVisit(ASTNode node)
 	{
-		nvnm.AddNoVisitNode(node.hashCode());
+		getNvnm().AddNoVisitNode(node.hashCode());
 	}
 	
 	protected boolean ShouldVisit(ASTNode node)
 	{
-		return nvnm.NeedVisit(node.hashCode());
+		return getNvnm().NeedVisit(node.hashCode());
 	}
 	
 	protected void DeleteNoVisit(ASTNode node)
 	{
-		nvnm.DeleteNoVisit(node.hashCode());
+		getNvnm().DeleteNoVisit(node.hashCode());
 	}
 
 	public String GetVeryRecentDeclaredType() {
@@ -462,13 +439,53 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	
 	protected void ClearClassAndLabelInfo()
 	{
-		cjcs.ClearAll();
-		ljcs.ClearAll();
+		getCjcs().ClearAll();
+		getLjcs().ClearAll();
 	}
 	
 	protected void AddNodeNeedAppendChildPreNodeType(ASTNode astnode, boolean ifneed)
 	{
 		ncm.AddNodeNeedAppendChildPreNodeType(astnode, ifneed);
+	}
+
+	public VarOrObjReferenceManager getVoorm() {
+		return voorm;
+	}
+
+	public void setVoorm(VarOrObjReferenceManager voorm) {
+		this.voorm = voorm;
+	}
+
+	public NoVisitNodeManager getNvnm() {
+		return nvnm;
+	}
+
+	public void setNvnm(NoVisitNodeManager nvnm) {
+		this.nvnm = nvnm;
+	}
+
+	public JCScope getCjcs() {
+		return cjcs;
+	}
+
+	public void setCjcs(JCScope cjcs) {
+		this.cjcs = cjcs;
+	}
+
+	public JCScope getLjcs() {
+		return ljcs;
+	}
+
+	public void setLjcs(JCScope ljcs) {
+		this.ljcs = ljcs;
+	}
+
+	public FirstOrderTaskPool getFotp() {
+		return fotp;
+	}
+
+	public void setFotp(FirstOrderTaskPool fotp) {
+		this.fotp = fotp;
 	}
 	
 }

@@ -3,6 +3,7 @@ package cn.yyx.research.language.JDTHelper;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.BreakStatement;
@@ -24,6 +25,7 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.LambdaExpression;
@@ -42,19 +44,81 @@ import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
+import cn.yyx.research.language.JDTManager.NodeCode;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
 import cn.yyx.research.language.JDTManager.OperationType;
 
 public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisitor {
-
+	
 	public ForwardMethodCodeGenerateASTVisitor(MyPreProcessASTVisitor mppast) {
 		super(mppast);
+	}
+	
+	@Override
+	public boolean visit(TypeDeclaration node) {
+		if (getOmc() == null) {
+			setOmc(new NodeCode());
+		}
+		if (getFirstLevelClass() == null) {
+			setFirstLevelClass(node.hashCode());
+		}
+		FieldCodeGenerateASTVisitor fcgast = new FieldCodeGenerateASTVisitor(this);
+		node.accept(fcgast);
+		return super.visit(node);
+	}
+
+	@Override
+	public void endVisit(TypeDeclaration node) {
+		if (getFirstLevelClass() == node.hashCode()) {
+			setFirstLevelClass(null);
+		}
+	}
+	
+	@Override
+	public boolean visit(AnonymousClassDeclaration node) {
+		// System.out.println("AnonymousClassDeclaration Begin");
+		// System.out.println(node);
+		// System.out.println("AnonymousClassDeclaration End");
+		getNlm().Visit(node);
+		FieldCodeGenerateASTVisitor fcgast = new FieldCodeGenerateASTVisitor(this);
+		node.accept(fcgast);
+		return super.visit(node);
+	}
+
+	@Override
+	public void endVisit(AnonymousClassDeclaration node) {
+		getNlm().EndVisit(node);
+	}
+	
+	@Override
+	public boolean visit(Initializer node) {
+		// Do nothing now.
+		// System.out.println("Initializer:"+node);
+		// ResetDLM();
+		if (isFirstLevelASTNode(node)) {
+			if (getOmc() != null && !getOmc().IsEmpty()) {
+				PushMethodNodeCodeToJavaFileCode();
+			}
+			setOmc(new NodeCode());
+		}
+		return super.visit(node);
+	}
+
+	@Override
+	public void endVisit(Initializer node) {
+		if (isFirstLevelASTNode(node)) {
+			FlushCode();
+		} else {
+			OneSentenceEnd();
+		}
+		// dlm.ClearRawStringDataLineInfo();
 	}
 
 	@Override
@@ -125,10 +189,26 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	public boolean visit(MethodDeclaration node) {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
 		boolean wcontinue = super.visit(node);
+		if (isFirstLevelASTNode(node)) {
+			if (getOmc() != null)
+			{
+				FlushCode();
+			}
+			setOmc(new NodeCode());
+		}
 		TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 		return wcontinue;
 	}
-
+	
+	@Override
+	public void endVisit(MethodDeclaration node) {
+		if (isFirstLevelASTNode(node)) {
+			FlushCode();
+		} else {
+			OneSentenceEnd();
+		}
+	}
+	
 	@Override
 	public void endVisit(ExpressionMethodReference node) {
 		if (ShouldExecute(node)) {
@@ -561,10 +641,11 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 
 	@Override
 	public boolean visit(FieldDeclaration node) {
-		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		}
-		return super.visit(node);
+		return false;
+		// if (ShouldExecute(node)) {
+		//	TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+		// }
+		// return super.visit(node);
 	}
 
 	@Override
