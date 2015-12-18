@@ -3,6 +3,8 @@ package cn.yyx.research.language.JDTHelper;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.Assignment;
@@ -24,17 +26,22 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.LambdaExpression;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NumberLiteral;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
@@ -56,6 +63,41 @@ import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
 import cn.yyx.research.language.JDTManager.OperationType;
 
 public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisitor {
+	
+	@Override
+	public boolean visit(ImportDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AnnotationTypeDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AnnotationTypeMemberDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PackageDeclaration node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SingleMemberAnnotation node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(NormalAnnotation node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(MarkerAnnotation node) {
+		return false;
+	}
 	
 	public ForwardMethodCodeGenerateASTVisitor(MyPreProcessASTVisitor mppast) {
 		super(mppast);
