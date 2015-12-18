@@ -1170,6 +1170,10 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		}
 		else
 		{
+			if (GetNodeHasOccupiedOneLine(expr))
+			{
+				AddNodeNeedAppendChildPreNodeType(node, true);
+			}
 			AddNodeHasUsed(expr, true);
 			exprcode = GetNodeCode(expr);
 		}

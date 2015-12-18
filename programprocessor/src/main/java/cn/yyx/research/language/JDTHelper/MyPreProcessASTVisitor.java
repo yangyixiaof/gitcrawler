@@ -466,4 +466,9 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 		ljcs.ClearAll();
 	}
 	
+	protected void AddNodeNeedAppendChildPreNodeType(ASTNode astnode, boolean ifneed)
+	{
+		ncm.AddNodeNeedAppendChildPreNodeType(astnode, ifneed);
+	}
+	
 }

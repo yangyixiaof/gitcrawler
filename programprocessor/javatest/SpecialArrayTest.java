@@ -8,11 +8,12 @@ public class SpecialArrayTest {
 	{
 		int[][][] a = new int[23][54][78];
 		a[GetNum()][GetNum()][GetNum()] = 100;
+		GetNum().a--;
 	}
 	
-	public int GetNum()
+	public OTY GetNum()
 	{
-		return 1;
+		return null;
 	}
 	
 }

@@ -19,6 +19,7 @@ public class TTest extends ParentTest{
 		if (frame != null && frame.getAlg() != null && 
 				frame.getAlg().drawingPanel != null) {
 		}
+		frame.getAlg()--;
 	}
 }
 	

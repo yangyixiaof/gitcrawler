@@ -463,7 +463,15 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 			AddFirstOrderTask(new FirstOrderTask(node.getOperand(), null, node, true) {
 				@Override
 				public void run() {
-					TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+					if (GetNodeNeedAppendChildPreNodeType(node))
+					{
+						ASTNode expr = node.getOperand();
+						TrulyGenerateOneLineWithAppendingPreType(node, expr, GetNodeLevel(node), GetNodeHasContentHolder(node));
+					}
+					else
+					{
+						TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+					}
 				}
 			});
 		}

@@ -14,11 +14,27 @@ public class NodeCodeManager {
 	// type should be a / c.
 	Map<Integer, Character> mNodeTypeMap = new TreeMap<Integer, Character>();
 	Map<Integer, Boolean> mNodeHasUsedMap = new TreeMap<Integer, Boolean>();
+	Map<Integer, Boolean> mNodeNeedAppendChildPreNodeType = new TreeMap<Integer, Boolean>();
 	Map<Integer, Integer> mNodeLinkMap = new TreeMap<Integer, Integer>();
 	
 	// handle NodeLink. create a new function and while and return the real node. change all other functions the way handle the node.
 	
 	public NodeCodeManager() {
+	}
+	
+	public void AddNodeNeedAppendChildPreNodeType(ASTNode astnode, boolean needAppend)
+	{
+		mNodeNeedAppendChildPreNodeType.put(astnode.hashCode(), needAppend);
+	}
+	
+	public boolean GetNodeNeedAppendChildPreNodeType(ASTNode astnode)
+	{
+		Boolean ifneed = mNodeNeedAppendChildPreNodeType.get(astnode.hashCode());
+		if (ifneed == null)
+		{
+			return false;
+		}
+		return ifneed;
 	}
 	
 	public void AddASTNodeCode(ASTNode astnode, String generatedCode)
