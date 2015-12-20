@@ -251,6 +251,11 @@ public class ScopeDataManager {
 			}
 			OneScope dataScope = nowinfo.getOscope();
 			String type = nowinfo.getType();
+			if (use == null)
+			{
+				System.err.println("Debuging use is null: data is:" +data);
+				return null;
+			}
 			Integer exactoffset = use.GetExactDataOffsetInDataOwnScope(dataScope, data, type);
 			if (exactoffset == null || classstack.getSize() == 0) {
 				if (classstack.getSize() == 0) {
