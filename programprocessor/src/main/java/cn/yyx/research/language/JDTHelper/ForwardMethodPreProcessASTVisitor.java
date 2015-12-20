@@ -1707,6 +1707,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			DeleteNoVisit(node);
 			return;
 		}
+		boolean isfield = false;
 		Integer hint = GetReferenceUpdateHint(node);
 		if (hint != ReferenceHintLibrary.NoHint)
 		{
@@ -1726,6 +1727,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldUse");
 				}*/
+				isfield = true;
 				code = GetDataOffset(data, true, false);
 				break;
 			case ReferenceHintLibrary.DataUpdate:
@@ -1741,6 +1743,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldUpdate");
 				}*/
+				isfield = true;
 				code = GetDataOffset(data, true, false);
 				DataNewlyUsed(data, null, GetVeryRecentDeclaredFinal(), false, false, true, false);
 				break;
@@ -1761,6 +1764,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldDeclare");
 				}*/
+				isfield = true;
 				String declaredtype2 = GetVeryRecentDeclaredType();
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
 				DataNewlyUsed(data, declaredtype2, GetVeryRecentDeclaredFinal(), true, false, false, false);
@@ -1778,7 +1782,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				if (!hasCorrespond)
 				{
 					String nodestr = node.toString();
-					AddNodeCode(node, nodestr);
+					String pre = (isfield ? "this." : "");
+					AddNodeCode(node, pre + nodestr);
 					if (Character.isLowerCase(nodestr.charAt(0))==true)
 					{
 						System.err.println("Debugging Data: " + node + "; No corresponding data offset. Maybe data use or others.");

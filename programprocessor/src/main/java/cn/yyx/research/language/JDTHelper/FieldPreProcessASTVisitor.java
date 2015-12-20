@@ -1521,6 +1521,7 @@ public class FieldPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			DeleteNoVisit(node);
 			return;
 		}
+		boolean isfield = false;
 		Integer hint = GetReferenceUpdateHint(node);
 		if (hint != ReferenceHintLibrary.NoHint)
 		{
@@ -1540,6 +1541,7 @@ public class FieldPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldUse");
 				}*/
+				isfield = true;
 				code = GetDataOffset(data, true, false);
 				break;
 			case ReferenceHintLibrary.DataUpdate:
@@ -1555,6 +1557,7 @@ public class FieldPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldUpdate");
 				}*/
+				isfield = true;
 				code = GetDataOffset(data, true, false);
 				DataNewlyUsed(data, null, GetVeryRecentDeclaredFinal(), false, false, true, false);
 				break;
@@ -1575,6 +1578,7 @@ public class FieldPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldDeclare");
 				}*/
+				isfield = true;
 				String declaredtype2 = GetVeryRecentDeclaredType();
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
 				DataNewlyUsed(data, declaredtype2, GetVeryRecentDeclaredFinal(), true, false, false, false);
@@ -1592,6 +1596,8 @@ public class FieldPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				if (!hasCorrespond)
 				{
 					String nodestr = node.toString();
+					String pre = (isfield ? "this." : "");
+					AddNodeCode(node, pre + nodestr);
 					AddNodeCode(node, nodestr);
 					if (Character.isLowerCase(nodestr.charAt(0))==true)
 					{
