@@ -69,6 +69,7 @@ import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -124,6 +125,12 @@ public class FieldPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(SuperMethodReference node) {
 		// TODO Auto-generated method stub
 		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeLiteral node) {
+		AddNodeCode(node, node.toString());
+		return false;
 	}
 	
 	@Override

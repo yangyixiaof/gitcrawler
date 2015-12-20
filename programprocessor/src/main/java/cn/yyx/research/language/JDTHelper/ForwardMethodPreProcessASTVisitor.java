@@ -151,15 +151,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(UnionType node) {
 		System.out.println("UnionType:" + node);
 		return super.visit(node);
-	}
+	}	
 	
-	@Override
-	public boolean visit(TypeLiteral node) {
-		 System.out.println("TypeLiteral:" + node);
-		// UnchangedNode(node);
-		return super.visit(node);
-	}
-
 	@Override
 	public boolean visit(TypeDeclarationStatement node) {
 		// Do not know what it is now.
@@ -193,6 +186,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// TODO Auto-generated method stub
 		 System.out.println("MethodRefParameter:"+node);
 		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeLiteral node) {
+		AddNodeCode(node, node.toString());
+		return false;
 	}
 	
 	@Override
