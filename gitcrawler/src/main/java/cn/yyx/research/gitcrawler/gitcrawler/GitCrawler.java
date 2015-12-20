@@ -49,6 +49,7 @@ public class GitCrawler implements ICrawler{
 		try {
 			doc = Jsoup.connect(url).get();
 		} catch (IOException e) {
+			System.err.println("wronged url:" + url);
 			e.printStackTrace();
 			return null;
 		}

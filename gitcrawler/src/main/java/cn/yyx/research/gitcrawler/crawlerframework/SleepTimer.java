@@ -15,7 +15,7 @@ public class SleepTimer {
 	public static SleepTimer RandomGenerateOne()
 	{
 		int idx = (int)(Math.random()*4);
-		System.out.println("Random timesleeper type : "+idx);
+		// System.out.println("Random timesleeper type : "+idx);
 		return new SleepTimer(minTimeArray[idx], maxTimeArray[idx], gapTimeArray[idx]);
 	}
 	
