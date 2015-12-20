@@ -121,10 +121,15 @@ public class ScopeDataManager {
 				LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
 				if (list != null) {
 					DataScopeInfo dscopeinfo = GetDataScopeInfoBySearch(list, true, true, true);
-					oscope = dscopeinfo.getOscope();
-					CheckTypeMustNull(type);
-					type = dscopeinfo.getType();
-					use = ffvdp;
+					if (dscopeinfo != null) {
+						oscope = dscopeinfo.getOscope();
+						CheckTypeMustNull(type);
+						type = dscopeinfo.getType();
+						use = ffvdp;
+					} else {
+						System.err
+								.println("Debugging dscope null: data:" + data + "; isFieldUpdate : " + isFieldUpdate);
+					}
 				}
 			}
 			if (isCommonUpdate) {
@@ -156,10 +161,15 @@ public class ScopeDataManager {
 				LinkedList<DataScopeInfo> list = mDataScopeMap.get(data);
 				if (list != null) {
 					DataScopeInfo dscopeinfo = GetDataScopeInfoBySearch(list, false, true, true);
-					oscope = dscopeinfo.getOscope();
-					CheckTypeMustNull(type);
-					type = dscopeinfo.getType();
-					use = fvdp;
+					if (dscopeinfo != null) {
+						oscope = dscopeinfo.getOscope();
+						CheckTypeMustNull(type);
+						type = dscopeinfo.getType();
+						use = fvdp;
+					} else {
+						System.err
+								.println("Debugging dscope null: data:" + data + "; isFieldUpdate : " + isFieldUpdate);
+					}
 				}
 			}
 			if (isCommonUpdate) {
