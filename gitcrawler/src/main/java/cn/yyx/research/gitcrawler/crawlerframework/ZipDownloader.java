@@ -14,10 +14,10 @@ public class ZipDownloader {
 
 	private static byte[] buffer = new byte[2048];
 
-	private static final String repoDir = "ZIPRepo";
+	private static String repoDir = "ZIPRepo";
 	
 	static {
-		File f = new File(repoDir);
+		File f = new File(getRepodir());
 		if (!f.exists()) {
 			f.mkdirs();
 		}
@@ -25,13 +25,14 @@ public class ZipDownloader {
 
 	public static String downLoadZip(String downloadURL, String filename) {
 		int byteread = 0;
-		String zipfname = repoDir + "/" + filename;
+		String zipfname = getRepodir() + "/" + filename;
 		File zfile = new File(zipfname);
 		if (!zfile.exists())
 		{
 			try {
 				zfile.createNewFile();
 			} catch (IOException e) {
+				System.err.println("Wrong name:" + zipfname);
 				e.printStackTrace();
 			}
 		}
@@ -97,6 +98,14 @@ public class ZipDownloader {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static void setRepodir(String prepoDir) {
+		repoDir = prepoDir;
+	}
+	
+	public static String getRepodir() {
+		return repoDir;
 	}
 	
 }

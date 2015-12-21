@@ -151,15 +151,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	public boolean visit(UnionType node) {
 		System.out.println("UnionType:" + node);
 		return super.visit(node);
-	}
+	}	
 	
-	@Override
-	public boolean visit(TypeLiteral node) {
-		 System.out.println("TypeLiteral:" + node);
-		// UnchangedNode(node);
-		return super.visit(node);
-	}
-
 	@Override
 	public boolean visit(TypeDeclarationStatement node) {
 		// Do not know what it is now.
@@ -193,6 +186,12 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		// TODO Auto-generated method stub
 		 System.out.println("MethodRefParameter:"+node);
 		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeLiteral node) {
+		AddNodeCode(node, node.toString());
+		return false;
 	}
 	
 	@Override
@@ -1707,6 +1706,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 			DeleteNoVisit(node);
 			return;
 		}
+		boolean isfield = false;
 		Integer hint = GetReferenceUpdateHint(node);
 		if (hint != ReferenceHintLibrary.NoHint)
 		{
@@ -1726,6 +1726,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldUse");
 				}*/
+				isfield = true;
 				code = GetDataOffset(data, true, false);
 				break;
 			case ReferenceHintLibrary.DataUpdate:
@@ -1741,6 +1742,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldUpdate");
 				}*/
+				isfield = true;
 				code = GetDataOffset(data, true, false);
 				DataNewlyUsed(data, null, GetVeryRecentDeclaredFinal(), false, false, true, false);
 				break;
@@ -1761,6 +1763,7 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				{
 					System.out.println("FieldDeclare");
 				}*/
+				isfield = true;
 				String declaredtype2 = GetVeryRecentDeclaredType();
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
 				DataNewlyUsed(data, declaredtype2, GetVeryRecentDeclaredFinal(), true, false, false, false);
@@ -1778,7 +1781,8 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				if (!hasCorrespond)
 				{
 					String nodestr = node.toString();
-					AddNodeCode(node, nodestr);
+					String pre = (isfield ? "this." : "");
+					AddNodeCode(node, pre + nodestr);
 					if (Character.isLowerCase(nodestr.charAt(0))==true)
 					{
 						System.err.println("Debugging Data: " + node + "; No corresponding data offset. Maybe data use or others.");

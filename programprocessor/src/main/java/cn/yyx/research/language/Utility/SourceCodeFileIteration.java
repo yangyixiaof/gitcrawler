@@ -27,9 +27,10 @@ public class SourceCodeFileIteration {
 				}
 			} else {
 				String fname = f.getName();
-				System.out.println("Handling file : " + f.getAbsolutePath());
-				if (fname.endsWith(".java") || fname.endsWith(".c") || fname.endsWith(".cpp") || fname.endsWith(".cc"))
+				//  || fname.endsWith(".c") || fname.endsWith(".cpp") || fname.endsWith(".cc")
+				if (fname.endsWith(".java"))
 				{
+					System.out.println("Handling file : " + f.getAbsolutePath());
 					ArrayList<CorpusContentPair> corpus = ProgramProcessor.ProcessOneJavaFile(f);
 					BigDirectoryManager.WriteCorpus(corpus);
 				}
