@@ -19,6 +19,10 @@ public class GitCrawler implements ICrawler{
 	int page = -1;
 	boolean hasnext = false;
 	
+	int sleepidx = 0;
+	final int[] sleeps = {5000,10000,15000};
+	final int sidxmax= sleeps.length;
+	
 	public GitCrawler(Config cfg) {
 		Initial(cfg);
 	}
@@ -45,11 +49,17 @@ public class GitCrawler implements ICrawler{
 
 	@Override
 	public ArrayList<String> ExtractProjectZipLinks(String url) {
-		Document doc;
+		Document doc = null;
 		try {
 			doc = Jsoup.connect(url).get();
 		} catch (IOException e) {
 			System.err.println("wronged url:" + url);
+			System.err.println("May be error 429.");
+			try {
+				Thread.sleep(600000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 			return null;
 		}
@@ -68,11 +78,16 @@ public class GitCrawler implements ICrawler{
 		//https://github.com/kaze0/launchy
 		//https://github.com/kaze0/launchy/archive/master.zip
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(sleeps[sleepidx]);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		sleepidx++;
+		if (sleepidx >= sidxmax)
+		{
+			sleepidx = 0;
+		}
 		return result;
 	}
-
+	
 }
