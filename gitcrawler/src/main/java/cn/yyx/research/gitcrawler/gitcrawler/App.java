@@ -19,9 +19,12 @@ public class App
 	int numberOfThreads = 1;
 	int starbegin = 1001;
 	int starrange = 1;
+	// int starbegin = 100;
+	// int starrange = 1000;
 	String language = "java";
 	String dest = "here";
 	// String dest = "/home/yangyixiaof/HomeSpace/AllZipFile";
+	// String dest = "/home/yyx/HomeSpace/AllZipPool";
 	
 	ArrayList<CrawlerWorker> cwlist = new ArrayList<CrawlerWorker>();
 	
