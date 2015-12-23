@@ -19,7 +19,7 @@ public class GitCrawler implements ICrawler{
 	int startbegin = -1;
 	int startend = -1;
 	
-	final int STARRANGE = 1;
+	final int STARRANGE = 16;
 	
 	String language = null;
 	int page = -1;
