@@ -17,8 +17,8 @@ import cn.yyx.research.gitcrawler.crawlerframework.ZipDownloader;
 public class App
 {
 	int numberOfThreads = 1;
-	int starbegin = 1001;
-	int starrange = 1;
+	int starbegin = 1005;
+	int starrange = 16;
 	// int starbegin = 100;
 	// int starrange = 1000;
 	String language = "java";
