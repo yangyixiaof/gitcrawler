@@ -15,6 +15,12 @@ public class GitCrawler implements ICrawler{
 
 	int starmin = -1;
 	int starmax = -1;
+	
+	int startbegin = -1;
+	int startend = -1;
+	
+	final int STARRANGE = 1;
+	
 	String language = null;
 	int page = -1;
 	boolean hasnext = false;
@@ -31,6 +37,10 @@ public class GitCrawler implements ICrawler{
 	public void Initial(Config cfg) {
 		starmin = cfg.getStarmin();
 		starmax = cfg.getStarmax();
+		
+		startbegin = starmin;
+		startend = startbegin + STARRANGE - 1;
+		
 		language = cfg.getLanguage();
 		page = 0;
 		hasnext = true;
@@ -41,10 +51,32 @@ public class GitCrawler implements ICrawler{
 		if (hasnext)
 		{
 			page++;
-			String nexturl = "https://github.com/search?p="+page+"&q=stars%3A"+starmin+".."+starmax+"+language%3A"+language+"&ref=searchresults&type=Repositories&utf8=%E2%9C%93";
+			String nexturl = "https://github.com/search?p="+page+"&q=stars%3A"+startbegin+".."+startend+"+language%3A"+language+"&ref=searchresults&type=Repositories&utf8=%E2%9C%93";
+			
+			System.out.println("hasnext page?" + hasnext);
+			System.out.println("download url:" + nexturl);
+			
 			return nexturl;
 		}
-		return null;
+		else
+		{
+			page = 1;
+			startbegin = startbegin + STARRANGE;
+			
+			if (startbegin > starmax)
+			{
+				System.out.println("The whole process should be over: startbegin:" + startbegin + ";starmax:" + starmax);
+				return null;
+			}
+			
+			startend = startbegin + STARRANGE - 1;
+			String nexturl = "https://github.com/search?p="+page+"&q=stars%3A"+startbegin+".."+startend+"+language%3A"+language+"&ref=searchresults&type=Repositories&utf8=%E2%9C%93";
+			
+			System.out.println("hasnext page?" + hasnext);
+			System.out.println("download url:" + nexturl);
+			
+			return nexturl;
+		}
 	}
 
 	@Override
@@ -65,7 +97,7 @@ public class GitCrawler implements ICrawler{
 		}
 		hasnext = true;
 		Elements next = doc.select("a.next_page");
-		if (next == null)
+		if (next == null || next.size() == 0)
 		{
 			hasnext = false;
 		}
