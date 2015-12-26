@@ -10,10 +10,12 @@ public class BigDirectory {
 	File mBigFileDirectory = null;
 	int nowmax = -1;
 	
+	public static String PrefixDirectory  = "";
+	
 	public static final int OneFileMaxMB = 100;
 
 	public BigDirectory(String bigfiledir) throws Exception {
-		mBigFileDirectory = new File(bigfiledir);
+		mBigFileDirectory = new File(PrefixDirectory.equals("")?bigfiledir:(PrefixDirectory + "/" + bigfiledir));
 		if (!mBigFileDirectory.exists()) {
 			mBigFileDirectory.mkdirs();
 		}

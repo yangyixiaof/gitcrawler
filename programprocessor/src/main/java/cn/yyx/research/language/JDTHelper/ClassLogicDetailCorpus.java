@@ -49,6 +49,10 @@ public class ClassLogicDetailCorpus {
 				String value = codemap.get(corpus);
 				allcodemap.put(corpus, (allcodemap.get(corpus) + value));
 			}
+			
+			fmastv = null;
+			fmvgastv = null;
+			codemap = null;
 		}
 		//testing
 		//System.out.println(Contentstr);
@@ -61,6 +65,9 @@ public class ClassLogicDetailCorpus {
 			String content = allcodemap.get(corpus);
 			result.add(new CorpusContentPair(corpus, content));
 		}
+		
+		// clear variables
+		allcodemap = null;
 		return result;
 	}
 	

@@ -21,6 +21,7 @@ public class ProgramProcessor {
 				content.append("\n");
 			}
 			reader.close();
+			reader = null;
 			String source = content.toString();
 			
 			ASTTraversal astmdf = new ASTTraversal(f.getName(), source);
@@ -29,6 +30,8 @@ public class ProgramProcessor {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			astmdf.Clear();
+			astmdf = null;
 			
 		} catch (Exception e1) {
 			e1.printStackTrace();
