@@ -128,6 +128,7 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 		// System.out.println("AnonymousClassDeclaration Begin");
 		// System.out.println(node);
 		// System.out.println("AnonymousClassDeclaration End");
+		JustBeforeAnonymousClassDeclaration();
 		getNlm().Visit(node);
 		FieldCodeGenerateASTVisitor fcgast = new FieldCodeGenerateASTVisitor(this);
 		node.accept(fcgast);
@@ -302,35 +303,7 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 		}
 		return super.visit(node);
 	}
-
-	@Override
-	public boolean visit(ClassInstanceCreation node) {
-		// System.out.println("Node Type:"+node.getType());
-		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
-		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		}
-		return super.visit(node);
-	}
-
-	@Override
-	public boolean visit(ConditionalExpression node) {
-		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		}
-		return super.visit(node);
-	}
-
-	@Override
-	public boolean visit(ConstructorInvocation node) {
-		// Do nothing now.
-		// System.out.println("ConstructorInvocation:" + node);
-		if (ShouldExecute(node)) {
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		}
-		return super.visit(node);
-	}
-
+	
 	@Override
 	public boolean visit(DoStatement node) {
 		if (ShouldExecute(node)) {
@@ -382,54 +355,6 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 			else
 			{
 				TrulyGenerateOneLine(node, GetNodeLevel(node), false);
-			}
-		}
-		return super.visit(node);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(SuperMethodInvocation node) {
-		if (ShouldExecute(node)) {
-			List<ASTNode> args = node.arguments();
-			if (args.size() > 0) {
-				RegistFirstNodeAfterDecreasingElement(args.get(0));
-				RegistLastNodeBeforeIncreaseingElement(args.get(args.size() - 1));
-			}
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		}
-		return super.visit(node);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(MethodInvocation node) {
-		if (ShouldExecute(node)) {
-			List<ASTNode> args = node.arguments();
-			ASTNode postnode = null;
-			boolean afterprerun = false;
-			if (args.size() > 0) {
-				postnode = args.get(0);
-				RegistFirstNodeAfterDecreasingElement(args.get(0));
-				RegistLastNodeBeforeIncreaseingElement(args.get(args.size() - 1));
-			}
-			else
-			{
-				afterprerun = true;
-			}
-			ASTNode expr = node.getExpression();
-			if (expr != null)
-			{
-				AddFirstOrderTask(new FirstOrderTask(expr, postnode, node, afterprerun) {
-					@Override
-					public void run() {
-						TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-					}
-				});
-			}
-			else
-			{
-				TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
 			}
 		}
 		return super.visit(node);
@@ -617,20 +542,6 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(SuperConstructorInvocation node) {
-		if (ShouldExecute(node)) {
-			List<ASTNode> args = node.arguments();
-			if (args.size() > 0) {
-				RegistFirstNodeAfterDecreasingElement(args.get(0));
-				RegistLastNodeBeforeIncreaseingElement(args.get(args.size() - 1));
-			}
-			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
-		}
-		return super.visit(node);
-	}
-
-	@Override
 	public boolean visit(SwitchStatement node) {
 		if (ShouldExecute(node)) {
 			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
@@ -705,5 +616,99 @@ public class ForwardMethodCodeGenerateASTVisitor extends MyCodeGenerateASTVisito
 		}
 		return super.visit(node);
 	}
+	
+	@Override
+	public boolean visit(ConditionalExpression node) {
+		if (ShouldExecute(node)) {
+			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+		}
+		return super.visit(node);
+	}
+	
+	// below are all method invocations.
+	
+	@Override
+	public boolean visit(ClassInstanceCreation node) {
+		// System.out.println("Node Type:"+node.getType());
+		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
+		if (ShouldExecute(node)) {
+			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+		}
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(ConstructorInvocation node) {
+		// Do nothing now.
+		// System.out.println("ConstructorInvocation:" + node);
+		if (ShouldExecute(node)) {
+			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+		}
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(SuperMethodInvocation node) {
+		OneMethodInvocationOccurs(node.getName().toString());
+		if (ShouldExecute(node)) {
+			List<ASTNode> args = node.arguments();
+			if (args.size() > 0) {
+				RegistFirstNodeAfterDecreasingElement(args.get(0));
+				RegistLastNodeBeforeIncreaseingElement(args.get(args.size() - 1));
+			}
+			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+		}
+		return super.visit(node);
+	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(MethodInvocation node) {
+		OneMethodInvocationOccurs(node.getName().toString());
+		if (ShouldExecute(node)) {
+			List<ASTNode> args = node.arguments();
+			ASTNode postnode = null;
+			boolean afterprerun = false;
+			if (args.size() > 0) {
+				postnode = args.get(0);
+				RegistFirstNodeAfterDecreasingElement(args.get(0));
+				RegistLastNodeBeforeIncreaseingElement(args.get(args.size() - 1));
+			}
+			else
+			{
+				afterprerun = true;
+			}
+			ASTNode expr = node.getExpression();
+			if (expr != null)
+			{
+				AddFirstOrderTask(new FirstOrderTask(expr, postnode, node, afterprerun) {
+					@Override
+					public void run() {
+						TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+					}
+				});
+			}
+			else
+			{
+				TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+			}
+		}
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(SuperConstructorInvocation node) {
+		if (ShouldExecute(node)) {
+			List<ASTNode> args = node.arguments();
+			if (args.size() > 0) {
+				RegistFirstNodeAfterDecreasingElement(args.get(0));
+				RegistLastNodeBeforeIncreaseingElement(args.get(args.size() - 1));
+			}
+			TrulyGenerateOneLine(node, GetNodeLevel(node), GetNodeHasContentHolder(node));
+		}
+		return super.visit(node);
+	}
+	
 }

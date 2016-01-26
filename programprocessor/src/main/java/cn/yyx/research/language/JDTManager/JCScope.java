@@ -121,7 +121,7 @@ public class JCScope {
 		{
 			if (Character.isLowerCase(data.charAt(0))==true)
 			{
-				System.err.println("Warning data: " + data + " : the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+				System.err.println("Warning data: " + data + " : here is JCScope, the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
 			}
 			return null;
 		}

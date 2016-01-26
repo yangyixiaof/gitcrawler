@@ -12,10 +12,12 @@ import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import cn.yyx.research.language.JDTManager.FirstOrderTask;
 import cn.yyx.research.language.JDTManager.FirstOrderTaskPool;
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
+import cn.yyx.research.language.JDTManager.MethodWindow;
 import cn.yyx.research.language.JDTManager.NodeCode;
 import cn.yyx.research.language.JDTManager.NodeCodeManager;
 import cn.yyx.research.language.JDTManager.NodeLevelManager;
 import cn.yyx.research.language.JDTManager.NodeTypeLibrary;
+import cn.yyx.research.language.JDTManager.OneJavaFileAnonymousClassesCode;
 import cn.yyx.research.language.JDTManager.OneJavaFileCode;
 import cn.yyx.research.language.JDTManager.OperationType;
 import cn.yyx.research.language.JDTManager.OtherCodeManager;
@@ -26,6 +28,8 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor {
 	private OtherCodeManager ocm = new OtherCodeManager();
 	private NodeCode omc = new NodeCode();
 	private OneJavaFileCode ojfc = new OneJavaFileCode();
+	private OneJavaFileAnonymousClassesCode ojfacc = new OneJavaFileAnonymousClassesCode();
+	private MethodWindow mw = new MethodWindow();
 	private NodeLevelManager nlm = new NodeLevelManager();
 	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 
@@ -37,6 +41,8 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor {
 		ocm = mcgast.getOcm();
 		omc = mcgast.getOmc();
 		ojfc = mcgast.getOjfc();
+		ojfacc = mcgast.getOjfacc();
+		mw = mcgast.getMw();
 		nlm = mcgast.getNlm();
 		fotp = mcgast.getFotp();
 		ncm = mcgast.getNcm();
@@ -102,32 +108,35 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor {
 	protected void AddFirstOrderTask(FirstOrderTask runtask) {
 		getFotp().InfixNodeAddFirstOrderTask(runtask);
 	}
-
+	
+	@Deprecated
 	protected void TrulyGenerateOneLineWithAppendingPreType(ASTNode node, ASTNode pre, int level,
 			boolean hasContentHolder) {
 		String nodecode = GetNodeCode(node) + GCodeMetaInfo.CommonSplitter
 				+ OperationType.GetTypeDescriptionId(pre.getClass()) + GCodeMetaInfo.CommonSplitter
 				+ OperationType.GetTypeDescriptionId(node.getClass());
 		// nodecode += "%" + HandleNodeType(node) + "/";
-		getOmc().AddOneLineCode(nodecode, level, hasContentHolder);
+		// getOmc().AddOneLineCode(nodecode, level, hasContentHolder);
 	}
-
+	
 	// code has ......#leixing, the rest is %b/ as an example, only need to add
 	// info of lines.
+	@Deprecated
 	protected void TrulyGenerateOneLine(ASTNode node, int level, boolean hasContentHolder) {
 		String nodecode = GetNodeCode(node) + GCodeMetaInfo.CommonSplitter
 				+ OperationType.GetTypeDescriptionId(node.getClass());
 		// nodecode += "%" + HandleNodeType(node) + "/";
-		getOmc().AddOneLineCode(nodecode, level, hasContentHolder);
+		// getOmc().AddOneLineCode(nodecode, level, hasContentHolder);
 	}
-
+	
+	@Deprecated
 	protected void TrulyGenerateOneLine(String rawtext, Integer astNodeType, Character relativeNodeType, int level,
 			boolean hasContentHolder) {
 		String nodecode = rawtext + GCodeMetaInfo.CommonSplitter + astNodeType;
 		// nodecode += "%" + relativeNodeType + "/";
-		getOmc().AddOneLineCode(nodecode, level, hasContentHolder);
+		// getOmc().AddOneLineCode(nodecode, level, hasContentHolder);
 	}
-
+	
 	public ArrayList<CorpusContentPair> GetOtherGeneratedCode() {
 		return getOcm().GetOtherGeneratedCode();
 	}
@@ -175,9 +184,21 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor {
 		Map<String, String> result = new TreeMap<String, String>();
 		result.putAll(getOcm().getOtherCodeMap());
 		result.put(GCodeMetaInfo.LogicCorpus, getOjfc().toString());
+		result.put(GCodeMetaInfo.AnonymousLogicCorpus, getOjfacc().toString());
+		// TODO
 		return result;
 	}
-
+	
+	public void JustBeforeAnonymousClassDeclaration()
+	{
+		getOjfacc().AddPreDeclrations(getMw());
+	}
+	
+	public void OneMethodInvocationOccurs(String rawmethodname)
+	{
+		getMw().PushMethodName(rawmethodname);
+	}
+	
 	public void RegistFirstNodeAfterDecreasingElement(ASTNode node) {
 		getNlm().RegistFirstNodeAfterDecreasingElement(node);
 	}
@@ -283,6 +304,22 @@ public class MyCodeGenerateASTVisitor extends ASTVisitor {
 
 	public void setFirstLevelClass(Integer firstLevelClass) {
 		FirstLevelClass = firstLevelClass;
+	}
+
+	public OneJavaFileAnonymousClassesCode getOjfacc() {
+		return ojfacc;
+	}
+
+	public void setOjfacc(OneJavaFileAnonymousClassesCode ojfacc) {
+		this.ojfacc = ojfacc;
+	}
+
+	public MethodWindow getMw() {
+		return mw;
+	}
+
+	public void setMw(MethodWindow mw) {
+		this.mw = mw;
 	}
 
 }

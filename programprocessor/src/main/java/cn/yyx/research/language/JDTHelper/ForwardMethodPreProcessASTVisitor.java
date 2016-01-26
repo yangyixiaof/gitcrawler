@@ -129,12 +129,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(CreationReference node) {
-		System.out.println("CreationReference:" + node);
-		return super.visit(node);
-	}
-	
-	@Override
 	public boolean visit(Dimension node) {
 		// []
 		// System.out.println("Dimension:" + node);
@@ -143,12 +137,14 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	
 	@Override
 	public boolean visit(IntersectionType node) {
+		// TODO type & type
 		System.out.println("IntersectionType:" + node);
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(UnionType node) {
+		// TODO type | type
 		System.out.println("UnionType:" + node);
 		return super.visit(node);
 	}	
@@ -161,29 +157,15 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(SuperMethodReference node) {
-		// TODO Auto-generated method stub
-		 System.out.println("SuperMethodReference:"+node);
-		return super.visit(node);
-	}
-	
-	@Override
-	public boolean visit(TypeMethodReference node) {
-		// TODO Auto-generated method stub
-		 System.out.println("TypeMethodReference:"+node);
-		return super.visit(node);
-	}
-	
-	@Override
 	public boolean visit(MethodRef node) {
-		// TODO Auto-generated method stub
+		// elements in java-doc, so do nothing.
 		 System.out.println("MethodRef:"+node);
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(MethodRefParameter node) {
-		// TODO Auto-generated method stub
+		// elements in java-doc, so do nothing.
 		 System.out.println("MethodRefParameter:"+node);
 		return super.visit(node);
 	}
@@ -429,6 +411,26 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		return super.visit(node);
 	}
 	
+	@Override
+	public boolean visit(CreationReference node) {
+		System.out.println("CreationReference:" + node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(SuperMethodReference node) {
+		// TODO Auto-generated method stub
+		 System.out.println("SuperMethodReference:"+node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeMethodReference node) {
+		// TODO Auto-generated method stub
+		 System.out.println("TypeMethodReference:"+node);
+		return super.visit(node);
+	}
+	
 	// CLASS offset is special, relate to code offset. Solved.
 	// Only 'assignment' records the line position of one variable. Solved.
 
@@ -622,30 +624,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(ClassInstanceCreation node) {
-		MethodInvocationAddHint(node.arguments());
-		return super.visit(node);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public void endVisit(ClassInstanceCreation node) {
-		// System.out.println("Node Type:"+node.getType());
-		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
-		// System.out.println("ClassInstanceCreation:"+node);
-		StringBuilder code = new StringBuilder("new" + GCodeMetaInfo.WhiteSpaceReplacer);
-		MethodInvocationCode(node.getType().toString(), node.arguments(), code);
-		AddNodeCode(node, code.toString());
-		AddNodeHasOccupiedOneLine(node, true);
-		/*if (node.getAnonymousClassDeclaration() != null)
-		{
-			AddNodeInMultipleLine(node, true);
-		}*/
-		MethodInvocationDeleteHint(node.arguments());
-	}
-	
-	@Override
 	public void endVisit(ConditionalExpression node) {
 		String thenexprcode = GCodeMetaInfo.CodeHole;
 		ASTNode thenexpr = node.getThenExpression();
@@ -683,29 +661,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		AddNodeCode(node, code);
 		AddNodeHasOccupiedOneLine(node, true);
 		AddNodeInMultipleLine(node, true);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(ConstructorInvocation node) {
-		MethodInvocationAddHint(node.arguments());
-		return super.visit(node);
-	}
-		
-	@Override
-	@SuppressWarnings("unchecked")
-	public void endVisit(ConstructorInvocation node) {
-		// Do nothing now.
-		// System.out.println("ConstructorInvocation:" + node);
-		StringBuilder code = new StringBuilder("");
-		boolean isInOneLine = MethodInvocationCode("this", node.arguments(), code);
-		AddNodeCode(node, code.toString());
-		AddNodeHasOccupiedOneLine(node, true);
-		if (!isInOneLine)
-		{
-			AddNodeInMultipleLine(node, true);
-		}
-		MethodInvocationDeleteHint(node.arguments());
 	}
 
 	@Override
@@ -863,77 +818,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 		NoVisit(node.getName());
 		AddNodeCode(node, node.toString());
 		return super.visit(node);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(SuperMethodInvocation node) {
-		MethodInvocationAddHint(node.arguments());
-		NoVisit(node.getName());
-		return super.visit(node);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public void endVisit(SuperMethodInvocation node) {
-		StringBuilder code = new StringBuilder("");
-		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
-		AddNodeCode(node, "super."+code.toString());
-		AddNodeHasOccupiedOneLine(node, true);
-		if (!isInOneLine)
-		{
-			AddNodeInMultipleLine(node, true);
-		}
-		MethodInvocationDeleteHint(node.arguments());
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(MethodInvocation node) {
-		MethodInvocationAddHint(node.arguments());
-		ASTNode expr = node.getExpression();
-		if (expr != null)
-		{
-			AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
-		}
-		NoVisit(node.getName());
-		return super.visit(node);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public void endVisit(MethodInvocation node) {
-		StringBuilder code = new StringBuilder("");
-		ASTNode expr = node.getExpression();
-		String exprcode = "";
-		if (expr != null)
-		{
-			if (GetNodeHasOccupiedOneLine(expr))
-			{
-				exprcode = ".";
-				AddNodeType(node, NodeTypeLibrary.adjacent);
-				AddNodeInMultipleLine(node, true);
-			}
-			else
-			{
-				exprcode = GetNodeCode(expr) + ".";
-				AddNodeHasUsed(expr, true);
-			}
-		}
-		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
-		AddNodeCode(node, exprcode + code.toString());
-		AddNodeHasOccupiedOneLine(node, true);
-		if (!isInOneLine)
-		{
-			AddNodeInMultipleLine(node, true);
-		}
-		
-		if (expr != null)
-		{
-			DeleteReferenceUpdateHint(expr);
-		}
-		
-		MethodInvocationDeleteHint(node.arguments());
 	}
 	
 	@Override
@@ -1378,27 +1262,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(SuperConstructorInvocation node) {
-		MethodInvocationAddHint(node.arguments());
-		return super.visit(node);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public void endVisit(SuperConstructorInvocation node) {
-		StringBuilder code = new StringBuilder("");
-		boolean isInOneLine = MethodInvocationCode("super", node.arguments(), code);
-		AddNodeCode(node, code.toString());
-		AddNodeHasOccupiedOneLine(node, true);
-		if (!isInOneLine)
-		{
-			AddNodeInMultipleLine(node, true);
-		}
-		MethodInvocationDeleteHint(node.arguments());
-	}
-	
-	@Override
 	public boolean visit(SwitchStatement node) {
 		// System.out.println("SwitchStatement:"+node);
 		// System.out.println("SwitchStatementExpr:"+node.getExpression());
@@ -1675,31 +1538,6 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(WhileStatement node) {
-		// System.out.println("WhileStatement:"+node);
-		// System.out.println("WhileStatementExpr:"+node.getExpression());
-		// System.out.println("WhileStatementBody:"+node.getBody());
-		
-		// this should register nlm.
-		return super.visit(node);
-	}
-	
-	@Override
-	public void endVisit(WhileStatement node) {
-		ASTNode expr = node.getExpression();
-		String exprcode = GetNodeCode(expr);
-		if (GetNodeInMultipleLine(expr) || GetNodeHasOccupiedOneLine(expr))
-		{
-			exprcode = GCodeMetaInfo.ContentHolder;
-			AddNodeHasContentHolder(node, true);
-		}
-		String code = "while" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
-		AddNodeCode(node, code);
-		AddNodeHasOccupiedOneLine(node, true);
-		AddNodeInMultipleLine(node, true);
-	}
-	
-	@Override
 	public void endVisit(SimpleName node) {
 		if (!ShouldVisit(node))
 		{
@@ -1799,6 +1637,173 @@ public class ForwardMethodPreProcessASTVisitor extends MyPreProcessASTVisitor {
 				System.err.println("Warning Data: " + node + "; just for debugging and testing. The simple name does not have hint.");
 			}
 		}
+	}
+	
+	@Override
+	public boolean visit(WhileStatement node) {
+		// System.out.println("WhileStatement:"+node);
+		// System.out.println("WhileStatementExpr:"+node.getExpression());
+		// System.out.println("WhileStatementBody:"+node.getBody());
+		
+		// this should register nlm.
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(WhileStatement node) {
+		ASTNode expr = node.getExpression();
+		String exprcode = GetNodeCode(expr);
+		if (GetNodeInMultipleLine(expr) || GetNodeHasOccupiedOneLine(expr))
+		{
+			exprcode = GCodeMetaInfo.ContentHolder;
+			AddNodeHasContentHolder(node, true);
+		}
+		String code = "while" + GCodeMetaInfo.WhiteSpaceReplacer + exprcode;
+		AddNodeCode(node, code);
+		AddNodeHasOccupiedOneLine(node, true);
+		AddNodeInMultipleLine(node, true);
+	}
+	
+	// all below are method invocations.
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(ClassInstanceCreation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(ClassInstanceCreation node) {
+		// System.out.println("Node Type:"+node.getType());
+		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
+		// System.out.println("ClassInstanceCreation:"+node);
+		StringBuilder code = new StringBuilder("new" + GCodeMetaInfo.WhiteSpaceReplacer);
+		MethodInvocationCode(node.getType().toString(), node.arguments(), code);
+		AddNodeCode(node, code.toString());
+		AddNodeHasOccupiedOneLine(node, true);
+		/*if (node.getAnonymousClassDeclaration() != null)
+		{
+			AddNodeInMultipleLine(node, true);
+		}*/
+		MethodInvocationDeleteHint(node.arguments());
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(ConstructorInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
+	}
+		
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(ConstructorInvocation node) {
+		// Do nothing now.
+		// System.out.println("ConstructorInvocation:" + node);
+		StringBuilder code = new StringBuilder("");
+		boolean isInOneLine = MethodInvocationCode("this", node.arguments(), code);
+		AddNodeCode(node, code.toString());
+		AddNodeHasOccupiedOneLine(node, true);
+		if (!isInOneLine)
+		{
+			AddNodeInMultipleLine(node, true);
+		}
+		MethodInvocationDeleteHint(node.arguments());
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(SuperMethodInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		NoVisit(node.getName());
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(SuperMethodInvocation node) {
+		StringBuilder code = new StringBuilder("");
+		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
+		AddNodeCode(node, "super."+code.toString());
+		AddNodeHasOccupiedOneLine(node, true);
+		if (!isInOneLine)
+		{
+			AddNodeInMultipleLine(node, true);
+		}
+		MethodInvocationDeleteHint(node.arguments());
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(MethodInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		ASTNode expr = node.getExpression();
+		if (expr != null)
+		{
+			AddReferenceUpdateHint(expr, ReferenceHintLibrary.DataUpdate);
+		}
+		NoVisit(node.getName());
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(MethodInvocation node) {
+		StringBuilder code = new StringBuilder("");
+		ASTNode expr = node.getExpression();
+		String exprcode = "";
+		if (expr != null)
+		{
+			if (GetNodeHasOccupiedOneLine(expr))
+			{
+				exprcode = ".";
+				AddNodeType(node, NodeTypeLibrary.adjacent);
+				AddNodeInMultipleLine(node, true);
+			}
+			else
+			{
+				exprcode = GetNodeCode(expr) + ".";
+				AddNodeHasUsed(expr, true);
+			}
+		}
+		boolean isInOneLine = MethodInvocationCode(node.getName().toString(), node.arguments(), code);
+		AddNodeCode(node, exprcode + code.toString());
+		AddNodeHasOccupiedOneLine(node, true);
+		if (!isInOneLine)
+		{
+			AddNodeInMultipleLine(node, true);
+		}
+		
+		if (expr != null)
+		{
+			DeleteReferenceUpdateHint(expr);
+		}
+		
+		MethodInvocationDeleteHint(node.arguments());
+	}
+	
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(SuperConstructorInvocation node) {
+		MethodInvocationAddHint(node.arguments());
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(SuperConstructorInvocation node) {
+		StringBuilder code = new StringBuilder("");
+		boolean isInOneLine = MethodInvocationCode("super", node.arguments(), code);
+		AddNodeCode(node, code.toString());
+		AddNodeHasOccupiedOneLine(node, true);
+		if (!isInOneLine)
+		{
+			AddNodeInMultipleLine(node, true);
+		}
+		MethodInvocationDeleteHint(node.arguments());
 	}
 	
 }

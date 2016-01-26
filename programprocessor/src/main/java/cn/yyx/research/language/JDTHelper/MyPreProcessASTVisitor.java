@@ -27,16 +27,17 @@ public class MyPreProcessASTVisitor extends ASTVisitor{
 	// private NodeLineManager nlm = new NodeLineManager();
 	// private LineManager lm = new LineManager();
 	// private LineCodeManager lcm = new LineCodeManager();
+	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 	private NodeCodeManager ncm = new NodeCodeManager();
 	private ScopeDataManager sdm = new ScopeDataManager();
-	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 	private VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
+	private JCScope cjcs = new JCScope();
+	private JCScope ljcs = new JCScope();
+	
 	private NoVisitNodeManager nvnm = new NoVisitNodeManager();
 	// private Map<Integer, ASTNode> nodelink = new TreeMap<Integer, ASTNode>();
 	// a node is only equivalent to one node.
 	// private Map<Integer, Integer> equivalentScope = new TreeMap<Integer, Integer>();
-	private JCScope cjcs = new JCScope();
-	private JCScope ljcs = new JCScope();
 	
 	private String VeryRecentDeclaredType = null;
 	private boolean VeryRecentDeclaredFinal = false;
