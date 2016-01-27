@@ -10,11 +10,14 @@ public class GCodeMetaInfo {
 	
 	public static final String DescriptionHint = "@DH";
 	
+	public static final String LeftParenthese = "@L";
+	public static final String RightParenthese = "@R";
+	
 	public static final String VariableDeclarationHolder = "@VH";
 	
 	// another display of ';'
 	public static final String EndOfAStatement = "@ED";
-	// another display of ','
+	// another display of ',' ']' ')'
 	public static final String EndOfAPartialStatement = "@PD";
 	
 	public static final String ArrayAccess = "@AC";
