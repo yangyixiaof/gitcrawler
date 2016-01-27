@@ -12,6 +12,10 @@ public class TodoList {
 	
 	// TODO important : test the case : int a[] = new int[100].
 	
+	// TODO class declaration ReferenceLibrary.ClassDeclare is not checked.
+	// TODO label declaration ReferenceLibrary.LabelDeclare is not checked.
+	// TODO different situation of for must be tested.
+	
 	// Declaration Code should be more compact. The handles of content holder are not right. Solved.
 	// Some GetDataOffset doesn't call DataNewlyUsed. Some should but some should not. Solved.
 	// Some level offset is not right. Solved.
