@@ -2,6 +2,8 @@ package cn.yyx.research.language.simplified.JDTHelper;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -98,28 +100,30 @@ import cn.yyx.research.language.JDTManager.OtherCodeManager;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.JDTManager.VarOrObjReferenceManager;
+import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 
 public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
-	private OtherCodeManager ocm = new OtherCodeManager();
-	private NodeCode omc = new NodeCode();
-	private OneJavaFileCode ojfc = new OneJavaFileCode();
-	private OneJavaFileAnonymousClassesCode ojfacc = new OneJavaFileAnonymousClassesCode();
-	private MethodWindow mw = new MethodWindow();
-	private FirstOrderTaskPool fotp = new FirstOrderTaskPool();
-	private ScopeDataManager sdm = new ScopeDataManager();
-	private VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
-	private JCScope cjcs = new JCScope();
-	private JCScope ljcs = new JCScope();
-	private Integer FirstLevelClass = null;
-	private String VeryRecentDeclaredType = null;
-	private boolean VeryRecentIsFieldDeclared = false;
-	private NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
-	private NodeHelpManager<Boolean> bereferedAlready = new NodeHelpManager<Boolean>();
-	private NodeHelpManager<String> referedcnt = new NodeHelpManager<String>();
-	private NodeHelpManager<Integer> referhint = new NodeHelpManager<Integer>();
-	private NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
-	private NodeHelpManager<Boolean> runforbid = new NodeHelpManager<Boolean>();
+	protected OtherCodeManager ocm = new OtherCodeManager();
+	protected NodeCode omc = new NodeCode();
+	protected OneJavaFileCode ojfc = new OneJavaFileCode();
+	protected OneJavaFileAnonymousClassesCode ojfacc = new OneJavaFileAnonymousClassesCode();
+	protected JavaCode jc = ojfc;
+	protected MethodWindow mw = new MethodWindow();
+	protected FirstOrderTaskPool fotp = new FirstOrderTaskPool();
+	protected ScopeDataManager sdm = new ScopeDataManager();
+	protected VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
+	protected JCScope cjcs = new JCScope();
+	protected JCScope ljcs = new JCScope();
+	protected Integer FirstLevelClass = null;
+	protected String VeryRecentDeclaredType = null;
+	protected boolean VeryRecentIsFieldDeclared = false;
+	protected NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
+	protected NodeHelpManager<Boolean> bereferedAlready = new NodeHelpManager<Boolean>();
+	protected NodeHelpManager<String> referedcnt = new NodeHelpManager<String>();
+	protected NodeHelpManager<Integer> referhint = new NodeHelpManager<Integer>();
+	protected NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
+	protected NodeHelpManager<Boolean> runforbid = new NodeHelpManager<Boolean>();
 
 	@Override
 	public boolean visit(ImportDeclaration node) {
@@ -182,10 +186,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// System.out.println("AnonymousClassDeclaration Begin");
 		// System.out.println(node);
 		// System.out.println("AnonymousClassDeclaration End");
+		jc = ojfacc;
 		JustBeforeAnonymousClassDeclaration();
 		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
 		node.accept(sfpa);
 		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(AnonymousClassDeclaration node) {
+		jc = ojfc;
 	}
 
 	@Override
@@ -1429,14 +1439,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	// the handle of the following types should use the helper function
-	// TypeCode(...).
-
-	/*protected String RawTypesHandle(ASTNode node, boolean simplified) {
-		if (node instanceof Type) {
-			return TypeCode((Type) node, simplified);
-		}
-		return null;
-	}*/
 
 	@SuppressWarnings("unchecked")
 	protected String TypeCode(Type node, boolean simplified) {
@@ -1627,11 +1629,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected void PushMethodNodeCodeToJavaFileCode() {
-		ojfc.AddOneMethodNodeCode(omc);
+		jc.AddOneMethodNodeCode(omc);
 	}
 
 	protected void OneSentenceEnd() {
-		ojfc.OneSentenceEnd();
+		jc.OneSentenceEnd();
 	}
 
 	protected void FlushCode() {
@@ -1843,4 +1845,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 	}
 
+	public Map<String, String> GetGeneratedCode() {
+		Map<String, String> result = new TreeMap<String, String>();
+		result.putAll(ocm.getOtherCodeMap());
+		result.put(GCodeMetaInfo.LogicCorpus, ojfc.toString());
+		result.put(GCodeMetaInfo.AnonymousLogicCorpus, ojfacc.toString());
+		return result;
+	}
+	
 }

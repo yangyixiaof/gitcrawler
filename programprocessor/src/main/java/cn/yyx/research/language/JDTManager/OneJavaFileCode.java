@@ -2,7 +2,9 @@ package cn.yyx.research.language.JDTManager;
 
 import java.util.Iterator;
 
-public class OneJavaFileCode {
+import cn.yyx.research.language.simplified.JDTManager.JavaCode;
+
+public class OneJavaFileCode implements JavaCode{
 	
 	StringBuilder sb = new StringBuilder("");
 	
