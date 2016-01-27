@@ -17,6 +17,8 @@ public class GCodeMetaInfo {
 	// another display of ','
 	public static final String EndOfAPartialStatement = "@PD";
 	
+	public static final String ArrayAccess = "@AC";
+	
 	public static final String ArrayInitial = "@ARI";
 	
 	public static final String ArrayCreation = "@ARC";

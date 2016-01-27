@@ -10,9 +10,12 @@ import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
+import org.eclipse.jdt.core.dom.ArrayCreation;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -46,9 +49,11 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NameQualifiedType;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
+import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.PrimitiveType;
@@ -114,6 +119,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	private String VeryRecentDeclaredType = null;
 	private boolean VeryRecentIsFieldDeclared = false;
 	private NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
+	private NodeHelpManager<Boolean> bereferedAlready = new NodeHelpManager<Boolean>();
 	private NodeHelpManager<String> referedcnt = new NodeHelpManager<String>();
 	private NodeHelpManager<Integer> referhint = new NodeHelpManager<Integer>();
 	private NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
@@ -423,12 +429,76 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ArrayAccess node) {
-		// do nothing.
-		// TODO
+		int nodehashcode = node.hashCode();
+		final boolean isrefered = NodeIsRefered(nodehashcode) ? true : false;
+		if (!isrefered)
+		{
+			berefered.AddNodeHelp(nodehashcode, true);
+		}
+		Integer hint = referhint.GetNodeHelp(nodehashcode);
+		Expression array = node.getArray();
+		Expression index = node.getIndex();
+		ExpressionReferPreHandle(array, hint);
+		AddFirstOrderTask(new FirstOrderTask(array, index, node, true) {
+			@Override
+			public void run() {
+				ExpressionReferPostHandle(node, array, GCodeMetaInfo.ArrayAccess, "", true, false);
+				String nodecode = referedcnt.GetNodeHelp(nodehashcode);
+				GenerateOneLine(nodecode, true, true, false, true);
+				if (!isrefered)
+				{
+					berefered.DeleteNodeHelp(nodehashcode);
+					referedcnt.DeleteNodeHelp(nodehashcode);
+				}
+			}
+		});
 		return super.visit(node);
-	};
+	}
+	
+	@Override
+	public boolean visit(NullLiteral node) {
+		RawLiteralHandle(node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(BooleanLiteral node) {
+		RawLiteralHandle(node);
+		return super.visit(node);
+	}
+	
+	protected void RawLiteralHandle(ASTNode node)
+	{
+		int nodehashcode = node.hashCode();
+		if (NodeIsRefered(nodehashcode))
+		{
+			referedcnt.AddNodeHelp(nodehashcode, node.toString());
+		}
+		else
+		{
+			GenerateOneLine(node.toString(), false, false, false, false);
+		}
+	}
 	
 	// TODO tonight over here.
+	
+	@Override
+	public boolean visit(ArrayCreation node) {
+		// TODO
+		return super.visit(node);
+	}
+
+	@Override
+	public boolean visit(ArrayInitializer node) {
+		// TODO
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(ParenthesizedExpression node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
