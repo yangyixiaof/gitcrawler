@@ -17,10 +17,12 @@ public class GCodeMetaInfo {
 	
 	// another display of ';'
 	public static final String EndOfAStatement = "@ED";
-	// another display of ',' ']' ')'
+	// another display of ',' ')'
 	public static final String EndOfAPartialStatement = "@PD";
 	
 	public static final String ArrayAccess = "@AC";
+	// another display of ']'
+	public static final String ArrayEnd = "@AD";
 	
 	public static final String ArrayInitial = "@ARI";
 	
