@@ -4,7 +4,7 @@ private NodeHelpManager<Integer> referhint = new NodeHelpManager<Integer>();
 private NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
 
 
-DeleteNodeRefered
-AddNodeRefered
-berefered\.AddNodeHelp
-berefered.DeleteNodeHelp
+
+TypePreHandle
+TypeContent
+TypePostHandle

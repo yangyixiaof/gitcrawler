@@ -1,9 +1,10 @@
 package cn.yyx.research.language.Utility;
 
 public class jclasstest {
+	int p = 0;
 	public jclasstest() {
 	}
-	class Test()
+	class Test
 	{
 		int j = 0;
 	}

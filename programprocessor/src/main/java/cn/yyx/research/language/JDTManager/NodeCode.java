@@ -50,6 +50,11 @@ public class NodeCode {
 	
 	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline) {
 		// lastCodeLevel = level;
+		/*if (code.equals("0"))
+		{
+			System.err.println("1:couldappend:"+couldappend+";mustappend:"+mustappend+";mustpre:"+mustpre+";occupyoneline:"+occupyoneline);
+			System.err.println("2:couldappend:"+couldAppend+";mustappend:"+mustAppend);
+		}*/
 		if (couldAppend)
 		{
 			if (occupyoneline)
@@ -81,10 +86,10 @@ public class NodeCode {
 		// set couldAppend.
 		this.mustAppend = mustappend;
 		this.couldAppend = couldappend;
-		if (occupyoneline)
+		/*if (occupyoneline)
 		{
 			couldAppend = false;
-		}
+		}*/
 	}
 
 	// in first line, only level is not sure.

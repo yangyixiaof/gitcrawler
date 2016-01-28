@@ -44,5 +44,10 @@ public class OneJavaFileAnonymousClassesCode implements JavaCode{
 	public String toString() {
 		return sb.toString();
 	}
+
+	@Override
+	public boolean IsEmpty() {
+		return sb.length() == 0;
+	}
 	
 }

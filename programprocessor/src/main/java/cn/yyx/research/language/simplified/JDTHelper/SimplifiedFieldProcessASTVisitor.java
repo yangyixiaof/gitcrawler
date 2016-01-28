@@ -60,7 +60,12 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	
 	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
-		return HandleCurrentLevelControl(node.hashCode());
+		boolean ifcontinue = HandleCurrentLevelControl(node.hashCode());
+		if (ifcontinue)
+		{
+			jc = ojfacc;
+		}		
+		return ifcontinue;
 	}
 	
 	@Override
@@ -69,8 +74,9 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
-		SetVeryRecentDeclaredType(TypeCode(node.getType(), true));
-		String nodecode = GenerateVariableDeclarationTypeCode(node.getType(), null);
+		String typecode = TypeCode(node.getType(), true);
+		SetVeryRecentDeclaredType(typecode);
+		String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
 		GenerateOneLine(nodecode, false, false, false, true);
 		VeryRecentIsFieldDeclared = true;
 		return true;
