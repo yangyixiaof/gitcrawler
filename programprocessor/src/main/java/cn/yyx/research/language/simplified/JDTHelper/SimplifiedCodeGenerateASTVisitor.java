@@ -300,6 +300,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (FirstLevelClass == null) {
 			FirstLevelClass = node.hashCode();
 		}
+		EnterBlock(node);
 		GenerateOneLine(node.getName().toString() + GCodeMetaInfo.ClassDeclarationHint, false, false, false, true);
 		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
 		node.accept(sfpa);
@@ -311,6 +312,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (FirstLevelClass == node.hashCode()) {
 			FirstLevelClass = null;
 		}
+		ExitBlock();
 	}
 
 	@Override
@@ -318,6 +320,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// System.out.println("AnonymousClassDeclaration Begin");
 		// System.out.println(node);
 		// System.out.println("AnonymousClassDeclaration End");
+		EnterBlock(node);
 		jc = ojfacc;
 		JustBeforeAnonymousClassDeclaration();
 		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
@@ -332,6 +335,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			omc = (new NodeCode());
 		}
 		jc = ojfc;
+		ExitBlock();
 	}
 	
 	@Override
@@ -961,9 +965,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(SingleVariableDeclaration node) {
+		// System.out.println("SingleVariableDeclaration:" + node);
+		int namehashcode = node.getName().hashCode();
+		runpermit.AddNodeHelp(namehashcode, true);
 		Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
 		if (forbid != null && forbid == true)
 		{
+			referhint.AddNodeHelp(namehashcode, ReferenceHintLibrary.DataDeclare);
+			visit(node.getName());
 			return false;
 		}
 		String typecode = TypeCode(node.getType(), true);
@@ -976,9 +985,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(SingleVariableDeclaration node) {
 		int nodehashcode = node.hashCode();
+		int namehashcode = node.getName().hashCode();
+		runpermit.DeleteNodeHelp(node.getName().hashCode());
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true)
 		{
+			endVisit(node.getName());
+			referhint.DeleteNodeHelp(namehashcode);
 			return;
 		}
 		SetVeryRecentDeclaredType(null);
@@ -1028,7 +1041,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			hint = ReferenceHintLibrary.FieldDeclare;
 		}
-		referhint.AddNodeHelp(fs.getName().hashCode(), hint);
+		int namehashcode = fs.getName().hashCode();
+		referhint.AddNodeHelp(namehashcode, hint);
+		runpermit.AddNodeHelp(namehashcode, true);
 		Expression iniexpr = fs.getInitializer();
 		if (iniexpr != null)
 		{
@@ -1056,7 +1071,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		AppendToLast(GCodeMetaInfo.EndOfAPartialStatement);
 		
 		// delete hint
-		referhint.DeleteNodeHelp(fs.getName().hashCode());
+		int namehashcode = fs.getName().hashCode();
+		referhint.DeleteNodeHelp(namehashcode);
+		runpermit.DeleteNodeHelp(namehashcode);
 		if (iniexpr != null)
 		{
 			DeleteNodeRefered(iniexpr.hashCode());
@@ -1300,9 +1317,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(MethodInvocation node) {
-		
-		System.out.println("MethodInvocation:" + node);
-		
+		// System.out.println("MethodInvocation:" + node);
 		Expression expr = node.getExpression();
 		String invoker = "this";
 		if (expr != null)
@@ -1482,6 +1497,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
+		
+		System.out.println("name:" + node.toString() +";hint:" + (hint == ReferenceHintLibrary.DataDeclare)+";hint2:"+(hint == ReferenceHintLibrary.DataUse));
+		
 		boolean isfield = false;
 		String result = null;
 		if (hint != ReferenceHintLibrary.NoHint) {
@@ -2061,6 +2079,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		berefered.DeleteNodeHelp(typehashcode);
 		referedcnt.DeleteNodeHelp(typehashcode);
 		typesimp.DeleteNodeHelp(typehashcode);
+	}
+	
+	protected void EnterBlock(ASTNode node) {
+		// System.out.println("Hashcode:"+node.hashCode()+";node:"+node);
+		sdm.EnterBlock(node.hashCode());
+	}
+	
+	protected void ExitBlock() {
+		sdm.ExitBlock();
 	}
 	
 }
