@@ -50,7 +50,11 @@ public class NodeCode {
 	
 	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline) {
 		// lastCodeLevel = level;
-		/*if (code.equals("0"))
+		/*if (code == null)
+		{
+			new Exception("AppendOneLineCode Is Null").printStackTrace();
+		}
+		if (code.equals("null3"))
 		{
 			System.err.println("codelast:" + codelist.get(codelist.size()-1) + ";1:couldappend:"+couldappend+";mustappend:"+mustappend+";mustpre:"+mustpre+";occupyoneline:"+occupyoneline);
 			System.err.println("codelast:" + codelist.get(codelist.size()-1) + ";2:couldappend:"+couldAppend+";mustappend:"+mustAppend);
@@ -147,6 +151,10 @@ public class NodeCode {
 
 	public Iterator<String> GetCodeIterator() {
 		return codelist.iterator();
+	}
+
+	public String GetLastCode() {
+		return codelist.get(codelist.size()-1);
 	}
 
 }
