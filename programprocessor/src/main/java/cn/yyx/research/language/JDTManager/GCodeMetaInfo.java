@@ -10,8 +10,8 @@ public class GCodeMetaInfo {
 	
 	public static final String DescriptionHint = "@DH";
 	
-	public static final String LeftParenthese = "@L";
-	public static final String RightParenthese = "@R";
+	public static final String LeftParenthese = "(";
+	public static final String RightParenthese = ")";
 	
 	public static final String VariableDeclarationHolder = "@VH";
 	
@@ -19,10 +19,11 @@ public class GCodeMetaInfo {
 	public static final String EndOfAStatement = "@ED";
 	// another display of ',' ')'
 	public static final String EndOfAPartialStatement = "@PD";
+	// another display of ']'
+	public static final String EndOfArrayDeclarationIndexExpression = "@AD";
 	
 	public static final String ArrayAccess = "@AC";
-	// another display of ']'
-	public static final String ArrayDeclarationIndexExpressionEnd = "@AD";
+	public static final String FieldAccess = "@FA";
 	
 	public static final String ArrayInitial = "@ARI";
 	
