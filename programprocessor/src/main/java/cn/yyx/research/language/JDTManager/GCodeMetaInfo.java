@@ -22,7 +22,7 @@ public class GCodeMetaInfo {
 	
 	public static final String ArrayAccess = "@AC";
 	// another display of ']'
-	public static final String ArrayEnd = "@AD";
+	public static final String ArrayDeclarationIndexExpressionEnd = "@AD";
 	
 	public static final String ArrayInitial = "@ARI";
 	

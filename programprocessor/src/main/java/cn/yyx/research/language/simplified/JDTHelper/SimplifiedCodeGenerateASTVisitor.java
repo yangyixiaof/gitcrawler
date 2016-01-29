@@ -3,6 +3,7 @@ package cn.yyx.research.language.simplified.JDTHelper;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -143,6 +144,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<Boolean> runforbid = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<Boolean> typesimp = new NodeHelpManager<Boolean>();
+	protected Stack<NodeCode> omcanonystack = new Stack<NodeCode>();
 	
 	{
 		cjcs.SetDescription("Class Declaration.");
@@ -321,8 +323,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// System.out.println(node);
 		// System.out.println("AnonymousClassDeclaration End");
 		EnterBlock(node);
+		omcanonystack.push(omc);
+		omc = new NodeCode();
 		jc = ojfacc;
-		JustBeforeAnonymousClassDeclaration();
+		AnonymousClassDeclarationCodeFileAddMethodWindow();
 		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
 		node.accept(sfpa);
 		return super.visit(node);
@@ -331,6 +335,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(AnonymousClassDeclaration node) {
 		FlushCode();
+		omc = omcanonystack.pop();
 		if (omc == null) {
 			omc = (new NodeCode());
 		}
@@ -594,7 +599,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(ArrayCreation node) {
 		ArrayType type = node.getType();
-		String typecode = TypeCode(type, true);
+		
+		// System.err.println("ArrayType:"+type);
+		// System.err.println("ArrayElementType:"+type.getElementType());
+		
+		String typecode = TypeCode(type.getElementType(), true);
 		GenerateOneLine(typecode+"(new)", false, false, false, true);
 		List<Expression> list = node.dimensions();
 		Iterator<Expression> itr = list.iterator();
@@ -605,7 +614,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true) {
 				@Override
 				public void run() {
-					AppendToLast(GCodeMetaInfo.ArrayEnd);
+					AppendToLast(GCodeMetaInfo.ArrayDeclarationIndexExpressionEnd);
 				}
 			});
 		}
@@ -637,7 +646,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true) {
 				@Override
 				public void run() {
-					AppendToLast(GCodeMetaInfo.ArrayEnd);
+					AppendToLast(GCodeMetaInfo.ArrayDeclarationIndexExpressionEnd);
 				}
 			});
 		}
@@ -951,7 +960,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(VariableDeclarationExpression node) {
 		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(typecode);
+		SetVeryRecentDeclaredType(node.getType().toString());
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
 		GenerateOneLine(nodecode, false, false, false, true);
 		return super.visit(node);
@@ -976,7 +985,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			return false;
 		}
 		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(typecode);
+		SetVeryRecentDeclaredType(node.getType().toString());
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, node.extraDimensions());
 		GenerateOneLine(nodecode, false, false, false, true);
 		return super.visit(node);
@@ -1011,7 +1020,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// System.err.println("VariableDeclarationStatement:"+node);
 		// System.err.println("VariableDeclarationStatementType:"+node.getType());
 		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(typecode);
+		SetVeryRecentDeclaredType(node.getType().toString());
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
 		GenerateOneLine(nodecode, false, false, false, true);
 		return super.visit(node);
@@ -1498,7 +1507,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
 		
-		System.out.println("name:" + node.toString() +";hint:" + (hint == ReferenceHintLibrary.DataDeclare)+";hint2:"+(hint == ReferenceHintLibrary.DataUse));
+		// System.out.println("name:" + node.toString() +";hint:" + (hint == ReferenceHintLibrary.DataDeclare)+";hint2:"+(hint == ReferenceHintLibrary.DataUse));
 		
 		boolean isfield = false;
 		String result = null;
@@ -1511,6 +1520,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				/*
 				 * if (data.equals("a")) { System.out.println("DataUse"); }
 				 */
+				 // System.out.println("datause:"+data);
 				code = GetDataOffset(data, false, false);
 				break;
 			case ReferenceHintLibrary.FieldUse:
@@ -1551,6 +1561,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				// declaredtype:"+declaredtype);
 				DataNewlyUsed(data, declaredtype, false, false, true, false, false);
 				hasCorrespond = true;
+				break;
 			case ReferenceHintLibrary.FieldDeclare:
 				/*
 				 * if (data.equals("a")) {
@@ -1561,6 +1572,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
 				DataNewlyUsed(data, declaredtype2, false, true, false, false, false);
 				hasCorrespond = true;
+				break;
 			default:
 				break;
 			}
@@ -1585,13 +1597,29 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			result = nodestr;
 		}
-		if (NodeIsRefered(nodehashcode))
+		if (result == null)
 		{
-			referedcnt.AddNodeHelp(nodehashcode, result);
+			if (hint == ReferenceHintLibrary.DataDeclare || hint == ReferenceHintLibrary.FieldDeclare)
+			{
+				// do nothing.
+			}
+			else
+			{
+				System.err.println("What the fuck. How serious the error is!");
+				new Exception().printStackTrace();
+				System.exit(1);
+			}
 		}
 		else
 		{
-			GenerateOneLine(result, true, false, false, false);
+			if (NodeIsRefered(nodehashcode))
+			{
+				referedcnt.AddNodeHelp(nodehashcode, result);
+			}
+			else
+			{
+				GenerateOneLine(result, true, false, false, false);
+			}
 		}
 		return super.visit(node);
 	}
@@ -1813,7 +1841,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 	}
 	
-	protected void JustBeforeAnonymousClassDeclaration() {
+	protected void AnonymousClassDeclarationCodeFileAddMethodWindow() {
 		ojfacc.AddPreDeclrations(mw);
 	}
 

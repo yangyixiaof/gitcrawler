@@ -52,8 +52,8 @@ public class NodeCode {
 		// lastCodeLevel = level;
 		/*if (code.equals("0"))
 		{
-			System.err.println("1:couldappend:"+couldappend+";mustappend:"+mustappend+";mustpre:"+mustpre+";occupyoneline:"+occupyoneline);
-			System.err.println("2:couldappend:"+couldAppend+";mustappend:"+mustAppend);
+			System.err.println("codelast:" + codelist.get(codelist.size()-1) + ";1:couldappend:"+couldappend+";mustappend:"+mustappend+";mustpre:"+mustpre+";occupyoneline:"+occupyoneline);
+			System.err.println("codelast:" + codelist.get(codelist.size()-1) + ";2:couldappend:"+couldAppend+";mustappend:"+mustAppend);
 		}*/
 		if (couldAppend)
 		{
