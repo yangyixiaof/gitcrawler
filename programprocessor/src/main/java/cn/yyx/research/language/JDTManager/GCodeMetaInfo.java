@@ -23,7 +23,6 @@ public class GCodeMetaInfo {
 	public static final String EndOfArrayDeclarationIndexExpression = "@AD";
 	
 	public static final String ArrayAccess = "@AC";
-	public static final String FieldAccess = "@FA";
 	
 	public static final String ArrayInitial = "@ARI";
 	

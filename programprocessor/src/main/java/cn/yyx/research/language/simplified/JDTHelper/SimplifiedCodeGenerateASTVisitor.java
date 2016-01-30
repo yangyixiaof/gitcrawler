@@ -1078,7 +1078,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			nodecode = node.getName().toString() + "." + referedcnt.GetNodeHelp(expr.hashCode());
 		}
-		nodecode += GCodeMetaInfo.FieldAccess;
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
