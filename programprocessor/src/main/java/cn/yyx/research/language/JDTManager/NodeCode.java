@@ -2,6 +2,7 @@ package cn.yyx.research.language.JDTManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Stack;
 
 public class NodeCode {
 
@@ -11,11 +12,13 @@ public class NodeCode {
 	private int firstCodeLevel = -1;
 	private boolean couldAppend = false;
 	private boolean mustAppend = false;
+	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	// private boolean lastHasContentHolder = false;
 
 	ArrayList<String> codelist = new ArrayList<String>();
 
-	public NodeCode() {
+	public NodeCode(Stack<Boolean> argmutiple) {
+		this.argmutiple = argmutiple;
 	}
 
 	public boolean IsEmpty() {
@@ -48,7 +51,7 @@ public class NodeCode {
 		lastHasContentHolder = hasContentHolder;
 	}*/
 	
-	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline) {
+	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline, String preHint) {
 		// lastCodeLevel = level;
 		/*if (code == null)
 		{
@@ -59,19 +62,21 @@ public class NodeCode {
 			System.err.println("codelast:" + codelist.get(codelist.size()-1) + ";1:couldappend:"+couldappend+";mustappend:"+mustappend+";mustpre:"+mustpre+";occupyoneline:"+occupyoneline);
 			System.err.println("codelast:" + codelist.get(codelist.size()-1) + ";2:couldappend:"+couldAppend+";mustappend:"+mustAppend);
 		}*/
+		boolean iscodenewline = false;
 		if (couldAppend)
 		{
 			if (occupyoneline)
 			{
 				if (mustAppend)
 				{
-					AppendLast(GCodeMetaInfo.CodeHole);
+					AppendEndInfoToLast(GCodeMetaInfo.CodeHole);
 				}
 				codelist.add(code);
+				iscodenewline = true;
 			}
 			else
 			{
-				AppendLast(code);
+				AppendEndInfoToLast(code);
 			}
 		}
 		else
@@ -80,10 +85,16 @@ public class NodeCode {
 			{
 				code = GCodeMetaInfo.PreExist + code;
 				codelist.add(code);
+				iscodenewline = true;
 			}
 			else
 			{
+				if (preHint != null && !preHint.equals(""))
+				{
+					code = preHint + code;
+				}
 				codelist.add(code);
+				iscodenewline = true;
 			}
 		}
 		
@@ -94,8 +105,20 @@ public class NodeCode {
 		{
 			couldAppend = false;
 		}*/
+		if (iscodenewline)
+		{
+			if (argmutiple.size() > 0)
+			{
+				Boolean mut = argmutiple.pop();
+				if (!mut)
+				{
+					mut = true;
+				}
+				argmutiple.push(mut);
+			}
+		}
 	}
-
+	
 	// in first line, only level is not sure.
 	/*public void BeAddedToNodeCode(NodeCode anc) {
 		if (codelist.size() > 0) {
@@ -113,7 +136,16 @@ public class NodeCode {
 		}
 	}*/
 
-	public void AppendLast(String apdcode) {
+	public void AppendEndInfoToLast(String apdcode) {
+		/*if (couldAppend || mustAppend)
+		{
+			AppendToLast(GCodeMetaInfo.CodeHole);
+		}*/
+		AppendToLast(apdcode);
+	}
+	
+	public void AppendToLast(String apdcode)
+	{
 		int idx = codelist.size() - 1;
 		String lastcode = codelist.get(idx) + (apdcode);
 		codelist.set(idx, lastcode);

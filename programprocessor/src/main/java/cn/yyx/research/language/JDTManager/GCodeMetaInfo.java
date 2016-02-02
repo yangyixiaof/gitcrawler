@@ -2,18 +2,44 @@ package cn.yyx.research.language.JDTManager;
 
 public class GCodeMetaInfo {
 	
-	public static final String AnonymousClassHintStatement = "@HT";
-	public static final String ClassDeclarationHint = "@CD";
-	public static final String MethodDeclarationHint = "@MD";
-	public static final String LabelDeclarationHint = "@LD";
-	public static final String VariableDeclarationHint = "@VD";
+	public static final String AnonymousClassHintStatement = "HT@";
+	public static final String ClassDeclarationHint = "CD@";
+	public static final String MethodDeclarationHint = "MD@";
+	public static final String LabelDeclarationHint = "LD@";
+	public static final String VariableDeclarationHint = "VD@";
+	public static final String LambdaExpressionHint = "LE@";
+	public static final String MethodReferenceHint = "MR@";
+	public static final String CastExpressionHint = "CE@";
+	public static final String AssignmentHint = "A@";
+	public static final String BreakHint = "B@";
+	public static final String ContinueHint = "C@";
+	public static final String DoWhileHint = "DW@";
+	public static final String InfixExpressionHint = "IxE@";
+	public static final String InstanceofExpressionHint = "InE@";
+	public static final String PostfixExpressionHint = "PtE@";
+	public static final String PrefixExpressionHint = "PeE@";
+	public static final String ReturnHint = "RT@";
+	public static final String SwitchHint = "SW@";
+	public static final String CaseHint = "CS@";
+	public static final String SynchronizedHint = "SC@";
+	public static final String ThrowStatementHint = "TS@";
+	public static final String CatchHint = "CT@";
+	public static final String WhileStatementHint = "WS@";
+	public static final String IfStatementHint = "IF@";
+	public static final String MethodInvocationHint = "MI@";
+	public static final String ArrayCreationHint = "AC@";
+	public static final String LiteralHint = "L@";
+	public static final String NameHint = "N@";
+	public static final String QualifiedNameHint = "QN@";
+	public static final String FieldAccessHint = "FA@";
 	
-	public static final String DescriptionHint = "@DH";
+	
+	public static final String DescriptionHint = "DH@";
 	
 	public static final String LeftParenthese = "(";
 	public static final String RightParenthese = ")";
 	
-	public static final String VariableDeclarationHolder = "@VH";
+	public static final String VariableDeclarationHolder = "VH@";
 	
 	// another display of ';'
 	public static final String EndOfAStatement = "@ED";
@@ -22,18 +48,17 @@ public class GCodeMetaInfo {
 	// another display of ']'
 	public static final String EndOfArrayDeclarationIndexExpression = "@AD";
 	
-	public static final String ArrayAccess = "@AC";
+	public static final String ArrayAccess = "@C@";
 	
-	public static final String ArrayInitial = "@ARI";
-	
-	public static final String ArrayCreation = "@ARC";
+	// public static final String ArrayInitial = "@ARI";
+	// public static final String ArrayCreation = "@ARC";
 	
 	public static final String StringHolder = "@STR";
-	public static final String NumberHolder = "@NUB";
-	public static final String CharHolder = "@CHR";
+	// public static final String NumberHolder = "@NUB";
+	// public static final String CharHolder = "@CHR";
 	
 	// public static String NoStatement = "nu#";
-	public static final String NullLiteral = "@NUL";
+	// public static final String NullLiteral = "@NUL";
 	public static final String CommonSplitter = "#";
 	
 	public static final String NoDeclaredType = "@NT";

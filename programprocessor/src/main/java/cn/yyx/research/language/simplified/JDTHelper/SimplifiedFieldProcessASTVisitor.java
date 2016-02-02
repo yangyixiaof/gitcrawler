@@ -14,7 +14,6 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	
 	public SimplifiedFieldProcessASTVisitor(SimplifiedCodeGenerateASTVisitor scga) {
 		ocm = scga.ocm;
-		omc = scga.omc;
 		ojfc = scga.ojfc;
 		ojfacc = scga.ojfacc;
 		mw = scga.mw;
@@ -29,6 +28,8 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		referhint = scga.referhint;
 		runpermit = scga.runpermit;
 		runforbid = scga.runforbid;
+		argmutiple = scga.argmutiple;
+		omc = scga.omc;
 	}
 	
 	@Override
@@ -77,7 +78,7 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		String typecode = TypeCode(node.getType(), true);
 		SetVeryRecentDeclaredType(typecode);
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
-		GenerateOneLine(nodecode, false, false, false, true);
+		GenerateOneLine(nodecode, false, false, false, true, null);
 		VeryRecentIsFieldDeclared = true;
 		return true;
 	}
@@ -86,7 +87,7 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	public void endVisit(FieldDeclaration node) {
 		SetVeryRecentDeclaredType(null);
 		VeryRecentIsFieldDeclared = false;
-		AppendToLast(GCodeMetaInfo.EndOfAStatement);
+		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 	}
 	
 	protected boolean HandleCurrentLevelControl(int classhashcode)
