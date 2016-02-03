@@ -416,7 +416,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(ExpressionMethodReference node) {
-		// TODO
 		// expression reference should be considered more carefully.
 		ExpressionReferPostHandle(node, node.getExpression(), "::", GCodeMetaInfo.MethodReferenceHint, node.getName().toString(), false, false, false, false, false);
 	}	
@@ -438,7 +437,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(SuperMethodReference node) {
-		// TODO
 		// qualified reference should be considered more carefully.
 		QualifiedPostHandle(node, node.getQualifier(), node.getName(), "super", "::");
 	}
@@ -1347,7 +1345,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		else
 		{
-			GenerateOneLine(nodecode, true, false, false, false, null);
+			GenerateOneLine(nodecode, true, false, false, false, GCodeMetaInfo.QualifiedHint);
 		}
 		// delete qualifier refer
 		int qualifierhashcode = qualifier.hashCode();
@@ -1881,6 +1879,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		int exprhashcode = expr.hashCode();
 		String exprcode = referedcnt.GetNodeHelp(exprhashcode);
+		
+		/*if (node instanceof PrefixExpression)
+		{
+			System.out.println("nodestr:" + node + ";node expr null?" + (exprcode == null));
+		}*/
+		
 		if (exprcode == null)
 		{
 			exprcode = GCodeMetaInfo.PreExist;
@@ -1900,6 +1904,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			nodecode = addedcnt + operator + exprcode;
 		}
+		
+		/*if (node instanceof PrefixExpression)
+		{
+			System.out.println("nodecode:" + operatorHint + nodecode);
+		}*/
+		
 		if (!asreturn)
 		{
 			int nodehashcode = node.hashCode();

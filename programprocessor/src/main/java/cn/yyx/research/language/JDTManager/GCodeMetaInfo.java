@@ -32,6 +32,7 @@ public class GCodeMetaInfo {
 	public static final String NameHint = "N@";
 	public static final String QualifiedNameHint = "QN@";
 	public static final String FieldAccessHint = "FA@";
+	public static final String QualifiedHint = "Q@";
 	
 	
 	public static final String DescriptionHint = "DH@";
@@ -42,13 +43,13 @@ public class GCodeMetaInfo {
 	public static final String VariableDeclarationHolder = "VH@";
 	
 	// another display of ';'
-	public static final String EndOfAStatement = "@ED";
+	public static final String EndOfAStatement = ";";
 	// another display of ',' ')'
-	public static final String EndOfAPartialStatement = "@PD";
+	public static final String EndOfAPartialStatement = ",";
 	// another display of ']'
-	public static final String EndOfArrayDeclarationIndexExpression = "@AD";
+	public static final String EndOfArrayDeclarationIndexExpression = "@]";
 	
-	public static final String ArrayAccess = "@C@";
+	public static final String ArrayAccess = "[@";
 	
 	// public static final String ArrayInitial = "@ARI";
 	// public static final String ArrayCreation = "@ARC";

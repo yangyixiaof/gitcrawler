@@ -5,15 +5,11 @@ import java.util.Iterator;
 import java.util.Stack;
 
 public class NodeCode {
-
-	// private int lastCodeLevel = -1;
-
 	// once set, no change.
 	private int firstCodeLevel = -1;
 	private boolean couldAppend = false;
 	private boolean mustAppend = false;
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
-	// private boolean lastHasContentHolder = false;
 
 	ArrayList<String> codelist = new ArrayList<String>();
 
@@ -38,19 +34,8 @@ public class NodeCode {
 	public boolean NotInitialize() {
 		return getFirstCodeLevel() == -1;
 	}
-
-	// code has b/leixing#......, only need to add info of lines.
-	/*public void AddOneLineCode(String code, int level, boolean hasContentHolder) {
-		// code = code + (IsEmpty() ? 0 : (level - lastCodeLevel));
-		lastCodeLevel = level;
-		if (lastHasContentHolder) {
-			AppendLast(code);
-		} else {
-			codelist.add(code);
-		}
-		lastHasContentHolder = hasContentHolder;
-	}*/
 	
+	// TODO
 	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline, String preHint) {
 		// lastCodeLevel = level;
 		/*if (code == null)
@@ -101,10 +86,6 @@ public class NodeCode {
 		// set couldAppend.
 		this.mustAppend = mustappend;
 		this.couldAppend = couldappend;
-		/*if (occupyoneline)
-		{
-			couldAppend = false;
-		}*/
 		if (iscodenewline)
 		{
 			if (argmutiple.size() > 0)
@@ -118,52 +99,31 @@ public class NodeCode {
 			}
 		}
 	}
-	
-	// in first line, only level is not sure.
-	/*public void BeAddedToNodeCode(NodeCode anc) {
-		if (codelist.size() > 0) {
-			String firstcode = codelist.get(0);
-			// firstcode = (getFirstCodeLevel() - anc.getLastCodeLevel()) + firstcode;
-			if (anc.isLastHasContentHolder()) {
-				anc.AppendLast(firstcode);
-			} else {
-				anc.PushOneLineCode(firstcode);
-			}
-			int len = codelist.size();
-			for (int i = 2; i < len; i++) {
-				anc.PushOneLineCode(codelist.get(i));
-			}
-		}
-	}*/
 
 	public void AppendEndInfoToLast(String apdcode) {
-		/*if (couldAppend || mustAppend)
+		if (apdcode.equals(";"))
 		{
-			AppendToLast(GCodeMetaInfo.CodeHole);
-		}*/
-		AppendToLast(apdcode);
+			CheckAndDeletePartialEnd();
+		}
+			AppendToLast(apdcode);
 	}
 	
+	private void CheckAndDeletePartialEnd() {
+		int idx = codelist.size() - 1;
+		String lastcode = codelist.get(idx);
+		if (lastcode.endsWith(","))
+		{
+			lastcode = lastcode.substring(0, lastcode.length()-1);
+			codelist.set(idx, lastcode);
+		}
+	}
+
 	public void AppendToLast(String apdcode)
 	{
 		int idx = codelist.size() - 1;
 		String lastcode = codelist.get(idx) + (apdcode);
 		codelist.set(idx, lastcode);
 	}
-	
-	/*public void AppendLast(String firstcode) {
-		int idx = codelist.size() - 1;
-		String lastcode = codelist.get(idx).replace(GCodeMetaInfo.ContentHolder, firstcode);
-		codelist.set(idx, lastcode);
-	}*/
-
-	/*public boolean isLastHasContentHolder() {
-		return lastHasContentHolder;
-	}
-
-	public void setLastHasContentHolder(boolean lastHasContentHolder) {
-		this.lastHasContentHolder = lastHasContentHolder;
-	}*/
 
 	public int getFirstCodeLevel() {
 		return firstCodeLevel;
@@ -172,14 +132,6 @@ public class NodeCode {
 	public void setFirstCodeLevel(int firstCodeLevel) {
 		this.firstCodeLevel = firstCodeLevel;
 	}
-
-	/*public int getLastCodeLevel() {
-		return lastCodeLevel;
-	}
-
-	public void setLastCodeLevel(int lastCodeLevel) {
-		this.lastCodeLevel = lastCodeLevel;
-	}*/
 
 	public Iterator<String> GetCodeIterator() {
 		return codelist.iterator();
