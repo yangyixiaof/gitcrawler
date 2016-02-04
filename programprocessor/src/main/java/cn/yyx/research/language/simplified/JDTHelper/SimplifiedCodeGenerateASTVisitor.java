@@ -542,19 +542,23 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(EnhancedForStatement node) {
 		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
 		runforbid.AddNodeHelp(node.getParameter().hashCode(), true);
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true) {
+			@Override
+			public void run() {
+				String code = ExpressionReferPostHandle(node, node.getExpression(), "", "", "", false, false, false, false, true);
+				if (code == null)
+				{
+					code = GCodeMetaInfo.PreExist;
+				}
+				String nodecode = "for(" + TypeCode(node.getParameter().getType(),true) + ":" + code + ")";
+				GenerateOneLine(nodecode, false, false, false, true, null);
+			}
+		});
 		return super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(EnhancedForStatement node) {
-		String code = ExpressionReferPostHandle(node, node.getExpression(), "", "", "", false, false, false, false, true);
-		if (code == null)
-		{
-			code = GCodeMetaInfo.PreExist;
-		}
-		String nodecode = "for(" + TypeCode(node.getParameter().getType(),true) + ":" + code + ")";
-		GenerateOneLine(nodecode, false, false, false, true, null);
-		
 		runforbid.DeleteNodeHelp(node.getParameter().hashCode());
 	}
 	
@@ -844,18 +848,24 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(nodecode, false, false, false, true, null);
 		return super.visit(node);
 	}
-
+	
 	// below are judge and loop related.
 	
 	@Override
 	public boolean visit(WhileStatement node) {
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "while", false, false, false, true, null);
 		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true) {
+			@Override
+			public void run() {
+				ExpressionReferPostHandle(node, node.getExpression(), "", "", "", false, false, false, false, false);
+			}
+		});
 		return super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(WhileStatement node) {
-		ExpressionReferPostHandle(node, node.getExpression(), "while", GCodeMetaInfo.WhileStatementHint, "", false, true, false, false, false);
 	}
 	
 	@Override
@@ -1268,7 +1278,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(SuperMethodInvocation node) {
 		MethodPushReferRequest(null, node.arguments());
-		AddNodeRefered(node.getQualifier().hashCode());
+		if (node.getQualifier() != null)
+		{
+			AddNodeRefered(node.getQualifier().hashCode());
+		}
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		return super.visit(node);
 	}
@@ -1277,12 +1290,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public void endVisit(SuperMethodInvocation node) {
 		String invoker = "super";
-		int qualifierhashcode = node.getQualifier().hashCode();
-		String qualifier = referedcnt.GetNodeHelp(qualifierhashcode);
-		DeleteNodeRefered(qualifierhashcode);
-		if (qualifier != null)
+		if (node.getQualifier() != null)
 		{
-			invoker += "." + qualifier;
+			int qualifierhashcode = node.getQualifier().hashCode();
+			String qualifiercnt = referedcnt.GetNodeHelp(qualifierhashcode);
+			DeleteNodeRefered(qualifierhashcode);
+			if (qualifiercnt != null)
+			{
+				invoker += "." + qualifiercnt;
+			}
 		}
 		MethodInvocationCode(node.getName().toString(), invoker, node.arguments());
 		MethodDeleteReferRequest(null, node.arguments());
@@ -1369,15 +1385,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			return false;
 		}
-		int qualifierhashcode = qualifier.hashCode();
-		Integer hint = referhint.GetNodeHelp(node.hashCode());
-		if (hint != null)
-		{
-			referhint.AddNodeHelp(qualifierhashcode, hint);
-		}
 		if (qualifier != null)
 		{
-			AddNodeRefered(qualifierhashcode);
+			int qualifierhashcode = qualifier.hashCode();
+			Integer hint = referhint.GetNodeHelp(node.hashCode());
+			if (hint != null)
+			{
+				referhint.AddNodeHelp(qualifierhashcode, hint);
+			}
+			if (qualifier != null)
+			{
+				AddNodeRefered(qualifierhashcode);
+			}
 		}
 		return true;
 	}
@@ -1401,15 +1420,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			GenerateOneLine(nodecode, true, false, false, false, GCodeMetaInfo.QualifiedHint);
 		}
 		// delete qualifier refer
-		int qualifierhashcode = qualifier.hashCode();
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
 		if (hint != null)
 		{
-			referhint.DeleteNodeHelp(qualifierhashcode);
 			referhint.DeleteNodeHelp(nodehashcode);
 		}
 		if (qualifier != null)
 		{
+			int qualifierhashcode = qualifier.hashCode();
+			referhint.DeleteNodeHelp(qualifierhashcode);
 			DeleteNodeRefered(qualifierhashcode);
 		}
 	}
@@ -2011,6 +2030,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				if (exprnoline)
 				{
 					occupyline = false;
+				}
+				if (!occupyline)
+				{
+					operatorHint = "";
 				}
 				GenerateOneLine(operatorHint + nodecode, couldAppend, mustAppend, false, occupyline, null);
 			}
