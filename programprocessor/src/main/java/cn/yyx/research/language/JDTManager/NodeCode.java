@@ -35,7 +35,6 @@ public class NodeCode {
 		return getFirstCodeLevel() == -1;
 	}
 	
-	// TODO
 	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline, String preHint) {
 		// lastCodeLevel = level;
 		/*if (code == null)

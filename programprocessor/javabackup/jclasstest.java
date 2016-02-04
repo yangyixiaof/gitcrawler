@@ -1,14 +1,14 @@
 package cn.yyx.research.language.Utility;
 
 public class jclasstest {
+	int p = 0;
 	public jclasstest() {
 	}
-	
-	class ytest {
-		int  j = 0;
+	class Test
+	{
+		int j = 0;
 	}
 }
-
 
 class ttest {
 	int i = 0;
@@ -16,6 +16,7 @@ class ttest {
 	{
 		int[] arr = new int[10];
 		int[] arr2 = {1,2,3,4,5};
+		i = -i;
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
