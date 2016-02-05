@@ -62,6 +62,7 @@ public class GCodeMetaInfo {
 	// public static final String NullLiteral = "@NUL";
 	public static final String CommonSplitter = "#";
 	
+	public static final String InferedType = "@IT";
 	public static final String NoDeclaredType = "@NT";
 	
 	public static final String CodeHole = "@HO";
