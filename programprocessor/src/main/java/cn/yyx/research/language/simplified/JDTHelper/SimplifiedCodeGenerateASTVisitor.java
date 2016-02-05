@@ -677,10 +677,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		
 		if (hint == null)
 		{
-			System.out.println("InfixExpression:" + node);
+			System.err.println("No hint InfixExpression:" + node);
 		}
 		
 		ExpressionReferPreHandle(left, hint);
+		// referhint.AddNodeHelp(left.hashCode(), hint);
 		AddFirstOrderTask(new FirstOrderTask(left, right, node, false) {
 			@Override
 			public void run() {
@@ -1085,7 +1086,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		ASTNode expr = node.getExpression();
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		int exprhashcode = expr.hashCode();
-		if (expr instanceof FieldAccess) {
+		if (expr instanceof FieldAccess || expr instanceof SuperFieldAccess) {
 			AddNodeRefered(exprhashcode);
 			referhint.AddNodeHelp(exprhashcode, hint);
 		}
@@ -1106,7 +1107,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(FieldAccess node) {
 		String nodecode = "";
 		ASTNode expr = node.getExpression();
-		if (!(expr instanceof FieldAccess)) {
+		if (!(expr instanceof FieldAccess || expr instanceof SuperFieldAccess)) {
 			if (expr instanceof ThisExpression)
 			{
 				int namehashcode = node.getName().hashCode();
@@ -1403,6 +1404,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	protected void QualifiedPostHandle(ASTNode node, Name qualifier, Name name, String additional, String additionalprefixoperator)
 	{
+		
+		// System.out.println("node:" + node);
+		// System.out.println("qualifier:" + qualifier);
+		// System.out.println("node is refered:" + NodeIsRefered(node.hashCode()));
+		
 		int nodehashcode = node.hashCode();
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true)
@@ -1962,6 +1968,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected String ExpressionReferPostHandle(ASTNode node, Expression expr, String operator, String operatorHint, String addedcnt, boolean exprisleft, boolean needaddsplitter, boolean couldAppend, boolean mustAppend, boolean asreturn)
 	{
 		boolean mustOneLine = false;
+		int exprhashcode = expr.hashCode();
+		String exprcode = referedcnt.GetNodeHelp(exprhashcode);
+		Boolean exprnoline = refernoline.GetNodeHelp(exprhashcode);
+		if (exprnoline == null || exprnoline == false)
+		{
+			exprnoline = false;
+		}
+		boolean occupyline = true;
+		if (exprnoline)
+		{
+			occupyline = false;
+		}
 		if (operator != null && !operator.equals(""))
 		{
 			mustOneLine = true;
@@ -1970,18 +1988,19 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			mustOneLine = true;
 		}
-		int exprhashcode = expr.hashCode();
-		String exprcode = referedcnt.GetNodeHelp(exprhashcode);
-		Boolean exprnoline = refernoline.GetNodeHelp(exprhashcode);
-		if (exprnoline == null || exprnoline == false)
+		if (mustOneLine)
 		{
-			exprnoline = false;
+			occupyline = true;
+		}
+		if (node instanceof PrefixExpression || node instanceof PostfixExpression)
+		{
+			occupyline = false;
 		}
 		/*if (node instanceof PrefixExpression)
 		{
 			System.out.println("nodestr:" + node + ";node expr null?" + (exprcode == null));
 		}*/
-		
+		boolean exprused = false;
 		if (exprcode == null)
 		{
 			if ((operator == null || operator.equals("")) && (addedcnt == null || addedcnt.equals("")))
@@ -1991,6 +2010,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			else
 			{
 				exprcode = GCodeMetaInfo.PreExist;
+			}
+		}
+		else
+		{
+			if (!needaddsplitter)
+			{
+				if (CheckAppend() && exprnoline)
+				{
+					GenerateOneLine(exprcode, false, false, false, false, null);
+					exprused = true;
+					exprcode = "";
+				}				
 			}
 		}
 		
@@ -2026,16 +2057,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			else
 			{
-				boolean occupyline = true;
-				if (exprnoline)
-				{
-					occupyline = false;
-				}
 				if (!occupyline)
 				{
 					operatorHint = "";
 				}
-				GenerateOneLine(operatorHint + nodecode, couldAppend, mustAppend, false, occupyline, null);
+				boolean mustPre = false;
+				if (exprused)
+				{
+					mustPre = true;
+				}
+				GenerateOneLine(nodecode, couldAppend, mustAppend, mustPre, occupyline, operatorHint);
 			}
 		}
 		
@@ -2064,6 +2095,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 		return GCodeMetaInfo.VariableDeclarationHint + typecode + dimenstr;
+	}
+	
+	protected boolean CheckAppend()
+	{
+		return omc.CheckAppend();
 	}
 	
 	protected void CheckHint(Integer hint)

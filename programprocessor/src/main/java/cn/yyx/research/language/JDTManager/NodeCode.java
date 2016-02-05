@@ -71,15 +71,12 @@ public class NodeCode {
 				codelist.add(code);
 				iscodenewline = true;
 			}
-			else
+			if (preHint != null && !preHint.equals(""))
 			{
-				if (preHint != null && !preHint.equals(""))
-				{
-					code = preHint + code;
-				}
-				codelist.add(code);
-				iscodenewline = true;
+				code = preHint + code;
 			}
+			codelist.add(code);
+			iscodenewline = true;
 		}
 		
 		// set couldAppend.
@@ -138,6 +135,14 @@ public class NodeCode {
 
 	public String GetLastCode() {
 		return codelist.get(codelist.size()-1);
+	}
+
+	public boolean CheckAppend() {
+		if (couldAppend || mustAppend)
+		{
+			return true;
+		}
+		return false;
 	}
 
 }
