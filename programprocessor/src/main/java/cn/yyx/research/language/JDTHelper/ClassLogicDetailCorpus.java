@@ -37,6 +37,9 @@ public class ClassLogicDetailCorpus {
 				String value = codemap.get(corpus);
 				allcodemap.put(corpus, (allcodemap.get(corpus) + value));
 			}
+			
+			fmastv = null;
+			codemap = null;
 		}
 		ArrayList<CorpusContentPair> result = new ArrayList<CorpusContentPair>();
 		Set<String> keys = allcodemap.keySet();
@@ -47,6 +50,9 @@ public class ClassLogicDetailCorpus {
 			String content = allcodemap.get(corpus);
 			result.add(new CorpusContentPair(corpus, content));
 		}
+		
+		// clear variables
+		allcodemap = null;
 		return result;
 	}
 	

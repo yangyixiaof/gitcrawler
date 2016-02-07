@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import cn.yyx.research.language.Utility.BigDirectory;
 import cn.yyx.research.language.Utility.SourceCodeFileIteration;
 
 /**
@@ -87,6 +88,12 @@ public class App {
 				default:
 					if (cmd.startsWith("start ")) {
 						processdir = cmd.substring("start ".length(), cmd.length());
+						String[] ps = processdir.split(" ");
+						if (ps.length == 2)
+						{
+							processdir = ps[0];
+							BigDirectory.PrefixDirectory = ps[1];
+						}
 						System.out.println("Java processor uses the directory : " + processdir);
 						app = new App(processdir);
 						// stop = !
