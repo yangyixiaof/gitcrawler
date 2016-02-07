@@ -1,0 +1,19 @@
+/*protected String ThisPrefixFieldAccessNameHandle(ASTNode node) {
+		if (node instanceof FieldAccess) {
+			FieldAccess fa = (FieldAccess) node;
+			Expression expr = fa.getExpression();
+			if (expr instanceof ThisExpression) {
+				return RawNamesHandle(fa.getName(), ReferenceHintLibrary.FieldUse);
+			} else {
+				if (expr instanceof FieldAccess) {
+					String prefix = ThisPrefixFieldAccessNameHandle(expr);
+					if (prefix == null) {
+						return null;
+					} else {
+						return fa.getName().toString() + "." + prefix;
+					}
+				}
+			}
+		}
+		return null;
+	}*/

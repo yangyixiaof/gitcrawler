@@ -1,0 +1,10 @@
+private NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
+private NodeHelpManager<String> referedcnt = new NodeHelpManager<String>();
+private NodeHelpManager<Integer> referhint = new NodeHelpManager<Integer>();
+private NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
+
+
+
+TypePreHandle
+TypeContent
+TypePostHandle

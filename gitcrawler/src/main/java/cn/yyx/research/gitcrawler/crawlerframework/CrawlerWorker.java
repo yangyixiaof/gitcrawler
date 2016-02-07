@@ -2,7 +2,7 @@ package cn.yyx.research.gitcrawler.crawlerframework;
 
 import java.util.ArrayList;
 
-public class CrawlerWorker implements Runnable{
+public class CrawlerWorker implements Runnable {
 	
 	Thread selfThread = null;
 	ICrawler onecrawler = null;
@@ -10,6 +10,10 @@ public class CrawlerWorker implements Runnable{
 	boolean stopped = false;
 	SleepTimer sleeptimer = null;
 	int ID = -1;
+	
+	int downloadcount = 0;
+	final int downloadmax = 50;
+	final int longsleeptime = 1800000;
 	
 	public CrawlerWorker(ICrawler crawler, SleepTimer stimer, int pID) {
 		onecrawler = crawler;
@@ -38,6 +42,7 @@ public class CrawlerWorker implements Runnable{
 					String filename = ExtractFileNameFromLink(zlink);
 					System.out.println("Downloading file : "+filename);
 					ZipDownloader.downLoadZip(zlink, filename);
+					downloadcount++;
 					if (!running)
 					{
 						break;
@@ -47,6 +52,15 @@ public class CrawlerWorker implements Runnable{
 					{
 						break;
 					}
+				}
+			}
+			if (downloadcount >= downloadmax)
+			{
+				downloadcount = 0;
+				try {
+					Thread.sleep(longsleeptime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}
