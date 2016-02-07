@@ -75,6 +75,7 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
+		// System.out.println("FieldDeclaration:" + node + ";typeclass:" + node.getType().getClass());
 		String typecode = TypeCode(node.getType(), true);
 		SetVeryRecentDeclaredType(typecode);
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);

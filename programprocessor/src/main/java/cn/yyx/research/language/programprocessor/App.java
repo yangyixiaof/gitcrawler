@@ -94,7 +94,7 @@ public class App {
 							processdir = ps[0];
 							BigDirectory.PrefixDirectory = ps[1];
 						}
-						System.out.println("Java processor uses the directory : " + processdir);
+						System.out.println("Java processor uses the directory : " + processdir + ";Writing Directory : " + BigDirectory.PrefixDirectory);
 						app = new App(processdir);
 						// stop = !
 						app.StartProcessJavaProjects();

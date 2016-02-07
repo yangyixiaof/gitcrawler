@@ -1096,6 +1096,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ConditionalExpression node) {
+		Integer hint = referhint.GetNodeHelp(node.hashCode());
+		referhint.AddNodeHelp(node.getExpression().hashCode(), ReferenceHintLibrary.DataUse);
+		if (hint != null)
+		{
+			referhint.AddNodeHelp(node.getThenExpression().hashCode(), hint);
+			referhint.AddNodeHelp(node.getElseExpression().hashCode(), hint);
+		}
+		else
+		{
+			referhint.AddNodeHelp(node.getThenExpression().hashCode(), ReferenceHintLibrary.DataUse);
+			referhint.AddNodeHelp(node.getElseExpression().hashCode(), ReferenceHintLibrary.DataUse);
+		}
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "CondExpBegin", false, false, false, true, null);
 		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getThenExpression(), node, false) {
 			@Override
@@ -1111,10 +1123,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		});
 		return super.visit(node);
 	}
-	
+
 	@Override
 	public void endVisit(ConditionalExpression node) {
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "CondExpEnd", false, false, false, true, null);
+		referhint.DeleteNodeHelp(node.getExpression().hashCode());
+		referhint.DeleteNodeHelp(node.getThenExpression().hashCode());
+		referhint.DeleteNodeHelp(node.getElseExpression().hashCode());
 	}
 
 	// field access is highly related to the below.
@@ -1252,6 +1267,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(ClassInstanceCreation node) {
+		// TODO
 		// System.out.println("Node Type:"+node.getType());
 		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
 		Expression expr = node.getExpression();
@@ -1265,7 +1281,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				invoker += ("." + refercnt);
 			}
 		}
-		MethodInvocationCode(node.getType().toString(), invoker, node.arguments());
+		MethodInvocationCode(TypeCode(node.getType(), false), invoker, node.arguments());
 		MethodDeleteReferRequest(expr, node.arguments());
 		if (node.getAnonymousClassDeclaration() != null)
 		{
@@ -1652,6 +1668,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					{
 						typecode = ((NameQualifiedType)node).getName().toString();
 					}
+					if (node instanceof QualifiedType)
+					{
+						typecode = ((QualifiedType)node).getName().toString();
+					}
+					if (node instanceof SimpleType)
+					{
+						Name name = ((SimpleType)node).getName();
+						if (name instanceof QualifiedName)
+						{
+							typecode = ((QualifiedName)name).getName().toString();
+						}
+					}
 				}
 			}
 		}
@@ -1787,15 +1815,50 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// Do nothing now.
 		// System.out.println("EnumDeclaration:"+node);
 		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
-		return super.visit(node);
-	}
-
-	@Override
-	public boolean visit(EnumConstantDeclaration node) {
-		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
+		FlushCode();
+		if (FirstLevelClass == null) {
+			FirstLevelClass = node.hashCode();
+		}
+		EnterBlock(node);
+		runforbid.AddNodeHelp(node.getName().hashCode(), true);
+		GenerateOneLine(GCodeMetaInfo.EnumDeclarationHint + node.getName().toString(), false, false, false, true, null);
+		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
+		node.accept(sfpa);
 		return super.visit(node);
 	}
 	
+	@Override
+	public void endVisit(EnumDeclaration node) {
+		FlushCode();
+		if (FirstLevelClass == node.hashCode()) {
+			FirstLevelClass = null;
+		}
+		ExitBlock();
+		runforbid.DeleteNodeHelp(node.getName().hashCode());
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(EnumConstantDeclaration node) {
+		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
+		MethodPushReferRequest(null, node.arguments());
+		runforbid.AddNodeHelp(node.getName().hashCode(), true);
+		return super.visit(node);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(EnumConstantDeclaration node) {
+		String invoker = "this";
+		EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
+		MethodDeleteReferRequest(null, node.arguments());
+		if (node.getAnonymousClassDeclaration() != null)
+		{
+			GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true, null);
+		}
+		runforbid.DeleteNodeHelp(node.getName().hashCode());
+	}
+
 	@Override
 	public boolean visit(TypeLiteral node) {
 		Type type = node.getType();
@@ -2372,7 +2435,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 	}
-
+	
 	protected void MethodInvocationCode(String methodName, String invoker, List<ASTNode> args) {
 		/*if (methodName.equals("getCodeBase"))
 		{
@@ -2400,6 +2463,42 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		nodecode.append(post);
 		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
+	}
+
+	protected void EnumConstantInvocationCode(String enumConstantName, String invoker, List<Expression> arguments) {
+		StringBuilder nodecode = new StringBuilder("");
+		nodecode.append(GCodeMetaInfo.EnumConstantDeclarationHint + enumConstantName);
+		if (arguments != null && arguments.size() > 0)
+		{
+			String pre = "(";
+			String post = ")";
+			nodecode.append(pre);
+			nodecode.append(invoker);
+			Iterator<Expression> itr = arguments.iterator();
+			while (itr.hasNext()) {
+				ASTNode arg = itr.next();
+				nodecode.append(",");
+				String argcnt = referedcnt.GetNodeHelp(arg.hashCode());
+				if (argcnt == null)
+				{
+					nodecode.append(GCodeMetaInfo.PreExist);
+				}
+				else
+				{
+					nodecode.append(argcnt);
+				}
+			}
+			nodecode.append(post);
+		}
+		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
+	}
+	
+	
+	protected void ErrorAndStop(String info) {
+		System.err.println(info);
+		System.err.println("The system will exit.");
+		new Exception().printStackTrace();
+		System.exit(1);
 	}
 	
 }
