@@ -21,6 +21,7 @@ public class GCodeMetaInfo {
 	public static final String ReturnHint = "RT@";
 	public static final String SwitchHint = "SW@";
 	public static final String CaseHint = "CS@";
+	public static final String DefaultHint = "DF@";
 	public static final String SynchronizedHint = "SC@";
 	public static final String ThrowStatementHint = "TS@";
 	public static final String CatchHint = "CT@";

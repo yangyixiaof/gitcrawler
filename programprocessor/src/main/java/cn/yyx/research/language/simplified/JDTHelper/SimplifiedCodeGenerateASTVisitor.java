@@ -838,13 +838,25 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchCase node) {
-		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
+		Expression expr = node.getExpression();
+		if (expr != null)
+		{
+			ExpressionReferPreHandle(expr, ReferenceHintLibrary.DataUse);
+		}		
 		return super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(SwitchCase node) {
-		ExpressionReferPostHandle(node, node.getExpression(), "case", GCodeMetaInfo.CaseHint, "", false, true, false, false, false);
+		Expression expr = node.getExpression();
+		if (expr != null)
+		{
+			ExpressionReferPostHandle(node, expr, "case", GCodeMetaInfo.CaseHint, "", false, true, false, false, false);
+		}
+		else
+		{
+			GenerateOneLine(GCodeMetaInfo.DefaultHint + "default", false, false, false, true, null);
+		}
 	}
 
 	@Override
