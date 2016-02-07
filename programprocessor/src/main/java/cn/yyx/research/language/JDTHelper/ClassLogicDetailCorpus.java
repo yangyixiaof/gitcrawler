@@ -39,7 +39,6 @@ public class ClassLogicDetailCorpus {
 			}
 			
 			fmastv = null;
-			fmvgastv = null;
 			codemap = null;
 		}
 		ArrayList<CorpusContentPair> result = new ArrayList<CorpusContentPair>();
