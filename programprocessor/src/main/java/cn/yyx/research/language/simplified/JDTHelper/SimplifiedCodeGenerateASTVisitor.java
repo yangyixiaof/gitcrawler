@@ -733,12 +733,17 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SwitchStatement node) {
 		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true) {
+			@Override
+			public void run() {
+				ExpressionReferPostHandle(node, node.getExpression(), "switch", GCodeMetaInfo.SwitchHint, "", false, true, false, false, false);
+			}
+		});
 		return super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(SwitchStatement node) {
-		ExpressionReferPostHandle(node, node.getExpression(), "switch", GCodeMetaInfo.SwitchHint, "", false, true, false, false, false);
 	}
 
 	@Override
@@ -1115,7 +1120,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodDeclaration node) {
 		// System.out.println("MethodDeclarationParent:"+node.getParent().hashCode());
-		if (isFirstLevelASTNode(node)) {
+		if (isFirstLevelASTNode(node) || ParentIsTypeDeclaration(node)) {
 			if (omc != null) {
 				FlushCode();
 				ClearClassAndLabelInfo();
@@ -1141,6 +1146,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 	
+	private boolean ParentIsTypeDeclaration(MethodDeclaration node) {
+		if (node.getParent() instanceof TypeDeclaration)
+		{
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(MethodDeclaration node) {
