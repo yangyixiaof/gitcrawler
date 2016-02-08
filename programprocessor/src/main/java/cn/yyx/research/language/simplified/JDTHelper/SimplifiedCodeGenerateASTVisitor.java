@@ -107,7 +107,25 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ThisExpression node) {
-		return super.visit(node);
+		int nodehashcode = node.hashCode();
+		if (NodeIsRefered(nodehashcode))
+		{
+			String nodecode = "this";
+			Name name = node.getQualifier();
+			if (name != null)
+			{
+				if (name instanceof SimpleName)
+				{
+					nodecode += "." + name.toString();
+				}
+				else
+				{
+					nodecode += "." + ((QualifiedName)name).getName().toString();
+				}
+			}
+			referedcnt.AddNodeHelp(nodehashcode, nodecode);
+		}
+		return false;
 	}
 	
 	@Override
