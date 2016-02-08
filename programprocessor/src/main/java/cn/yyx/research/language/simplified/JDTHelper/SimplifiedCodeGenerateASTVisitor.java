@@ -2188,7 +2188,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			if (!needaddsplitter)
 			{
-				if (CheckAppend() && exprnoline)
+				if (CheckAppend() && exprnoline && !occupyline)
 				{
 					GenerateOneLine(exprcode, false, false, false, false, null);
 					exprused = true;
