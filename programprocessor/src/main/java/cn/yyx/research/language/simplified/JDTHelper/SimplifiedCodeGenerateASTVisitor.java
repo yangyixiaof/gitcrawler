@@ -148,6 +148,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected Stack<NodeCode> omcanonystack = new Stack<NodeCode>();
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	protected NodeCode omc = new NodeCode(argmutiple);
+	protected int StrictedNameLength = 2;
 	
 	{
 		cjcs.SetDescription("Class Declaration.");
@@ -1267,7 +1268,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(ClassInstanceCreation node) {
-		// TODO
 		// System.out.println("Node Type:"+node.getType());
 		// System.out.println("Body:"+node.getAnonymousClassDeclaration());
 		Expression expr = node.getExpression();
@@ -1423,18 +1423,83 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(QualifiedName node) {
-		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		Name qualifier = node.getQualifier();
-		return QualifiedPreHandle(node, qualifier) && super.visit(node);
+		int nodehashcode = node.hashCode();
+		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
+		if (forbid != null && forbid == true)
+		{
+			return false;
+		}
+		int len = PredictLength(node);
+		boolean ctn = true;
+		if (len > StrictedNameLength)
+		{
+			ctn = false;
+			String nodecode = GetStrictedLengthOfName(node, StrictedNameLength);
+			if (NodeIsRefered(nodehashcode))
+			{
+				referedcnt.AddNodeHelp(nodehashcode, nodecode);
+				refernoline.AddNodeHelp(nodehashcode, true);
+			}
+			else
+			{
+				GenerateOneLine(nodecode, true, false, false, false, GCodeMetaInfo.QualifiedHint);
+			}
+		}
+		else
+		{
+			runforbid.AddNodeHelp(node.getName().hashCode(), true);
+			Name qualifier = node.getQualifier();
+			ctn = QualifiedPreHandle(node, qualifier);
+		}
+		return ctn && super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(QualifiedName node) {
-		Name qualifier = node.getQualifier();
-		Name name = node.getName();
-		QualifiedPostHandle(node, qualifier, name, null, null);
-		
-		runforbid.DeleteNodeHelp(node.getName().hashCode());
+		int nodehashcode = node.hashCode();
+		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
+		if (forbid != null && forbid == true)
+		{
+			return;
+		}
+		int len = PredictLength(node);
+		if (len <= StrictedNameLength)
+		{
+			Name qualifier = node.getQualifier();
+			Name name = node.getName();
+			QualifiedPostHandle(node, qualifier, name, null, null);
+			
+			runforbid.DeleteNodeHelp(node.getName().hashCode());
+		}
+	}
+	
+	protected int PredictLength(Name node)
+	{
+		if (node instanceof SimpleName)
+		{
+			return 1;
+		}
+		else
+		{
+			return PredictLength(((QualifiedName)node).getQualifier()) + 1;
+		}
+	}
+	
+	protected String GetStrictedLengthOfName(QualifiedName node, int len)
+	{
+		String cnt = "";
+		while (len > 0)
+		{
+			len--;
+			String cat = ".";
+			if (len == 0)
+			{
+				cat = "";
+			}
+			cnt += node.getName().toString() + cat;
+			node = (QualifiedName) node.getQualifier();
+		}
+		return cnt;
 	}
 	
 	protected boolean QualifiedPreHandle(ASTNode node, Name qualifier)
