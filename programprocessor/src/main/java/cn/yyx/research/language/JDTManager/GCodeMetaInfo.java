@@ -36,7 +36,7 @@ public class GCodeMetaInfo {
 	public static final String QualifiedNameHint = "QN@";
 	public static final String FieldAccessHint = "FA@";
 	public static final String QualifiedHint = "Q@";
-	
+	public static final String Initializer = "IB@";
 	
 	public static final String DescriptionHint = "DH@";
 	
