@@ -4,6 +4,7 @@ public class GCodeMetaInfo {
 	
 	public static final String AnonymousClassHintStatement = "HT@";
 	public static final String ClassDeclarationHint = "CD@";
+	public static final String ClassInnerDeclarationHint = "ICD@";
 	public static final String EnumDeclarationHint = "ED@";
 	public static final String MethodDeclarationHint = "MD@";
 	public static final String EnumConstantDeclarationHint = "EMD@";

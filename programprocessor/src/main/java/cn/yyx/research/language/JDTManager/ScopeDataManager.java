@@ -25,7 +25,7 @@ public class ScopeDataManager {
 	Map<OneScope, LinkedList<String>> mCommonScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
 	Map<OneScope, LinkedList<String>> mFinalCommonScopeTypeMap = new TreeMap<OneScope, LinkedList<String>>();
 
-	EnteredScopeStack blockstack = new EnteredScopeStack();
+	EnteredScopeStack classstack = new EnteredScopeStack();
 
 	VDataPool fvdp = new VDataPool();
 	VDataPool cvdp = new VDataPool();
@@ -106,14 +106,14 @@ public class ScopeDataManager {
 		VDataPool use = null;
 		if (isfinal) {
 			if (isfielddeclare) {
-				oscope = blockstack.peek();
+				oscope = classstack.peek();
 				CheckTypeNotNull(type);
 				use = ffvdp;
 				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mFinalFieldScopeDataMap,
 						mFinalFieldScopeTypeMap);
 			}
 			if (iscommondeclare) {
-				oscope = blockstack.peek();
+				oscope = classstack.peek();
 				CheckTypeNotNull(type);
 				use = fcvdp;
 				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mFinalCommonScopeDataMap,
@@ -152,7 +152,7 @@ public class ScopeDataManager {
 					new Exception().printStackTrace();
 				}
 				
-				oscope = blockstack.peek();
+				oscope = classstack.peek();
 				CheckTypeNotNull(type);
 				use = fvdp;
 				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mFieldScopeDataMap,
@@ -160,7 +160,7 @@ public class ScopeDataManager {
 			}
 			if (iscommondeclare) {
 				// MyLogger.Info("commondeclare:data:"+data+";type:"+type+";isfielddeclare:"+isfielddeclare+";isfinal:"+isfinal);
-				oscope = blockstack.peek();
+				oscope = classstack.peek();
 				CheckTypeNotNull(type);
 				use = cvdp;
 				DataScopeAndScopeDataMapCode(data, type, isfinal, oscope, isfielddeclare, mCommonScopeDataMap,
@@ -273,14 +273,14 @@ public class ScopeDataManager {
 				return null;
 			}
 			Integer exactoffset = use.GetExactDataOffsetInDataOwnScope(dataScope, data, type);
-			if (exactoffset == null || blockstack.getSize() == 0) {
-				if (blockstack.getSize() == 0) {
+			if (exactoffset == null || classstack.getSize() == 0) {
+				if (classstack.getSize() == 0) {
 					MyLogger.Error("What the fuck, data does not have scope? The system will exit.");
 					System.exit(1);
 				}
 				return null;
 			}
-			OneScope currentscope = blockstack.getScope(blockstack.getSize() - 1);
+			OneScope currentscope = classstack.getScope(classstack.getSize() - 1);
 			String indicator = nowinfo.isFinal() ? (nowinfo.isField() ? "D" : "X") : (nowinfo.isField() ? "F" : "C");
 			return "$" + indicator + Math.abs(dataScope.getLevel() - currentscope.getLevel())
 					+ GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(exactoffset);
@@ -313,8 +313,8 @@ public class ScopeDataManager {
 	}
 
 	public void EnterBlock(int scopeid) {
-		int level = blockstack.getSize();
-		OneScope oscope = blockstack.PushBack(scopeid, level);
+		int level = classstack.getSize();
+		OneScope oscope = classstack.PushBack(scopeid, level);
 
 		fvdp.AScopeCreated(oscope);
 		cvdp.AScopeCreated(oscope);
@@ -324,7 +324,7 @@ public class ScopeDataManager {
 	}
 
 	public void ExitBlock() {
-		OneScope oscope = blockstack.pop();
+		OneScope oscope = classstack.pop();
 
 		fvdp.AScopeDestroyed(oscope);
 		cvdp.AScopeDestroyed(oscope);
@@ -372,17 +372,20 @@ public class ScopeDataManager {
 	}
 
 	public void ResetCurrentClassField() {
-		OneScope classscope = blockstack.peek();
-
 		// just check now only one size.
-		CheckOnlyOneSize(mCommonScopeDataMap);
+		// CheckOnlyOneSize(mCommonScopeDataMap);
 
-		// remove commons in datascope list, then clear common data map..
+		// remove commons in datascope list, then clear common data map.
 		LinkedList<String> datalist = null;
-		datalist = mCommonScopeDataMap.remove(classscope);
-		DeleteDataScopeOfScope(classscope, datalist, true);
-		datalist = mFinalCommonScopeDataMap.remove(classscope);
-		DeleteDataScopeOfScope(classscope, datalist, true);
+		Iterator<OneScope> itr2 = classstack.GetIterator();
+		while (itr2.hasNext())
+		{
+			OneScope onescope = itr2.next();
+			datalist = mCommonScopeDataMap.remove(onescope);
+			DeleteDataScopeOfScope(onescope, datalist, true);
+			datalist = mFinalCommonScopeDataMap.remove(onescope);
+			DeleteDataScopeOfScope(onescope, datalist, true);
+		}
 
 		// then clear common type map.
 		mCommonScopeTypeMap.clear();
@@ -390,12 +393,18 @@ public class ScopeDataManager {
 
 		cvdp.ClearAll();
 		fcvdp.ClearAll();
-		fvdp.ResetClassScope(classscope, mFieldScopeDataMap.get(classscope), mFieldScopeTypeMap.get(classscope));
-		ffvdp.ResetClassScope(classscope, mFinalFieldScopeDataMap.get(classscope),
-				mFinalFieldScopeTypeMap.get(classscope));
+		
+		Iterator<OneScope> itr = classstack.GetIterator();
+		while (itr.hasNext())
+		{
+			OneScope onescope = itr.next();
+			fvdp.ResetClassScope(onescope, mFieldScopeDataMap.get(onescope), mFieldScopeTypeMap.get(onescope));
+			ffvdp.ResetClassScope(onescope, mFinalFieldScopeDataMap.get(onescope),
+					mFinalFieldScopeTypeMap.get(onescope));
+		}
 	}
 
-	private void CheckOnlyOneSize(Map<OneScope, LinkedList<String>> scopeDataMap) {
+	protected void CheckOnlyOneSize(Map<OneScope, LinkedList<String>> scopeDataMap) {
 		if (scopeDataMap.size() > 1) {
 			MyLogger.Error("ScopeData size:" + scopeDataMap.size()
 					+ ". What the fuck, in first level method has two class levels? Serious error, the system will exit.");
@@ -414,11 +423,11 @@ public class ScopeDataManager {
 	}
 
 	public boolean ContainsScope(Integer equid) {
-		return blockstack.isIdContained(equid);
+		return classstack.isIdContained(equid);
 	}
 
 	public int GetFirstClassId() {
-		return blockstack.getScope(0).getID();
+		return classstack.getScope(0).getID();
 	}
 
 }

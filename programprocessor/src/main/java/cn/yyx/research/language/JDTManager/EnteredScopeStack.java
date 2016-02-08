@@ -1,6 +1,7 @@
 package cn.yyx.research.language.JDTManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class EnteredScopeStack {
 	
@@ -55,6 +56,11 @@ public class EnteredScopeStack {
 			}
 		}
 		return false;
+	}
+	
+	public Iterator<OneScope> GetIterator()
+	{
+		return stack.iterator();
 	}
 	
 }

@@ -199,6 +199,21 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TryStatement node) {
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "try", false, false, false, true, null);
+		ASTNode lastbeforefinally = node.getBody();
+		if (node.catchClauses() != null && node.catchClauses().size() > 0)
+		{
+			lastbeforefinally = (ASTNode) node.catchClauses().get(node.catchClauses().size()-1);
+		}
+		if (node.getFinally() != null)
+		{
+			AddFirstOrderTask(new FirstOrderTask(lastbeforefinally, null, node, true) {
+				@Override
+				public void run() {
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "finally", false, false, false, true, null);
+				}
+			});
+		}
 		return super.visit(node);
 	}
 	
@@ -215,12 +230,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		FlushCode();
+		boolean inner = false;
 		if (FirstLevelClass == null) {
 			FirstLevelClass = node.hashCode();
 		}
+		else
+		{
+			inner = true;
+		}
 		EnterBlock(node);
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		GenerateOneLine(GCodeMetaInfo.ClassDeclarationHint + node.getName().toString(), false, false, false, true, null);
+		String declareHint = inner ? GCodeMetaInfo.ClassInnerDeclarationHint : GCodeMetaInfo.ClassDeclarationHint;
+		GenerateOneLine(declareHint + node.getName().toString(), false, false, false, true, null);
 		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
 		node.accept(sfpa);
 		return super.visit(node);
@@ -818,6 +839,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(CatchClause node) {
+		runforbid.AddNodeHelp(node.getException().hashCode(), true);
 		String nodecode = GCodeMetaInfo.CatchHint + "catch" + GCodeMetaInfo.WhiteSpaceReplacer + TypeCode(node.getException().getType(), true);
 		GenerateOneLine(nodecode, false, false, false, true, null);
 		return super.visit(node);
