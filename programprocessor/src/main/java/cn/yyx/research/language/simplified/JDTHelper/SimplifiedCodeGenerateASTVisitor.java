@@ -342,6 +342,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(LambdaExpression node) {
+		EnterBlock(node);
 		SetVeryRecentNotGenerateCode(true);
 		List<ASTNode> params = node.parameters();
 		StringBuffer nodecode = new StringBuffer(GCodeMetaInfo.LambdaExpressionHint + "(");
@@ -383,6 +384,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 		SetVeryRecentNotGenerateCode(false);
+		ExitBlock();
 	}
 	
 	@Override
