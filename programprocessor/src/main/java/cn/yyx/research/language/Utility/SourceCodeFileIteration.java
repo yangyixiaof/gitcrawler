@@ -1,6 +1,9 @@
 package cn.yyx.research.language.Utility;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cn.yyx.research.language.JDTHelper.ProgramProcessor;
@@ -60,6 +63,7 @@ public class SourceCodeFileIteration {
 						corpus = null;
 					} catch (Exception e) {
 						System.err.println("Not Parsed File or wrong parsed file, ignore it.");
+						RecordWrongFile(f.getAbsolutePath());
 						try {
 							Thread.sleep(10000);
 						} catch (InterruptedException e1) {
@@ -70,6 +74,28 @@ public class SourceCodeFileIteration {
 			}
 		}
 		level--;
+	}
+	
+	private static void RecordWrongFile(String filepath)
+	{
+		File errorfile = new File("errorJavaFile.txt");
+		if (!errorfile.exists())
+		{
+			try {
+				errorfile.createNewFile();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(errorfile));
+			bw.write("Wrong File Path:" + filepath);
+			bw.newLine();
+			bw.flush();
+			bw.close();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
 	}
 
 	public static void StopIterate() {
