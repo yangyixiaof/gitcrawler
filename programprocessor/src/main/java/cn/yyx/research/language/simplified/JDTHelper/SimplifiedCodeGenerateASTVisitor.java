@@ -21,7 +21,6 @@ import cn.yyx.research.language.JDTManager.OneJavaFileCode;
 import cn.yyx.research.language.JDTManager.OtherCodeManager;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
-import cn.yyx.research.language.JDTManager.VarOrObjReferenceManager;
 import cn.yyx.research.language.Utility.MyLogger;
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 
@@ -34,7 +33,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected MethodWindow mw = new MethodWindow();
 	protected FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 	protected ScopeDataManager sdm = new ScopeDataManager();
-	protected VarOrObjReferenceManager voorm = new VarOrObjReferenceManager();
 	protected JCScope cjcs = new JCScope();
 	protected JCScope ljcs = new JCScope();
 	protected Integer FirstLevelClass = null;
@@ -52,7 +50,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected Stack<NodeCode> omcanonystack = new Stack<NodeCode>();
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	protected NodeCode omc = new NodeCode(argmutiple);
-	protected int StrictedNameLength = 2;
+	public final int StrictedNameLength = 2;
 	
 	{
 		cjcs.SetDescription("Class Declaration.");
@@ -283,12 +281,19 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(Initializer node) {
 		// Do nothing now.
 		// MyLogger.Info("Initializer:"+node);
-		if (isFirstLevelASTNode(node)) {
+		if (isFirstLevelASTNode(node) || ParentIsTypeDeclaration(node)) {
+			if (omc != null && !omc.IsEmpty()) {
+				PushMethodNodeCodeToJavaFileCode();
+				ResetDLM();
+			}
+			omc = new NodeCode(argmutiple);
+		}
+		/*if (isFirstLevelASTNode(node)) {
 			if (omc != null && !omc.IsEmpty()) {
 				PushMethodNodeCodeToJavaFileCode();
 			}
 			omc = new NodeCode(argmutiple);
-		}
+		}*/
 		GenerateOneLine(GCodeMetaInfo.Initializer + "InitialBlock", false, false, false, true, null);
 		return super.visit(node);
 	}
@@ -316,7 +321,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(LambdaExpression node) {
-		EnterBlock(node);
 		SetVeryRecentNotGenerateCode(true);
 		List<ASTNode> params = node.parameters();
 		StringBuffer nodecode = new StringBuffer(GCodeMetaInfo.LambdaExpressionHint + "(");
@@ -358,7 +362,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 		SetVeryRecentNotGenerateCode(false);
-		ExitBlock();
 	}
 	
 	@Override
@@ -418,6 +421,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(CastExpression node) {
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
+		// System.err.println("CastExpression:" + node);
 		CheckHint(hint);
 		ExpressionReferPreHandle(node.getExpression(), hint);
 		return super.visit(node);
@@ -1073,10 +1077,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		ASTNode expr = node.getExpression();
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		int exprhashcode = expr.hashCode();
-		if (expr instanceof FieldAccess || expr instanceof SuperFieldAccess) {
+		/*if (expr instanceof FieldAccess || expr instanceof SuperFieldAccess) {
 			AddNodeRefered(exprhashcode);
 			referhint.AddNodeHelp(exprhashcode, hint);
-		}
+		}*/
 		if (expr instanceof ThisExpression)
 		{
 			int namehashcode = node.getName().hashCode();
@@ -1084,6 +1088,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			Integer changedhint = ReferenceHintLibrary.ChangeHintHighByteToField(hint);
 			referhint.AddNodeHelp(namehashcode, changedhint);
 			AddNodeRefered(namehashcode);
+		}
+		else
+		{
+			AddNodeRefered(exprhashcode);
+			referhint.AddNodeHelp(exprhashcode, hint);
 		}
 		return super.visit(node);
 	}
@@ -1094,20 +1103,19 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(FieldAccess node) {
 		String nodecode = "";
 		ASTNode expr = node.getExpression();
-		if (!(expr instanceof FieldAccess || expr instanceof SuperFieldAccess)) {
-			if (expr instanceof ThisExpression)
-			{
-				int namehashcode = node.getName().hashCode();
-				nodecode = referedcnt.GetNodeHelp(namehashcode);
-			}
-			else
-			{
-				nodecode = node.getName().toString() + "." + GCodeMetaInfo.PreExist;
-			}
+		if (expr instanceof ThisExpression)
+		{
+			int namehashcode = node.getName().hashCode();
+			nodecode = referedcnt.GetNodeHelp(namehashcode);
 		}
 		else
 		{
-			nodecode = node.getName().toString() + "." + referedcnt.GetNodeHelp(expr.hashCode());
+			String exprcode = referedcnt.GetNodeHelp(expr.hashCode());
+			if (exprcode == null || exprcode.equals(""))
+			{
+				exprcode = GCodeMetaInfo.PreExist;
+			}
+			nodecode = node.getName().toString() + "." + exprcode;
 		}
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
@@ -1120,16 +1128,21 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// delete hint.
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 		int exprhashcode = expr.hashCode();
-		if (expr instanceof FieldAccess) {
+		/*if (expr instanceof FieldAccess) {
 			DeleteNodeRefered(exprhashcode);
 			referhint.DeleteNodeHelp(exprhashcode);
-		}
+		}*/
 		if (expr instanceof ThisExpression)
 		{
 			int namehashcode = node.getName().hashCode();
 			runpermit.DeleteNodeHelp(namehashcode);
 			referhint.DeleteNodeHelp(namehashcode);
 			DeleteNodeRefered(namehashcode);
+		}
+		else
+		{
+			DeleteNodeRefered(exprhashcode);
+			referhint.DeleteNodeHelp(exprhashcode);
 		}
 	}
 	
@@ -1143,6 +1156,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			if (omc != null) {
 				FlushCode();
 				ClearClassAndLabelInfo();
+				ResetDLM();
 			}
 			omc = new NodeCode(argmutiple);
 		}
@@ -1165,7 +1179,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 	
-	private boolean ParentIsTypeDeclaration(MethodDeclaration node) {
+	private boolean ParentIsTypeDeclaration(BodyDeclaration node) {
 		if (node.getParent() instanceof TypeDeclaration)
 		{
 			return true;
@@ -2027,15 +2041,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		return "$L" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(offset);
 	}
-
-	protected Integer GetReferenceUpdateHint(ASTNode node) {
-		return voorm.GetReferenceUpdateHint(node);
-	}
-
-	protected void AddReferenceUpdateHint(ASTNode node, Integer hint) {
-		voorm.AddReferenceUpdateHint(node, hint);
-	}
-
+	
 	protected void DataNewlyUsed(String data, String type, boolean isfianl, boolean isFieldDeclare,
 			boolean isCommonDeclare, boolean isFieldUseOrDeclare, boolean isCommonUseOrDeclare) {
 		sdm.AddDataNewlyUsed(data, type, isfianl, isFieldDeclare, isCommonDeclare, isFieldUseOrDeclare,
@@ -2509,12 +2515,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
 	}
 	
-	
 	protected void ErrorAndStop(String info) {
 		MyLogger.Error(info);
 		MyLogger.Error("The system will exit.");
 		new Exception().printStackTrace();
 		System.exit(1);
+	}
+	
+	protected void ResetDLM() {
+		sdm.ResetCurrentClassField();
 	}
 	
 }

@@ -20,7 +20,6 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		mw = scga.mw;
 		fotp = scga.fotp;
 		sdm = scga.sdm;
-		voorm = scga.voorm;
 		cjcs = scga.cjcs;
 		ljcs = scga.ljcs;
 		berefered = scga.berefered;
