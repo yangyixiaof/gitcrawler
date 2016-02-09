@@ -47,16 +47,25 @@ public class SourceCodeFileIteration {
 				{
 					num++;
 					System.out.println("Handling file : " + f.getAbsolutePath() + ";CurrentNum:"+num);
-					long begin = System.currentTimeMillis();
-					ArrayList<CorpusContentPair> corpus = ProgramProcessor.ProcessOneJavaFile(f);
-					long end = System.currentTimeMillis();
 					try {
-						SleepTimeController.TImeSleep(begin, end);
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
+						long begin = System.currentTimeMillis();
+						ArrayList<CorpusContentPair> corpus = ProgramProcessor.ProcessOneJavaFile(f);
+						long end = System.currentTimeMillis();
+						try {
+							SleepTimeController.TImeSleep(begin, end);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+						BigDirectoryManager.WriteCorpus(corpus);
+						corpus = null;
+					} catch (Exception e) {
+						System.err.println("Not Parsed File or wrong parsed file, ignore it.");
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
 					}
-					BigDirectoryManager.WriteCorpus(corpus);
-					corpus = null;
 				}
 			}
 		}
