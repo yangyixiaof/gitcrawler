@@ -559,6 +559,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 	
 	@Override
+	public void endVisit(ArrayAccess node) {
+		AppendEndInfoToLast(GCodeMetaInfo.EndOfArrayDeclarationIndexExpression);
+	}
+	
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ArrayCreation node) {
 		ArrayType type = node.getType();
@@ -2167,12 +2172,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			if (!needaddsplitter)
 			{
-				if (CheckAppend() && exprnoline && !occupyline)
+				if (CheckAppend() && exprnoline && !occupyline && exprisleft && !(node instanceof PostfixExpression || node instanceof PrefixExpression))
 				{
 					GenerateOneLine(exprcode, false, false, false, false, null);
 					exprused = true;
 					exprcode = "";
-				}				
+				}
 			}
 		}
 		
@@ -2213,7 +2218,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					operatorHint = "";
 				}
 				boolean mustPre = false;
-				if (exprused)
+				if (exprused && exprisleft)
 				{
 					mustPre = true;
 				}
