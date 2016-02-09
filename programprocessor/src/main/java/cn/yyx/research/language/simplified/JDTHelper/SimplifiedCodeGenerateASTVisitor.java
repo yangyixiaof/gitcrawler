@@ -1502,7 +1502,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			if (len == 1)
 			{
-				name = (SimpleName) node.getQualifier();
+				Name qualifier = node.getQualifier();
+				if (qualifier instanceof QualifiedName)
+				{
+					name = ((QualifiedName) qualifier).getName();
+				}
+				else
+				{
+					name = (SimpleName) qualifier;
+				}
 			}
 		}
 		return cnt;
