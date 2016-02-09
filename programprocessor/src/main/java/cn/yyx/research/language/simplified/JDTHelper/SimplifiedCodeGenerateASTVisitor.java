@@ -50,7 +50,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected Stack<NodeCode> omcanonystack = new Stack<NodeCode>();
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	protected NodeCode omc = new NodeCode(argmutiple);
-	public final int StrictedNameLength = 2;
+	public static final int StrictedNameLength = 2;
 	
 	{
 		cjcs.SetDescription("Class Declaration.");
@@ -1312,16 +1312,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		MethodInvocationCode("super", invoker, node.arguments());
 		MethodDeleteReferRequest(expr, node.arguments());
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(SuperMethodInvocation node) {
 		MethodPushReferRequest(null, node.arguments());
+		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		if (node.getQualifier() != null)
 		{
-			AddNodeRefered(node.getQualifier().hashCode());
+			runforbid.AddNodeHelp(node.getQualifier().hashCode(), true);
 		}
-		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		return super.visit(node);
 	}
 	
@@ -1331,9 +1331,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		String invoker = "super";
 		if (node.getQualifier() != null)
 		{
-			int qualifierhashcode = node.getQualifier().hashCode();
-			String qualifiercnt = referedcnt.GetNodeHelp(qualifierhashcode);
-			DeleteNodeRefered(qualifierhashcode);
+			String qualifiercnt = GetDefaultStrictedLengthOfName(node.getQualifier());
 			if (qualifiercnt != null)
 			{
 				invoker += "." + qualifiercnt;
@@ -1343,6 +1341,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		MethodDeleteReferRequest(null, node.arguments());
 		
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
+		if (node.getQualifier() != null)
+		{
+			runforbid.DeleteNodeHelp(node.getQualifier().hashCode());
+		}
 	}
 
 	@Override
@@ -1464,9 +1466,20 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 	}
 	
+	protected String GetDefaultStrictedLengthOfName(Name node)
+	{
+		int len = PredictLength(node);
+		if (len == 1)
+		{
+			return node.toString();
+		}
+		return GetStrictedLengthOfName((QualifiedName)node, Math.min(StrictedNameLength, len));
+	}
+	
 	protected String GetStrictedLengthOfName(QualifiedName node, int len)
 	{
 		String cnt = "";
+		SimpleName name = null;
 		while (len > 0)
 		{
 			len--;
@@ -1475,10 +1488,21 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			{
 				cat = "";
 			}
-			cnt += node.getName().toString() + cat;
-			if (len > 0)
+			if (len >= 1)
+			{
+				cnt += node.getName().toString() + cat;
+			}
+			else
+			{
+				cnt += name.toString() + cat;
+			}
+			if (len > 1)
 			{
 				node = (QualifiedName) node.getQualifier();
+			}
+			if (len == 1)
+			{
+				name = (SimpleName) node.getQualifier();
 			}
 		}
 		return cnt;
@@ -1492,18 +1516,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			return false;
 		}
-		if (qualifier != null)
+		if (qualifier  != null)
 		{
-			int qualifierhashcode = qualifier.hashCode();
-			Integer hint = referhint.GetNodeHelp(node.hashCode());
-			if (hint != null)
-			{
-				referhint.AddNodeHelp(qualifierhashcode, hint);
-			}
-			if (qualifier != null)
-			{
-				AddNodeRefered(qualifierhashcode);
-			}
+			runforbid.AddNodeHelp(qualifier.hashCode(), true);
 		}
 		return true;
 	}
@@ -1521,7 +1536,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			return;
 		}
-		String nodecode = name.toString() + (additional != null ? additionalprefixoperator + additional : "") + (qualifier != null ? "." + referedcnt.GetNodeHelp(qualifier.hashCode()) : "");
+		String nodecode = name.toString() + (additional != null ? additionalprefixoperator + additional : "") + (qualifier != null ? "." + GetDefaultStrictedLengthOfName(qualifier) : "");
 		if (NodeIsRefered(nodehashcode))
 		{
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
@@ -1531,17 +1546,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			GenerateOneLine(nodecode, true, false, false, false, GCodeMetaInfo.QualifiedHint);
 		}
-		// delete qualifier refer
-		Integer hint = referhint.GetNodeHelp(node.hashCode());
-		if (hint != null)
-		{
-			referhint.DeleteNodeHelp(nodehashcode);
-		}
 		if (qualifier != null)
 		{
-			int qualifierhashcode = qualifier.hashCode();
-			referhint.DeleteNodeHelp(qualifierhashcode);
-			DeleteNodeRefered(qualifierhashcode);
+			runforbid.DeleteNodeHelp(qualifier.hashCode());
 		}
 	}
 	

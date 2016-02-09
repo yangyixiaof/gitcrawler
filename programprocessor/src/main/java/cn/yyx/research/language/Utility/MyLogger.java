@@ -2,7 +2,7 @@ package cn.yyx.research.language.Utility;
 
 public class MyLogger {
 	
-	public static boolean PrintInfo = false;
+	public static boolean PrintInfo = true;
 	
 	public static void Info(String info)
 	{
