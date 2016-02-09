@@ -365,7 +365,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			nodecode.deleteCharAt(nodecode.length()-1);
 		}
-		nodecode.append(")->{}");
+		ASTNode body = node.getBody();
+		String bodycode = "{}";
+		if (body instanceof SimpleName || body instanceof QualifiedName)
+		{
+			bodycode = body.toString();
+			runforbid.AddNodeHelp(body.hashCode(), true);
+		}
+		nodecode.append(")->" + bodycode);
 		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
 		return super.visit(node);
 	}
@@ -382,6 +389,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			{
 				SetVeryRecentDeclaredType(null);
 			}
+		}
+		ASTNode body = node.getBody();
+		if (body instanceof SimpleName || body instanceof QualifiedName)
+		{
+			runforbid.DeleteNodeHelp(body.hashCode());
 		}
 		SetVeryRecentNotGenerateCode(false);
 		ExitBlock();

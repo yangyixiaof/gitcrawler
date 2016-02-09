@@ -129,8 +129,7 @@ public class ScopeDataManager {
 						type = dscopeinfo.getType();
 						use = ffvdp;
 					} else {
-						System.err
-								.println("Debugging dscope null: data:" + data + "; isFieldUpdate : " + isFieldUpdate);
+						MyLogger.Error("Debugging dscope null: data:" + data + "; isFieldUpdate : " + isFieldUpdate);
 					}
 				}
 			}
@@ -176,8 +175,7 @@ public class ScopeDataManager {
 						type = dscopeinfo.getType();
 						use = fvdp;
 					} else {
-						System.err
-								.println("Debugging dscope null: data:" + data + "; isFieldUpdate : " + isFieldUpdate);
+						MyLogger.Error("Debugging dscope null: data:" + data + "; isFieldUpdate : " + isFieldUpdate);
 					}
 				}
 			}
