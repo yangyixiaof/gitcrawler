@@ -372,6 +372,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			bodycode = body.toString();
 			runforbid.AddNodeHelp(body.hashCode(), true);
 		}
+		else
+		{
+			referhint.AddNodeHelp(body.hashCode(), ReferenceHintLibrary.DataUse);
+		}
 		nodecode.append(")->" + bodycode);
 		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
 		return super.visit(node);
@@ -394,6 +398,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (body instanceof SimpleName || body instanceof QualifiedName)
 		{
 			runforbid.DeleteNodeHelp(body.hashCode());
+		}
+		else
+		{
+			referhint.DeleteNodeHelp(body.hashCode());
 		}
 		SetVeryRecentNotGenerateCode(false);
 		ExitBlock();
