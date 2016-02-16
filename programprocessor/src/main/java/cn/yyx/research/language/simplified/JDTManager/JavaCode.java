@@ -24,7 +24,7 @@ public interface JavaCode {
 		int atidx = onesentence.indexOf('@');
 		if (atidx < 0)
 		{
-			System.err.println("There is no @ in str, What is the problem?");
+			System.err.println("There is no @ in str, What is the problem? The wrong sentence is:"+onesentence);
 			System.exit(1);
 		}
 		String prefixhint = onesentence.substring(0, atidx);
@@ -70,7 +70,7 @@ public interface JavaCode {
 			case GCodeMetaInfo.VariableDeclarationHolder:
 				break;
 			default:
-				System.err.println("Unrecognized code prefix hint, What is the problem?");
+				System.err.println("Unrecognized code prefix hint, What is the problem? The wrong sentence is:"+onesentence);
 				System.exit(1);
 				break;
 		}
