@@ -62,7 +62,15 @@ public class SourceCodeFileIteration {
 						BigDirectoryManager.WriteCorpus(corpus);
 						corpus = null;
 					} catch (Exception e) {
-						System.err.println("Not Parsed File or wrong parsed file, ignore it.");
+						System.err.println("Not Parsed File or wrong parsed file, ignore it. It is exception.");
+						RecordWrongFile(f.getAbsolutePath());
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+					} catch (Error e) {
+						System.err.println("Not Parsed File or wrong parsed file, ignore it. It is error.");
 						RecordWrongFile(f.getAbsolutePath());
 						try {
 							Thread.sleep(10000);

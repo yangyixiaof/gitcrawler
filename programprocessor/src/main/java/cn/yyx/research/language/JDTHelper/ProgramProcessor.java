@@ -25,11 +25,7 @@ public class ProgramProcessor {
 			String source = content.toString();
 			
 			ASTTraversal astmdf = new ASTTraversal(f.getName(), source);
-			try {
-				target = astmdf.GeneratePredictionSuiteOnJava();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			target = astmdf.GeneratePredictionSuiteOnJava();
 			astmdf.Clear();
 			astmdf = null;
 			
