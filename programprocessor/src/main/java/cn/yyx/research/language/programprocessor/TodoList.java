@@ -5,7 +5,7 @@ public class TodoList {
 	
 	// TODO what is ' ?
 	// TODO what is  ?
-	// TODO some doesn't have hint.
+	// TODO temp solved: some doesn't have hint.
 	// TODO ZTSERVERS.Constants+,@HO some holes are behind endOfStatement.
 	// TODO MI@EntityItem(new,worldObj,.5,.5,.5,$C0?0) what is the problem ?
 	// Declaration Code should be more compact. The handles of content holder are not right. Solved.
