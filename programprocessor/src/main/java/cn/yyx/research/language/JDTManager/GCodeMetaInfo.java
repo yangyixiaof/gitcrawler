@@ -40,6 +40,10 @@ public class GCodeMetaInfo {
 	public static final String Initializer = "IB@";
 	public static final String DescriptionHint = "DH@";
 	public static final String VariableDeclarationHolder = "VH@";
+	public static final String ArrayAccess = "[@";
+	
+	// another display of ']'
+	public static final String EndOfArrayDeclarationIndexExpression = "@]";
 	
 	public static final String LeftParenthese = "@(";
 	public static final String RightParenthese = "@)";
@@ -51,10 +55,6 @@ public class GCodeMetaInfo {
 	public static final String EndOfAStatement = ";";
 	// another display of ',' ')'
 	public static final String EndOfAPartialStatement = ",";
-	// another display of ']'
-	public static final String EndOfArrayDeclarationIndexExpression = "@]";
-	
-	public static final String ArrayAccess = "[@";
 	
 	// public static final String ArrayInitial = "@ARI";
 	// public static final String ArrayCreation = "@ARC";

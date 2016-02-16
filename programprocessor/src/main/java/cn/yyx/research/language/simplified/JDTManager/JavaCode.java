@@ -70,9 +70,10 @@ public interface JavaCode {
 			case GCodeMetaInfo.Initializer:
 			case GCodeMetaInfo.DescriptionHint:
 			case GCodeMetaInfo.VariableDeclarationHolder:
+			case GCodeMetaInfo.ArrayAccess:
 				break;
 			default:
-				System.err.println("Unrecognized code prefix hint, What is the problem? The wrong sentence is:"+onesentence+";prestr="+prestr);
+				System.err.println("Unrecognized code prefix hint, What is the problem? The wrong sentence is:"+onesentence+";prestr:"+prestr);
 				System.exit(1);
 				break;
 		}
