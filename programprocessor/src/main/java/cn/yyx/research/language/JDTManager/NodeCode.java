@@ -36,6 +36,10 @@ public class NodeCode {
 	}
 	
 	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline, String preHint) {
+		if (code == null || code.equals(""))
+		{
+			return;
+		}
 		// lastCodeLevel = level;
 		/*if (code == null)
 		{

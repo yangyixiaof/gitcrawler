@@ -721,11 +721,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (extendops == null || extendops.size() == 0)
 		{
 			// MyLogger.Info("infix node:" + node);
-			ExpressionReferPostHandle(node, right, "", "", "", false, false, false, false, false);
+			ExpressionReferPostHandle(node, right, "", "", "", true, false, false, false, false);
 		}
 		else
 		{
-			ExpressionReferPostHandle(node, extendops.get(extendops.size()-1), "", "", "", false, false, false, false, false);
+			ExpressionReferPostHandle(node, extendops.get(extendops.size()-1), "", "", "", true, false, false, false, false);
 		}
 	}
 	
