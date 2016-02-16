@@ -792,7 +792,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					false);
 			AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 		} else {
-			GenerateOneLine("return", false, false, false, true, null);
+			GenerateOneLine(GCodeMetaInfo.ReturnHint + "return", false, false, false, true, null);
 			AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 		}
 	}
