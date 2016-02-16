@@ -14,7 +14,7 @@ import cn.yyx.research.language.Utility.SourceCodeFileIteration;
  */
 public class App {
 
-	// command: start /home/yyx/HomeSpace/UnzipPool
+	// command: start /home/yyx/HomeSpace/UnzipPool /home/yyx/HomeSpace/UnzipAllFiles/TransformedData
 	
 	String processdir = null;
 	Thread runThread = null;
