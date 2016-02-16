@@ -684,8 +684,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				}
 			}
 		});
-		if (extendops == null || extendops.size() == 0) {
+		if (extendops != null && extendops.size() != 0) {
 			Expression pre = right;
+			Expression last = extendops.get(extendops.size() - 1);
 			Iterator<Expression> itr = extendops.iterator();
 			while (itr.hasNext()) {
 				Expression op = itr.next();
@@ -694,7 +695,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					public void run() {
 						ExpressionReferPostHandle(node, (Expression) getPre(), operatorcode,
 								GCodeMetaInfo.InfixExpressionHint, "", true, false, true, true, false);
-						if (!itr.hasNext()) {
+						if (getPost() == last) {
 							referhint.AddNodeHelp(getPost().hashCode(), hint);
 						} else {
 							ExpressionReferPreHandle((Expression) getPost(), hint);
