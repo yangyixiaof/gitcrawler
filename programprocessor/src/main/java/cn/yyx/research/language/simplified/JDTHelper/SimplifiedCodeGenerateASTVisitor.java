@@ -461,7 +461,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				ExpressionReferPostHandle(node, (Expression) getPre(), node.getOperator().toString(),
 						GCodeMetaInfo.AssignmentHint, "", true, false, true, true, false);
 				referhint.AddNodeHelp(getPost().hashCode(), ReferenceHintLibrary.DataUse);
-				// ExpressionReferPreHandle(node.getRightHandSide(), ReferenceHintLibrary.DataUse);
+				// ExpressionReferPreHandle(node.getRightHandSide(),
+				// ReferenceHintLibrary.DataUse);
 			}
 		});
 		return super.visit(node);
@@ -469,7 +470,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(Assignment node) {
-		// ExpressionReferPostHandle(node, node.getRightHandSide(), "", "", "", true, false, false, false, false);
+		// ExpressionReferPostHandle(node, node.getRightHandSide(), "", "", "",
+		// true, false, false, false, false);
 		referhint.DeleteNodeHelp(node.getRightHandSide().hashCode());
 	}
 
@@ -685,20 +687,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (extendops == null || extendops.size() == 0) {
 			Expression pre = right;
 			Iterator<Expression> itr = extendops.iterator();
-			while (itr.hasNext())
-			{
+			while (itr.hasNext()) {
 				Expression op = itr.next();
 				AddFirstOrderTask(new FirstOrderTask(pre, op, node, false) {
 					@Override
 					public void run() {
 						ExpressionReferPostHandle(node, (Expression) getPre(), operatorcode,
 								GCodeMetaInfo.InfixExpressionHint, "", true, false, true, true, false);
-						if (!itr.hasNext())
-						{
+						if (!itr.hasNext()) {
 							referhint.AddNodeHelp(getPost().hashCode(), hint);
-						}
-						else
-						{
+						} else {
 							ExpressionReferPreHandle((Expression) getPost(), hint);
 						}
 					}
@@ -717,10 +715,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (extendops == null || extendops.size() == 0) {
 			// MyLogger.Info("infix node:" + node);
 			referhint.DeleteNodeHelp(right.hashCode());
-			// ExpressionReferPostHandle(node, right, "", "", "", true, false, false, false, false);
+			// ExpressionReferPostHandle(node, right, "", "", "", true, false,
+			// false, false, false);
 		} else {
 			referhint.DeleteNodeHelp(extendops.get(extendops.size() - 1).hashCode());
-			// ExpressionReferPostHandle(node, extendops.get(extendops.size() - 1), "", "", "", true, false, false, false, false);
+			// ExpressionReferPostHandle(node, extendops.get(extendops.size() -
+			// 1), "", "", "", true, false, false, false, false);
 		}
 	}
 
@@ -2283,7 +2283,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		runpermit.AddNodeHelp(namehashcode, true);
 		if (iniexpr != null) {
 			referhint.AddNodeHelp(iniexpr.hashCode(), ReferenceHintLibrary.DataUse);
-			AddNodeRefered(iniexpr.hashCode());
+			// AddNodeRefered(iniexpr.hashCode());
 			if (!VeryRecentNotGenerateCode) {
 				GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder + "=", true, true, false, true, null);
 			}
@@ -2296,17 +2296,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	protected void VariableDeclarationFragmentPostHandle(Expression iniexpr, SimpleName name) {
 		if (!VeryRecentNotGenerateCode) {
-			if (iniexpr != null) {
+			/*if (iniexpr != null) {
 				int iniexprhashcode = iniexpr.hashCode();
 				String exprcnt = referedcnt.GetNodeHelp(iniexprhashcode);
 				if (exprcnt != null) {
 					GenerateOneLine(exprcnt, false, false, false, false, null);
+				} else {
+					GenerateOneLine(GCodeMetaInfo.PreExist, false, false, false, false, null);
 				}
-				/*
-				 * else { GenerateOneLine(GCodeMetaInfo.PreExist, false, false,
-				 * false, false); }
-				 */
-			}
+			}*/
 			AppendEndInfoToLast(GCodeMetaInfo.EndOfAPartialStatement);
 		}
 
@@ -2315,7 +2313,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		referhint.DeleteNodeHelp(namehashcode);
 		runpermit.DeleteNodeHelp(namehashcode);
 		if (iniexpr != null) {
-			DeleteNodeRefered(iniexpr.hashCode());
+			// DeleteNodeRefered(iniexpr.hashCode());
 			referhint.DeleteNodeHelp(iniexpr.hashCode());
 		}
 	}
