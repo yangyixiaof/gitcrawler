@@ -12,14 +12,16 @@ public interface JavaCode {
 	public default void AddOneNodeCode(NodeCode nc, StringBuilder sb)
 	{
 		Iterator<String> itr = nc.GetCodeIterator();
+		String prestr = null;
 		while (itr.hasNext())
 		{
 			String onesentence = itr.next();
-			CheckAllHavePrefixHint(onesentence);
+			CheckAllHavePrefixHint(onesentence, prestr);
+			prestr = onesentence;
 			sb.append(" " + onesentence);
 		}
 	}
-	public default void CheckAllHavePrefixHint(String onesentence)
+	public default void CheckAllHavePrefixHint(String onesentence, String prestr)
 	{
 		int atidx = onesentence.indexOf('@');
 		if (atidx < 0)
@@ -70,7 +72,7 @@ public interface JavaCode {
 			case GCodeMetaInfo.VariableDeclarationHolder:
 				break;
 			default:
-				System.err.println("Unrecognized code prefix hint, What is the problem? The wrong sentence is:"+onesentence);
+				System.err.println("Unrecognized code prefix hint, What is the problem? The wrong sentence is:"+onesentence+";prestr="+prestr);
 				System.exit(1);
 				break;
 		}

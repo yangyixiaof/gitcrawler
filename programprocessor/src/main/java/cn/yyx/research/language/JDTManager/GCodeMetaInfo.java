@@ -19,8 +19,8 @@ public class GCodeMetaInfo {
 	public static final String DoWhileHint = "DW@";
 	public static final String InfixExpressionHint = "IxE@";
 	public static final String InstanceofExpressionHint = "InE@";
-	public static final String PostfixExpressionHint = "PtE@";
 	public static final String PrefixExpressionHint = "PeE@";
+	public static final String PostfixExpressionHint = "PtE@";
 	public static final String ReturnHint = "RT@";
 	public static final String SwitchHint = "SW@";
 	public static final String CaseHint = "CS@";

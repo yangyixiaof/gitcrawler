@@ -2192,10 +2192,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			occupyline = true;
 		}
-		if (node instanceof PrefixExpression || node instanceof PostfixExpression)
+		/*if (node instanceof PrefixExpression || node instanceof PostfixExpression)
 		{
 			occupyline = false;
-		}
+		}*/
 		/*if (node instanceof PrefixExpression)
 		{
 			MyLogger.Info("nodestr:" + node + ";node expr null?" + (exprcode == null));
