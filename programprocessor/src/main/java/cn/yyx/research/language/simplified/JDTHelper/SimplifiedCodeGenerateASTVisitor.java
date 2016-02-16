@@ -36,7 +36,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected JCScope cjcs = new JCScope();
 	protected JCScope ljcs = new JCScope();
 	protected Integer FirstLevelClass = null;
-	protected String VeryRecentDeclaredType = null;
+	protected Stack<String> VeryRecentDeclaredType = new Stack<String>();
 	protected boolean VeryRecentIsFieldDeclared = false;
 	protected boolean VeryRecentNotGenerateCode = false;
 	protected NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
@@ -2113,7 +2113,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected String GetVeryRecentDeclaredType() {
-		return VeryRecentDeclaredType;
+		if (VeryRecentDeclaredType.size() > 0)
+		{
+			return VeryRecentDeclaredType.peek();
+		}
+		return null;
 	}
 
 	protected void CheckVeryRecentDeclaredTypeMustNotNull(String declaredtype) {
@@ -2277,7 +2281,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 	
 	protected void SetVeryRecentDeclaredType(String veryRecentDeclaredType) {
-		VeryRecentDeclaredType = veryRecentDeclaredType;
+		if (veryRecentDeclaredType == null)
+		{
+			VeryRecentDeclaredType.pop();
+		}
+		else
+		{
+			VeryRecentDeclaredType.push(veryRecentDeclaredType);
+		}
 	}
 	
 	protected String GenerateVariableDeclarationTypeCode(String typecode, List<ASTNode> dimens)

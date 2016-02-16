@@ -42,12 +42,12 @@ public class NodeCode {
 		}
 		
 		// debugging
-		if (code.equals("'"))
+		if (code.trim().equals("'"))
 		{
 			System.err.println("Wrong error: what is '?");
 			System.exit(1);
 		}
-		if (code.equals("')"))
+		if (code.trim().equals("')"))
 		{
 			System.err.println("Wrong error: what is ')?");
 			System.exit(1);

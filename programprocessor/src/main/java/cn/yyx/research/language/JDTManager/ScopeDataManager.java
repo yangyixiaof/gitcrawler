@@ -146,10 +146,10 @@ public class ScopeDataManager {
 		} else {
 			if (isfielddeclare) {
 				//MyLogger.Info("fielddeclare:data:"+data+";type:"+type+";isfielddeclare:"+isfielddeclare+";isfinal:"+isfinal);
-				if (data.equals("arr"))
+				/*if (data.equals("arr"))
 				{
 					new Exception().printStackTrace();
-				}
+				}*/
 				
 				oscope = classstack.peek();
 				CheckTypeNotNull(type);
