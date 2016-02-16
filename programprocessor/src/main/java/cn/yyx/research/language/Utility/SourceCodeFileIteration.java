@@ -88,7 +88,7 @@ public class SourceCodeFileIteration {
 			}
 		}
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(errorfile));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(errorfile, true));
 			bw.write("Wrong File Path:" + filepath);
 			bw.newLine();
 			bw.flush();
