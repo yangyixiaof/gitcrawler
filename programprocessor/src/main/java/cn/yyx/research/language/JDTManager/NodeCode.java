@@ -55,6 +55,10 @@ public class NodeCode {
 				{
 					AppendEndInfoToLast(GCodeMetaInfo.CodeHole);
 				}
+				if (preHint != null && !preHint.equals(""))
+				{
+					code = preHint + code;
+				}
 				codelist.add(code);
 				iscodenewline = true;
 			}
@@ -101,7 +105,7 @@ public class NodeCode {
 		{
 			CheckAndDeletePartialEnd();
 		}
-			AppendToLast(apdcode);
+		AppendToLast(apdcode);
 	}
 	
 	private void CheckAndDeletePartialEnd() {
