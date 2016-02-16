@@ -46,6 +46,9 @@ public class GCodeMetaInfo {
 	
 	public static final String VariableDeclarationHolder = "VH@";
 	
+	// another display of ' '
+	public static final String WhiteSpace = "'#w'";
+	
 	// another display of ';'
 	public static final String EndOfAStatement = ";";
 	// another display of ',' ')'

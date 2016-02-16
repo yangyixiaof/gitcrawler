@@ -2012,6 +2012,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			nodecode = node.toString();
 		}
+		// special for char.
+		if (nodecode.trim().equals(' ') || nodecode.trim().equals('	'))
+		{
+			nodecode = GCodeMetaInfo.WhiteSpace;
+		}
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode))
 		{
