@@ -1,7 +1,5 @@
 package cn.yyx.research.language.JDTManager;
 
-import java.util.Iterator;
-
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 
 public class OneJavaFileAnonymousClassesCode implements JavaCode{
@@ -24,11 +22,7 @@ public class OneJavaFileAnonymousClassesCode implements JavaCode{
 			sb.append(mw);
 			mw = null;
 		}
-		Iterator<String> itr = nc.GetCodeIterator();
-		while (itr.hasNext())
-		{
-			sb.append(" " + itr.next());
-		}
+		AddOneNodeCode(nc, sb);
 	}
 	
 	public void OneSentenceEnd()
