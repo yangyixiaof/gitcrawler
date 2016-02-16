@@ -70,6 +70,7 @@ public interface JavaCode {
 			case GCodeMetaInfo.Initializer:
 			case GCodeMetaInfo.DescriptionHint:
 			case GCodeMetaInfo.VariableDeclarationHolder:
+			case GCodeMetaInfo.EnhancedFor:
 			case GCodeMetaInfo.ArrayAccess:
 				break;
 			default:
