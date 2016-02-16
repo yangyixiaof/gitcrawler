@@ -9,7 +9,7 @@ import cn.yyx.research.language.Utility.CorpusContentPair;
 
 public class ProgramProcessor {
 	
-	public static ArrayList<CorpusContentPair> ProcessOneJavaFile(File f)
+	public static ArrayList<CorpusContentPair> ProcessOneJavaFile(File f) throws Exception
 	{
 		ArrayList<CorpusContentPair> target = null;
 		try {
@@ -33,8 +33,9 @@ public class ProgramProcessor {
 			astmdf.Clear();
 			astmdf = null;
 			
-		} catch (Exception e1) {
-			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 		return target;
 	}
