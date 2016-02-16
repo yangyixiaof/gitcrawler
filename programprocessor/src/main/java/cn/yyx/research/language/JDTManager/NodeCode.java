@@ -40,6 +40,19 @@ public class NodeCode {
 		{
 			return;
 		}
+		
+		// debugging
+		if (code.equals("'"))
+		{
+			System.err.println("Wrong error: what is '?");
+			System.exit(1);
+		}
+		if (code.equals("')"))
+		{
+			System.err.println("Wrong error: what is ')?");
+			System.exit(1);
+		}
+		
 		// lastCodeLevel = level;
 		/*if (code == null)
 		{
