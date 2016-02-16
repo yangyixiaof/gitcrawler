@@ -41,6 +41,7 @@ public class GCodeMetaInfo {
 	public static final String DescriptionHint = "DH@";
 	public static final String VariableDeclarationHolder = "VH@";
 	public static final String ArrayAccess = "[@";
+	public static final String EnhancedFor = "EF@";
 	
 	// another display of ']'
 	public static final String EndOfArrayDeclarationIndexExpression = "@]";

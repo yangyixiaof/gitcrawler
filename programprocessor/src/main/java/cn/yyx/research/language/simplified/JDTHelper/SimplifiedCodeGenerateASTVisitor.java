@@ -532,7 +532,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				if (code == null) {
 					code = GCodeMetaInfo.PreExist;
 				}
-				String nodecode = "for(" + TypeCode(node.getParameter().getType(), true) + ":" + code + ")";
+				String nodecode = GCodeMetaInfo.EnhancedFor + "for(" + TypeCode(node.getParameter().getType(), true) + ":" + code + ")";
 				GenerateOneLine(nodecode, false, false, false, true, null);
 			}
 		});
