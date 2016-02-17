@@ -5,6 +5,8 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
+
 public class FirstOrderTaskPool {
 	
 	Map<String, FirstOrderTask> pretasks = new TreeMap<String, FirstOrderTask>();
@@ -29,7 +31,7 @@ public class FirstOrderTaskPool {
 	{
 		if (already != null)
 		{
-			throw new Error("Not unique FirstOrderTask. The program will exit.");
+			throw new ConflictASTNodeHashCodeError("Not unique FirstOrderTask. The program will exit.");
 			// System.exit(1);
 		}
 	}
