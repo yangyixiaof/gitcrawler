@@ -89,6 +89,7 @@ public class SourceCodeFileIteration {
 						corpus = null;
 					} catch (Exception e) {
 						System.err.println("Not Parsed File or wrong parsed file, ignore it. It is exception.");
+						e.printStackTrace();
 						RecordWrongFile(f.getAbsolutePath());
 						try {
 							Thread.sleep(15000);
@@ -97,6 +98,7 @@ public class SourceCodeFileIteration {
 						}
 					} catch (Error e) {
 						System.err.println("Not Parsed File or wrong parsed file, ignore it. It is error.");
+						e.printStackTrace();
 						RecordWrongFile(f.getAbsolutePath());
 						try {
 							Thread.sleep(15000);
