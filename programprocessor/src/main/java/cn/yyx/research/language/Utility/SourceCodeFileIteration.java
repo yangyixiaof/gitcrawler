@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import cn.yyx.research.language.JDTHelper.ProgramProcessor;
+import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 
 public class SourceCodeFileIteration {
 	
 	private static boolean canrun = false;
+	
+	public static final int MaxTry = 0;
 	
 	private static int level = 0;
 	private static int num = 0;
@@ -52,7 +55,23 @@ public class SourceCodeFileIteration {
 					System.out.println("Handling file : " + f.getAbsolutePath() + ";CurrentNum:"+num);
 					try {
 						long begin = System.currentTimeMillis();
-						ArrayList<CorpusContentPair> corpus = ProgramProcessor.ProcessOneJavaFile(f);
+						ArrayList<CorpusContentPair> corpus = null;
+						int trytime = 0;
+						boolean cancontinue = false;
+						while (!cancontinue)
+						{
+							trytime++;
+							try {
+								corpus = ProgramProcessor.ProcessOneJavaFile(f);
+								cancontinue = true;
+							} catch (ConflictASTNodeHashCodeError e) {
+								if (trytime >= MaxTry)
+								{
+									System.err.println("Conflict! Have tried " + MaxTry + " times. try stops and ignore this file :" + f.getAbsolutePath());
+									throw e;
+								}
+							}
+						}
 						long end = System.currentTimeMillis();
 						try {
 							SleepTimeController.TImeSleep(begin, end);
