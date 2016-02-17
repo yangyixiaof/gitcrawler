@@ -13,7 +13,7 @@ public class SourceCodeFileIteration {
 	
 	private static boolean canrun = false;
 	
-	public static final int MaxTry = 0;
+	public static final int MaxTry = 3;
 	
 	private static int level = 0;
 	private static int num = 0;
@@ -65,6 +65,13 @@ public class SourceCodeFileIteration {
 								corpus = ProgramProcessor.ProcessOneJavaFile(f);
 								cancontinue = true;
 							} catch (ConflictASTNodeHashCodeError e) {
+								System.err.println("Conflict! try again. wait for 20s. Doing system gc in this period.");
+								try {
+									System.gc();
+									Thread.sleep(20000);
+								} catch (InterruptedException e1) {
+									e1.printStackTrace();
+								}
 								if (trytime >= MaxTry)
 								{
 									System.err.println("Conflict! Have tried " + MaxTry + " times. try stops and ignore this file :" + f.getAbsolutePath());
