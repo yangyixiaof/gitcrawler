@@ -22,6 +22,7 @@ import cn.yyx.research.language.JDTManager.OtherCodeManager;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.Utility.MyLogger;
+import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 
 public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
@@ -47,6 +48,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<Boolean> runforbid = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<Boolean> typesimp = new NodeHelpManager<Boolean>();
+	protected Map<Integer, Boolean> scopeck = new TreeMap<Integer, Boolean>();
 	protected Stack<NodeCode> omcanonystack = new Stack<NodeCode>();
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	protected NodeCode omc = new NodeCode(argmutiple);
@@ -244,7 +246,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (FirstLevelClass == node.hashCode()) {
 			FirstLevelClass = null;
 		}
-		ExitBlock();
+		ExitBlock(node);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -271,7 +273,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			omc = (new NodeCode(argmutiple));
 		}
 		jc = ojfc;
-		ExitBlock();
+		ExitBlock(node);
 	}
 
 	@Override
@@ -379,7 +381,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referhint.DeleteNodeHelp(body.hashCode());
 		}
 		SetVeryRecentNotGenerateCode(false);
-		ExitBlock();
+		ExitBlock(node);
 	}
 
 	@Override
@@ -1832,7 +1834,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (FirstLevelClass == node.hashCode()) {
 			FirstLevelClass = null;
 		}
-		ExitBlock();
+		ExitBlock(node);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -2244,11 +2246,19 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	protected void EnterBlock(ASTNode node) {
 		// MyLogger.Info("Hashcode:"+node.hashCode()+";node:"+node);
-		sdm.EnterBlock(node.hashCode());
+		int nhash = node.hashCode();
+		Boolean ck = scopeck.get(nhash);
+		if (ck != null)
+		{
+			throw new ConflictASTNodeHashCodeError("Conflict Scope.");
+		}
+		scopeck.put(nhash, true);
+		sdm.EnterBlock(nhash);
 	}
 
-	protected void ExitBlock() {
+	protected void ExitBlock(ASTNode node) {
 		sdm.ExitBlock();
+		scopeck.remove(node.hashCode());
 	}
 
 	protected void LabelReferPreHandle(SimpleName label) {

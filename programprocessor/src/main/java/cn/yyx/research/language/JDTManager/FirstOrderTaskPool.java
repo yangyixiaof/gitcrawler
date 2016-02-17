@@ -29,9 +29,8 @@ public class FirstOrderTaskPool {
 	{
 		if (already != null)
 		{
-			System.err.println("Not unique FirstOrderTask. The program will exit.");
-			new Exception().printStackTrace();
-			System.exit(1);
+			throw new Error("Not unique FirstOrderTask. The program will exit.");
+			// System.exit(1);
 		}
 	}
 	
