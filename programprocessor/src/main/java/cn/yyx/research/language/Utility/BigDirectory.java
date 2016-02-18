@@ -60,6 +60,7 @@ public class BigDirectory {
 				currfile.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.exit(1);
 			}
 		}
 		long tfbytes = content.length()*2;
@@ -92,6 +93,7 @@ public class BigDirectory {
 				currfile.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.exit(1);
 			}
 		}
 		long tfbytes = tf.length();
@@ -110,6 +112,7 @@ public class BigDirectory {
 					f.createNewFile();
 				} catch (IOException e) {
 					e.printStackTrace();
+					System.exit(1);
 				}
 			}
 		}

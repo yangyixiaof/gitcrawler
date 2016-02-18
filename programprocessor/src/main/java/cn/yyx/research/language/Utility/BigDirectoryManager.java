@@ -17,6 +17,7 @@ public class BigDirectoryManager {
 				cps.put(bdname, bd);
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.exit(1);
 			}
 		}
 		return cps.get(bdname);

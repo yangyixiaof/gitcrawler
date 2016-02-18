@@ -130,6 +130,7 @@ public class SourceCodeFileIteration {
 			bw.close();
 		} catch (IOException e2) {
 			e2.printStackTrace();
+			System.exit(1);
 		}
 	}
 

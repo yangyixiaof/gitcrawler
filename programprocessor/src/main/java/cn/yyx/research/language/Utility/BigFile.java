@@ -23,6 +23,7 @@ public class BigFile {
 			mBigFile.Begin();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 		mBigFile.appendContent(onecnt+"\n");
 		mBigFile.End();
@@ -33,6 +34,7 @@ public class BigFile {
 			mBigFile.Begin();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 		BufferedReader reader = null;
 		try {
@@ -48,6 +50,7 @@ public class BigFile {
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			if (reader != null) {
 				try {

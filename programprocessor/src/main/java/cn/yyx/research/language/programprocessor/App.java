@@ -33,6 +33,8 @@ public class App {
 					f.createNewFile();
 				} catch (IOException e) {
 					e.printStackTrace();
+					System.err.println("Create temp.txt fails, the system will exit.");
+					System.exit(1);
 				}
 			}
 			dir = new File(f.getAbsolutePath()).getParentFile();
