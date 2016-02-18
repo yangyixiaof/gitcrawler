@@ -1874,13 +1874,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(NullLiteral node) {
 		RawLiteralHandle(node, null);
-		return super.visit(node);
+		return false;
 	}
 
 	@Override
 	public boolean visit(BooleanLiteral node) {
 		RawLiteralHandle(node, null);
-		return super.visit(node);
+		return false;
 	}
 
 	@Override
@@ -1889,7 +1889,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		String literal = node.toString().trim();
 		AppendOtherCode(GCodeMetaInfo.StringCorpus, literal.substring(1, literal.length() - 1));
 		RawLiteralHandle(node, GCodeMetaInfo.StringHolder);
-		return super.visit(node);
+		return false;
 	}
 
 	@Override
@@ -1898,7 +1898,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		AppendOtherCode(GCodeMetaInfo.NumberCorpus, node.toString());
 
 		RawLiteralHandle(node, null);
-		return super.visit(node);
+		return false;
 	}
 
 	@Override
@@ -1908,7 +1908,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		AppendOtherCode(GCodeMetaInfo.CharCorpus, node.charValue() + "");
 
 		RawLiteralHandle(node, null);
-		return super.visit(node);
+		return false;
 	}
 
 	// helper functions
@@ -1918,7 +1918,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			nodecode = node.toString();
 		}
 		// special for char.
-		if (nodecode.trim().equals(' ') || nodecode.trim().equals('	')) {
+		if (nodecode.trim().equals("' '") || nodecode.trim().equals("'	'")) {
+			// System.out.println("Exist ' ', stop to watch closely.");
+			// System.exit(1);
 			nodecode = GCodeMetaInfo.WhiteSpace;
 		}
 		int nodehashcode = node.hashCode();
