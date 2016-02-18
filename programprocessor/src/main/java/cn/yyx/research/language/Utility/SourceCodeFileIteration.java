@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import cn.yyx.research.language.JDTHelper.ProgramProcessor;
+import cn.yyx.research.language.JDTHelper.SystemParameter;
 import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 
 public class SourceCodeFileIteration {
 	
 	private static boolean canrun = false;
-	
-	public static final int MaxTry = 5;
 	
 	private static int level = 0;
 	private static int num = 0;
@@ -72,9 +71,9 @@ public class SourceCodeFileIteration {
 								} catch (InterruptedException e1) {
 									e1.printStackTrace();
 								}
-								if (trytime >= MaxTry)
+								if (trytime >= SystemParameter.MaxTry)
 								{
-									System.err.println("Conflict! Have tried " + MaxTry + " times. try stops and ignore this file :" + f.getAbsolutePath());
+									System.err.println("Conflict! Have tried " + SystemParameter.MaxTry + " times. try stops and ignore this file :" + f.getAbsolutePath());
 									throw e;
 								}
 							}
