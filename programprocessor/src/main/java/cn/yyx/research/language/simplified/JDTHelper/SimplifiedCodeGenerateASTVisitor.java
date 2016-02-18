@@ -1670,8 +1670,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				if (node instanceof WildcardType)
 				{
 					WildcardType wildtype = (WildcardType)node;
-					typecode = "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wildtype.isUpperBound()?"extends":"super") + GCodeMetaInfo.WhiteSpaceReplacer + TypeCode(wildtype.getBound(), true);
-					// System.err.println("HaHaHa WildcardType:" + typecode);
+					if (wildtype.getBound() == null)
+					{
+						typecode = "?";
+					}
+					else
+					{
+						typecode = "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wildtype.isUpperBound()?"extends":"super") + GCodeMetaInfo.WhiteSpaceReplacer + TypeCode(wildtype.getBound(), true);
+					}
 				}
 				if (simplified) {
 					if (node instanceof NameQualifiedType) {
