@@ -67,7 +67,7 @@ public class SourceCodeFileIteration {
 								System.err.println("Conflict! try " + trytime + "st time. wait for 20s. Doing system gc in this period.");
 								try {
 									System.gc();
-									Thread.sleep(20000);
+									Thread.sleep(20000 + (trytime-1)*10000);
 								} catch (InterruptedException e1) {
 									e1.printStackTrace();
 								}
