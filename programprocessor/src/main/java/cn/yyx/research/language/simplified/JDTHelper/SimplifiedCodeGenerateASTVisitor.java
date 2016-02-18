@@ -1002,10 +1002,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(SingleVariableDeclaration node) {
 		// MyLogger.Info("SingleVariableDeclaration:" + node);
 		int namehashcode = node.getName().hashCode();
-		runpermit.AddNodeHelp(namehashcode, true);
 		Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
 		SetVeryRecentDeclaredType(node.getType().toString());
 		if (forbid != null && forbid == true) {
+			runpermit.AddNodeHelp(namehashcode, true);
 			referhint.AddNodeHelp(namehashcode, ReferenceHintLibrary.DataDeclare);
 			visit(node.getName());
 			return false;
@@ -1023,10 +1023,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(SingleVariableDeclaration node) {
 		int nodehashcode = node.hashCode();
 		int namehashcode = node.getName().hashCode();
-		runpermit.DeleteNodeHelp(namehashcode);
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			endVisit(node.getName());
+			runpermit.DeleteNodeHelp(namehashcode);
 			referhint.DeleteNodeHelp(namehashcode);
 			return;
 		}
