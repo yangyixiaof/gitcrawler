@@ -1651,6 +1651,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@SuppressWarnings("unchecked")
 	protected String TypeCode(Type node, boolean simplified) {
+		if (node == null)
+		{
+			System.err.println("Null Type? What the fuck!");
+			new Exception("Null Type").printStackTrace();
+			System.exit(1);
+		}
 		if (node instanceof PrimitiveType) {
 			return node.toString();
 		}
@@ -1661,6 +1667,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				|| node instanceof WildcardType) {
 			if (typecode == null) {
 				typecode = node.toString();
+				if (node instanceof WildcardType)
+				{
+					WildcardType wildtype = (WildcardType)node;
+					typecode = "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wildtype.isUpperBound()?"extends":"super") + GCodeMetaInfo.WhiteSpaceReplacer + TypeCode(wildtype.getBound(), true);
+					// System.err.println("HaHaHa WildcardType:" + typecode);
+				}
 				if (simplified) {
 					if (node instanceof NameQualifiedType) {
 						typecode = ((NameQualifiedType) node).getName().toString();
@@ -1699,11 +1711,24 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		if (node instanceof ParameterizedType) {
 			if (typecode == null) {
-				if (simplified) {
-					typecode = ((ParameterizedType) node).getType().toString();
-				} else {
-					typecode = node.toString();
-				}
+				ParameterizedType pt = (ParameterizedType) node;
+				//if (simplified) {
+				//	typecode = TypeCode(pt.getType(), true);
+				//} else {
+					typecode = TypeCode(pt.getType(), simplified) + "<";
+					List<Type> tas = pt.typeArguments();
+					Iterator<Type> itr = tas.iterator();
+					while (itr.hasNext())
+					{
+						Type tt = itr.next();
+						typecode += TypeCode(tt, simplified);
+						if (itr.hasNext())
+						{
+							typecode += ",";
+						}
+					}
+					typecode += ">";
+				//}
 			}
 		}
 		if (node instanceof IntersectionType) {

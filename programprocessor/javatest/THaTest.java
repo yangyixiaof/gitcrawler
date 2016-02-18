@@ -7,4 +7,9 @@ public class TTest extends ParentTest{
 		append('d',' ');
 	}
 	
+	public void AddConsumedAnnotationType(Class<? extends A> ac)
+	{
+		
+	}
+	
 }

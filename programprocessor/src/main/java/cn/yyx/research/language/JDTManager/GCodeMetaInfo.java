@@ -50,7 +50,7 @@ public class GCodeMetaInfo {
 	public static final String RightParenthese = "@)";
 	
 	// another display of ' '
-	public static final String WhiteSpace = "'#w'";
+	public static final String WhiteSpace = "'@w'";
 	
 	// another display of ';'
 	public static final String EndOfAStatement = ";";
