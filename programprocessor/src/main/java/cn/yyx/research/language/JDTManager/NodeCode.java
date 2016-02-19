@@ -116,6 +116,20 @@ public class NodeCode {
 			}
 		}
 	}
+	
+	public void GenerateEndInfo(String lcode)
+	{
+		if (lcode.charAt(lcode.length()-1) == ';')
+		{
+			int idx = codelist.size() - 1;
+			String lastcode = codelist.get(idx);
+			if (lastcode.charAt(lastcode.length()-1) == ',')
+			{
+				codelist.remove(idx);
+			}
+		}
+		codelist.add(lcode);
+	}
 
 	public void AppendEndInfoToLast(String apdcode) {
 		if (apdcode.equals(";"))

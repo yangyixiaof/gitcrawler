@@ -3,8 +3,8 @@ package cn.yyx.research.language.programprocessor;
 public class TodoList {
 	// TODO 1. how to distinguish anti-pair and similar-pair.
 	
-	// TODO what is ' ?
-	// TODO what is  ?
+	// what is ' ? solved due to ' '.
+	// what is ') ? solved due to ' ').
 	// temporarily solved: some doesn't have hint.
 	// temporarily solved: ZTSERVERS.Constants+,@HO some holes are behind endOfStatement.
 	// MI@EntityItem(new,worldObj,.5,.5,.5,$C0?0) what is the problem ? To tell the truth, there is no problem.

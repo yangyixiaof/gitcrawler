@@ -285,7 +285,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(ExpressionStatement node) {
 		Expression expr = node.getExpression();
 		if (expr != null) {
-			AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+			GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+			// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 		}
 	}
 
@@ -486,7 +487,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(BreakStatement node) {
 		LabelReferPostHandle(GCodeMetaInfo.BreakHint + "break", node.getLabel());
-		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 	}
 
 	@Override
@@ -498,7 +500,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(ContinueStatement node) {
 		LabelReferPostHandle(GCodeMetaInfo.ContinueHint + "continue", node.getLabel());
-		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 	}
 
 	@Override
@@ -519,7 +522,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(DoStatement node) {
 		ExpressionReferPostHandle(node, node.getExpression(), "while", GCodeMetaInfo.DoWhileHint, "", false, true,
 				false, false, false);
-		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 	}
 
 	@Override
@@ -641,13 +645,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (hint != null) {
 			referhint.AddNodeHelp(node.getExpression().hashCode(), hint);
 		}
-		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "(", false, false, false, true, null);
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.LeftParenthese, false, false, false, true, null);
 		return super.visit(node);
 	}
 
 	@Override
 	public void endVisit(ParenthesizedExpression node) {
-		AppendEndInfoToLast(GCodeMetaInfo.RightParenthese);
+		// AppendEndInfoToLast(GCodeMetaInfo.RightParenthese);
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.RightParenthese, false, false, false, true, null);
 		referhint.DeleteNodeHelp(node.getExpression().hashCode());
 	}
 
@@ -749,7 +754,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(LabeledStatement node) {
-		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 		referhint.DeleteNodeHelp(node.getLabel().hashCode());
 	}
 
@@ -792,10 +797,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (expr != null) {
 			ExpressionReferPostHandle(node, expr, "return", GCodeMetaInfo.ReturnHint, "", false, true, false, false,
 					false);
-			AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+			GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+			// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 		} else {
 			GenerateOneLine(GCodeMetaInfo.ReturnHint + "return", false, false, false, true, null);
-			AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+			GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+			// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 		}
 	}
 
@@ -858,7 +865,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(ThrowStatement node) {
 		ExpressionReferPostHandle(node, node.getExpression(), "throw", GCodeMetaInfo.ThrowStatementHint, "", false,
 				true, false, false, false);
-		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
 	}
 
 	@Override
@@ -1057,7 +1065,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(VariableDeclarationStatement node) {
 		SetVeryRecentDeclaredType(null);
-		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
+		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
 	}
 
 	@Override
@@ -2010,6 +2019,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			boolean occupyoneline, String preHint) {
 		omc.AddOneLineCode(nodecode, couldappend, mustappend, mustpre, occupyoneline, preHint);
 	}
+	
+	protected void GenerateEndInfo(String lcode) {
+		omc.GenerateEndInfo(lcode);
+	}
 
 	protected void AppendEndInfoToLast(String ncode) {
 		omc.AppendEndInfoToLast(ncode);
@@ -2340,16 +2353,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	protected void VariableDeclarationFragmentPostHandle(Expression iniexpr, SimpleName name) {
 		if (!VeryRecentNotGenerateCode) {
-			/*if (iniexpr != null) {
-				int iniexprhashcode = iniexpr.hashCode();
-				String exprcnt = referedcnt.GetNodeHelp(iniexprhashcode);
-				if (exprcnt != null) {
-					GenerateOneLine(exprcnt, false, false, false, false, null);
-				} else {
-					GenerateOneLine(GCodeMetaInfo.PreExist, false, false, false, false, null);
-				}
-			}*/
-			AppendEndInfoToLast(GCodeMetaInfo.EndOfAPartialStatement);
+			GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAPartialStatement);
 		}
 
 		// delete hint
@@ -2376,11 +2380,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				referhint.AddNodeHelp(arghashcode, ReferenceHintLibrary.DataUse);
 				AddNodeRefered(arghashcode);
 				argmutiple.push(false);
-				AddFirstOrderTask(new FirstOrderTask(arg, null, arg.getParent(), true) {
+				AddFirstOrderTask(new FirstOrderTask(arg, null, arg.getParent(), true, itr.hasNext()) {
 					@Override
 					public void run() {
 						if (argmutiple.pop()) {
-							AppendEndInfoToLast(GCodeMetaInfo.EndOfAPartialStatement);
+							if (isExtra())
+							{
+								GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAPartialStatement);
+							}
+							// AppendEndInfoToLast(GCodeMetaInfo.EndOfAPartialStatement);
 						}
 					}
 				});
