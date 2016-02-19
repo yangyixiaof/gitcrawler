@@ -123,7 +123,8 @@ public class NodeCode {
 		{
 			int idx = codelist.size() - 1;
 			String lastcode = codelist.get(idx);
-			if (lastcode.charAt(lastcode.length()-1) == ',')
+			char lc = lastcode.charAt(lastcode.length()-1);
+			if (lc == ',' || lc == ';')
 			{
 				codelist.remove(idx);
 			}
