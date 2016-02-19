@@ -9,7 +9,7 @@ public class TTest extends ParentTest{
 	
 	public void AddConsumedAnnotationType(Class<? extends A> ac)
 	{
-		
+		getResources(ghj(), a.per());
 	}
 	
 }

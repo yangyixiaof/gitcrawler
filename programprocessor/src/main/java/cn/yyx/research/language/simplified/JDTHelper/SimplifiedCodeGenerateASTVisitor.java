@@ -2380,14 +2380,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				referhint.AddNodeHelp(arghashcode, ReferenceHintLibrary.DataUse);
 				AddNodeRefered(arghashcode);
 				argmutiple.push(false);
-				AddFirstOrderTask(new FirstOrderTask(arg, null, arg.getParent(), true, itr.hasNext()) {
+				AddFirstOrderTask(new FirstOrderTask(arg, null, arg.getParent(), true) {
 					@Override
 					public void run() {
 						if (argmutiple.pop()) {
-							if (isExtra())
-							{
-								GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAPartialStatement);
-							}
+							GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAPartialStatement);
 							// AppendEndInfoToLast(GCodeMetaInfo.EndOfAPartialStatement);
 						}
 					}
