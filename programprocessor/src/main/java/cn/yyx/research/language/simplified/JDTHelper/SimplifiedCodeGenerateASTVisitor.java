@@ -1825,7 +1825,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			for (int i = 0; i < dimens; i++) {
 				dimenstr += "[]";
 			}
-			return RawTypeCode(node) + dimenstr;
+			return RawTypeCode(at.getElementType()) + dimenstr;
 		}
 		if (node instanceof ParameterizedType)
 		{
