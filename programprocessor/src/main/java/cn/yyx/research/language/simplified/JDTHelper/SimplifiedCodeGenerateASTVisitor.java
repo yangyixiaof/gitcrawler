@@ -1669,13 +1669,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (node instanceof PrimitiveType) {
 			return node.toString();
 		}
-		String type = node.toString();
+		String type = RawTypeCode(node);
 		String typecode = GetClassOffset(type);
 		ClassNewlyAssigned(type);
 		if (node instanceof SimpleType || node instanceof QualifiedType || node instanceof NameQualifiedType
 				|| node instanceof WildcardType) {
 			if (typecode == null) {
-				typecode = node.toString();
+				if (node instanceof SimpleType || node instanceof QualifiedType || node instanceof NameQualifiedType)
+				{
+					typecode = type;
+				}
 				if (node instanceof WildcardType)
 				{
 					WildcardType wildtype = (WildcardType)node;
@@ -1720,11 +1723,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					}
 					typecode = simplifiedtype + dimenstr;
 				} else {
-					typecode = node.toString();
+					typecode = type;
 				}
 			}
 		}
 		if (node instanceof ParameterizedType) {
+			
+			// System.err.println("ParameterizedType:" + node);
+			
 			if (typecode == null) {
 				ParameterizedType pt = (ParameterizedType) node;
 				//if (simplified) {
@@ -1736,6 +1742,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					while (itr.hasNext())
 					{
 						Type tt = itr.next();
+						
+						// System.err.println("ParameterizedTypeSmallType :" + tt.getClass());
+						
 						typecode += TypeCode(tt, simplified);
 						if (itr.hasNext())
 						{
@@ -1777,6 +1786,138 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		return typecode;
 	}
 
+	@SuppressWarnings("unchecked")
+	protected String RawTypeCode(Type node) {
+		if (node instanceof PrimitiveType)
+		{
+			String code = ((PrimitiveType)node).toString().trim();
+			int widx = code.lastIndexOf(' ');
+			return code.substring(widx+1);
+		}
+		if (node instanceof SimpleType)
+		{
+			return GetStrictedName(((SimpleType)node).getName(), StrictedNameLength);
+		}
+		if (node instanceof QualifiedType)
+		{
+			QualifiedType qn = (QualifiedType)node;
+			return qn.getName().toString() + RawTypeCode(qn.getQualifier());
+		}
+		if (node instanceof NameQualifiedType)
+		{
+			NameQualifiedType nt = (NameQualifiedType)node;
+			return nt.getName().toString() + "." + GetStrictedName(((NameQualifiedType)node).getQualifier(), StrictedNameLength-1);
+		}
+		if (node instanceof WildcardType)
+		{
+			WildcardType wt = (WildcardType)node;
+			if (wt.getBound() == null)
+			{
+				return "?";
+			}
+			return "?" + (wt.isUpperBound() ? " extends " : " super ") + RawTypeCode(wt.getBound());
+		}
+		if (node instanceof ArrayType)
+		{
+			ArrayType at = (ArrayType)node;
+			int dimens = at.dimensions().size();
+			String dimenstr = "";
+			for (int i = 0; i < dimens; i++) {
+				dimenstr += "[]";
+			}
+			return RawTypeCode(node) + dimenstr;
+		}
+		if (node instanceof ParameterizedType)
+		{
+			ParameterizedType pt = (ParameterizedType)node;
+			String result = RawTypeCode(pt.getType()) + "<";
+			List<Type> tas = pt.typeArguments();
+			Iterator<Type> itr = tas.iterator();
+			while (itr.hasNext())
+			{
+				Type tt = itr.next();
+				result += RawTypeCode(tt);
+				if (itr.hasNext())
+				{
+					result += ",";
+				}
+			}
+			result += ">";
+			return result;
+		}
+		if (node instanceof UnionType)
+		{
+			UnionType ut = (UnionType) node;
+			List<Type> types = ut.types();
+			Iterator<Type> itr = types.iterator();
+			String result = "";
+			boolean first = true;
+			while (itr.hasNext()) {
+				Type t = itr.next();
+				String tstr = RawTypeCode(t);
+				if (first)
+				{
+					result = tstr;
+					first = false;
+				}
+				else
+				{
+					result = result + "|" + tstr;
+				}
+			}
+			return result;
+		}
+		if (node instanceof IntersectionType)
+		{
+			IntersectionType ut = (IntersectionType) node;
+			List<Type> types = ut.types();
+			Iterator<Type> itr = types.iterator();
+			String result = "";
+			boolean first = true;
+			while (itr.hasNext()) {
+				Type t = itr.next();
+				String tstr = RawTypeCode(t);
+				if (first)
+				{
+					result = tstr;
+					first = false;
+				}
+				else
+				{
+					result = result + "&" + tstr;
+				}
+			}
+			return result;
+		}
+	    
+		System.err.println("Uncognized Type node.");
+		System.exit(1);
+		return null;
+	}
+	
+	protected String GetStrictedName(Name name, int alreadylen)
+	{
+		String result = null;
+		if (name != null && alreadylen > 0)
+		{
+			if (name instanceof QualifiedName)
+			{
+				QualifiedName qn = (QualifiedName)name;
+				result = qn.getName().toString();
+				String qs = GetStrictedName(qn, alreadylen-1);
+				if (qs != null)
+				{
+					result += "." + qs;
+				}
+			}
+			if (name instanceof SimpleName)
+			{
+				result = name.toString();
+			}
+		}
+		return result;
+	}
+	
 	@Override
 	public boolean visit(IntersectionType node) {
 		// type & type
