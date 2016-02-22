@@ -12,7 +12,7 @@ import cn.yyx.research.language.Utility.SourceCodeFileIteration;
  * Hello world!
  *
  */
-public class App {
+public class ProgramHandle {
 
 	// command: start /home/yyx/HomeSpace/UnzipPool /home/yyx/HomeSpace/UnzipAllFiles/TransformedData
 	
@@ -21,7 +21,7 @@ public class App {
 	File dir = null;
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-	public App(String processdir) {
+	public ProgramHandle(String processdir) {
 		this.processdir = processdir;
 	}
 
@@ -68,7 +68,7 @@ public class App {
 
 	public static void main(String[] args) {
 		String processdir = "";
-		App app = null;
+		ProgramHandle app = null;
 		String cmd = null;
 		boolean stop = false;
 		try {
@@ -77,7 +77,7 @@ public class App {
 				switch (cmd.toLowerCase()) {
 				case "start":
 					System.out.println("Java processor uses the current directory.");
-					app = new App(processdir);
+					app = new ProgramHandle(processdir);
 					// stop = !...
 					app.StartProcessJavaProjects();
 					break;
@@ -99,7 +99,7 @@ public class App {
 							BigDirectory.PrefixDirectory = ps[1];
 						}
 						System.out.println("Java processor uses the directory : " + processdir + ";Writing Directory : " + BigDirectory.PrefixDirectory);
-						app = new App(processdir);
+						app = new ProgramHandle(processdir);
 						// stop = !
 						app.StartProcessJavaProjects();
 					} else {
