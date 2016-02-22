@@ -21,4 +21,11 @@ public class TodoList {
 	// Field access should be more compact. Solved. Just so so. 
 	// comphole should be removed at maximum cancellation. Solved.
 	// a mechanism which append some extra type hint is needed.
+	
+	
+	// TODO AnnotationTypeMemberDeclaration is not handled.
+	// AnnotationTypeMemberDeclaration:
+		//   [ Javadoc ] { ExtendedModifier }
+		 //      Type Identifier ( ) [ default Expression ] ;
+
 }
