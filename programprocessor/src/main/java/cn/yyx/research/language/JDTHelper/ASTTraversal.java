@@ -18,12 +18,12 @@ import cn.yyx.research.language.Utility.CorpusContentPair;
  */
 public class ASTTraversal {
 
-	Document document = null;
-	CompilationUnit compilationUnit = null;
+	private Document document = null;
+	private CompilationUnit compilationUnit = null;
 
 	public ASTTraversal(String identifier, String sourceCode) {
-		document = new Document(sourceCode);
-		compilationUnit = parseSourceCode(identifier, document);
+		setDocument(new Document(sourceCode));
+		setCompilationUnit(parseSourceCode(identifier, getDocument()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -51,13 +51,29 @@ public class ASTTraversal {
 	public ArrayList<CorpusContentPair> GeneratePredictionSuiteOnJava() {
 		//CorpusContentPair cp_class_framework = ClassFrameworkCorpus.GenerateClassFrameworkCorpus(compilationUnit);
 		//result.add(cp_class_framework);
-		ArrayList<CorpusContentPair> cp_class_logic = ClassLogicDetailCorpus.GenerateClassDetailCorpus(compilationUnit);
+		ArrayList<CorpusContentPair> cp_class_logic = ClassLogicDetailCorpus.GenerateClassDetailCorpus(getCompilationUnit());
 		return cp_class_logic;
 	}
 
 	public void Clear() {
-		document = null;
-		compilationUnit = null;
+		setDocument(null);
+		setCompilationUnit(null);
+	}
+
+	public Document getDocument() {
+		return document;
+	}
+
+	public void setDocument(Document document) {
+		this.document = document;
+	}
+
+	public CompilationUnit getCompilationUnit() {
+		return compilationUnit;
+	}
+
+	public void setCompilationUnit(CompilationUnit compilationUnit) {
+		this.compilationUnit = compilationUnit;
 	}
 
 	/*public static void main(String[] args) {
