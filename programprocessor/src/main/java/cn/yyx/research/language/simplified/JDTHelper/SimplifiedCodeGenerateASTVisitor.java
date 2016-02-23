@@ -58,7 +58,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		cjcs.SetDescription("Class Declaration.");
 		ljcs.SetDescription("Label Declaration.");
 	}
-
+	
 	@Override
 	public void preVisit(ASTNode node) {
 		fotp.PostIsBegin(node);
