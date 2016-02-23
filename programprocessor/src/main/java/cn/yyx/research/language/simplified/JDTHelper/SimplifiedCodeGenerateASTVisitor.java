@@ -255,6 +255,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("AnonymousClassDeclaration Begin");
 		// MyLogger.Info(node);
 		// MyLogger.Info("AnonymousClassDeclaration End");
+		
+		// TODO
+		
 		EnterBlock(node);
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
@@ -2118,6 +2121,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected void OneMethodInvocationOccurs(String rawmethodname) {
+		// TODO
 		mw.PushMethodName(rawmethodname);
 	}
 
