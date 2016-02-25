@@ -5,7 +5,7 @@ public class Empty {
 	public void HeiHei()
 	{
 		new Runnable() {
-			@Override
+			/*@Override
 			public void run() {
 				System.out.println("RT");
 				new Runnable() {
@@ -22,7 +22,7 @@ public class Empty {
 					}
 				};
 				System.out.println("OIU");
-			}
+			}*/
 		};
 	}
 	
