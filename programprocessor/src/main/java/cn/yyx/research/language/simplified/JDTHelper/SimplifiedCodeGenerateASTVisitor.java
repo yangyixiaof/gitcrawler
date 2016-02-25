@@ -268,7 +268,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info(node);
 		// MyLogger.Info("AnonymousClassDeclaration End");
 		EnterBlock(node);
-		// TODO
 		jc = acp.EnterAnonymousClass(mw);
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
@@ -285,9 +284,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (omc == null) {
 			omc = (new NodeCode(argmutiple));
 		}
-		jc = ojfc;
-		// TODO
-		acp.ExitAnonymousClass();
+		jc = acp.ExitAnonymousClass();
+		if (jc == null)
+		{
+			jc = ojfc;
+		}
 		ExitBlock(node);
 	}
 
@@ -2413,13 +2414,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		result.putAll(ocm.getOtherCodeMap());
 		StringBuilder sb = new StringBuilder("");
 		if (!ojfc.IsEmpty()) {
-			// TODO
-			sb.append("===== common =====");
 			sb.append(ojfc.toString());
 		}
 		if (!acp.IsEmpty()) {
-			// TODO
-			sb.append("===== anony =====");
 			sb.append(acp.toString());
 		}
 		if (sb.length() > 0) {

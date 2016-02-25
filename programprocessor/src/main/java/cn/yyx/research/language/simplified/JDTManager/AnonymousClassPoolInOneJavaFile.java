@@ -37,13 +37,18 @@ public class AnonymousClassPoolInOneJavaFile {
 		return nowanonymous;
 	}
 	
-	public void ExitAnonymousClass()
+	public OneJavaFileAnonymousClassesCode ExitAnonymousClass()
 	{
 		ojfaccstack.pop();
 		if (!ojfaccstack.isEmpty())
 		{
 			recently = ojfaccstack.peek();
 		}
+		else
+		{
+			recently = null;
+		}
+		return recently;
 	}
 
 	public boolean IsEmpty() {
