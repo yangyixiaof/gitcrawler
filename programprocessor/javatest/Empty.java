@@ -1,6 +1,6 @@
 package cn.yyx.research.language.Utility;
 
-public class TTest extends ParentTest{
+public class Empty {
 	
 	public void HeiHei()
 	{

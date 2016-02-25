@@ -26,6 +26,7 @@ import cn.yyx.research.language.Utility.MyLogger;
 import cn.yyx.research.language.simplified.JDTManager.AnonymousClassPoolInOneJavaFile;
 import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
+import cn.yyx.research.language.simplified.JDTManager.TypeASTHelper;
 
 public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
@@ -223,9 +224,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(TypeParameter node) {
 		return false;
 	}
-
+	
 	@Override
 	public boolean visit(TypeDeclaration node) {
+		
+		if (TypeASTHelper.IsEmptyTypeDeclaration(node))
+		{
+			return false;
+		}
+		
 		FlushCode();
 		boolean inner = false;
 		if (FirstLevelClass == null) {
@@ -244,6 +251,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(TypeDeclaration node) {
+		
+		if (TypeASTHelper.IsEmptyTypeDeclaration(node))
+		{
+			return;
+		}
+		
 		FlushCode();
 		if (FirstLevelClass == node.hashCode()) {
 			FirstLevelClass = null;
