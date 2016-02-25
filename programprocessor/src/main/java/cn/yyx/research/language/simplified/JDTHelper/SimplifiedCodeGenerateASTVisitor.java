@@ -17,7 +17,6 @@ import cn.yyx.research.language.JDTManager.MethodWindow;
 import cn.yyx.research.language.JDTManager.NodeCode;
 import cn.yyx.research.language.JDTManager.NodeHelpManager;
 import cn.yyx.research.language.JDTManager.OffsetLibrary;
-import cn.yyx.research.language.JDTManager.OneJavaFileAnonymousClassesCode;
 import cn.yyx.research.language.JDTManager.OneJavaFileCode;
 import cn.yyx.research.language.JDTManager.OtherCodeManager;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
@@ -271,10 +270,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info(node);
 		// MyLogger.Info("AnonymousClassDeclaration End");
 		EnterBlock(node);
+		// TODO
 		jc = acp.EnterAnonymousClass(mw);
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
-		AnonymousClassDeclarationCodeFileAddMethodWindow();
+		// AnonymousClassDeclarationCodeFileAddMethodWindow();
 		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
 		node.accept(sfpa);
 		return super.visit(node);
@@ -288,6 +288,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			omc = (new NodeCode(argmutiple));
 		}
 		jc = ojfc;
+		// TODO
 		acp.ExitAnonymousClass();
 		ExitBlock(node);
 	}
@@ -2132,9 +2133,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 	}
 
-	protected void AnonymousClassDeclarationCodeFileAddMethodWindow() {
+	/*protected void AnonymousClassDeclarationCodeFileAddMethodWindow() {
 		((OneJavaFileAnonymousClassesCode)jc).AddPreDeclrations(mw);
-	}
+	}*/
 
 	protected void OneMethodInvocationOccurs(String rawmethodname) {
 		mw.PushMethodName(rawmethodname);
@@ -2425,9 +2426,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		result.putAll(ocm.getOtherCodeMap());
 		StringBuilder sb = new StringBuilder("");
 		if (!ojfc.IsEmpty()) {
+			// TODO
+			sb.append("===== common =====");
 			sb.append(ojfc.toString());
 		}
 		if (!acp.IsEmpty()) {
+			// TODO
+			sb.append("===== anony =====");
 			sb.append(acp.toString());
 		}
 		if (sb.length() > 0)

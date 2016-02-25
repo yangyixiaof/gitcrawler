@@ -6,10 +6,12 @@ import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 
 public class OneJavaFileAnonymousClassesCode extends JavaCode {
 	
+	int level = -1;
 	String mwcontent = null;
 	ArrayList<String> codelist = null;
 	
-	public OneJavaFileAnonymousClassesCode() {
+	public OneJavaFileAnonymousClassesCode(int level) {
+		this.level = level;
 	}
 	
 	public void AddPreDeclrations(MethodWindow mw)
