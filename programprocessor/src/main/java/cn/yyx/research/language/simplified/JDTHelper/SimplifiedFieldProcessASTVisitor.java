@@ -1,5 +1,6 @@
 package cn.yyx.research.language.simplified.JDTHelper;
 
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Initializer;
@@ -72,20 +73,20 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	public void endVisit(EnumDeclaration node) {
 	}
 	
-	/*@Override
+	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
 		boolean ifcontinue = HandleCurrentLevelControl(node.hashCode());
 		if (ifcontinue)
 		{
-			jc = ojfacc;
+			super.visit(node);
 		}		
 		return ifcontinue;
 	}
 	
 	@Override
 	public void endVisit(AnonymousClassDeclaration node) {
-		jc = ojfc;
-	}*/
+		super.endVisit(node);
+	}
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
