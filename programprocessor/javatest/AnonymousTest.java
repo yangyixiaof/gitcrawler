@@ -5,11 +5,11 @@ public class Empty {
 	public void HeiHei()
 	{
 		new Runnable() {
-			/*@Override
+			@Override
 			public void run() {
 				System.out.println("RT");
 				new Runnable() {
-					@Override
+					/*@Override
 					public void run() {
 						System.out.println("run");
 						new Runnable() {
@@ -19,21 +19,11 @@ public class Empty {
 							}
 						};
 						System.out.println("qwer");
-					}
+					}*/
 				};
 				System.out.println("OIU");
-			}*/
+			}
 		};
 	}
 	
-	class TTest2
-	{
-		
-	}
-	
-}
-
-class tt 
-{
-	int a;
 }

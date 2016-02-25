@@ -1267,7 +1267,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(ClassInstanceCreation node) {
 		// MyLogger.Info("Node Type:"+node.getType());
 		// MyLogger.Info("Body:"+node.getAnonymousClassDeclaration());
-		OneMethodInvocationOccurs(TypeCode(node.getType(), true));
+		OneMethodInvocationOccurs(RawTypeCode(node.getType()));
 		MethodPushReferRequest(node.getExpression(), node.arguments());
 		return super.visit(node);
 	}
