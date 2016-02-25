@@ -40,7 +40,10 @@ public class AnonymousClassPoolInOneJavaFile {
 	public void ExitAnonymousClass()
 	{
 		ojfaccstack.pop();
-		recently = ojfaccstack.peek();
+		if (!ojfaccstack.isEmpty())
+		{
+			recently = ojfaccstack.peek();
+		}
 	}
 
 	public boolean IsEmpty() {
