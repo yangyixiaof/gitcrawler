@@ -76,16 +76,16 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
 		boolean ifcontinue = HandleCurrentLevelControl(node.hashCode());
-		if (ifcontinue)
+		/*if (ifcontinue)
 		{
-			super.visit(node);
-		}		
+			jc = ojfacc;
+		}*/
 		return ifcontinue;
 	}
 	
 	@Override
 	public void endVisit(AnonymousClassDeclaration node) {
-		super.endVisit(node);
+		// jc = ojfc;
 	}
 	
 	@Override
