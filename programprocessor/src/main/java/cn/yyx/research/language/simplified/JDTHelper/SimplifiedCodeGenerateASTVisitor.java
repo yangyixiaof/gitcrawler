@@ -2032,18 +2032,27 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
 		MethodPushReferRequest(null, node.arguments());
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
+		ASTNode over = node.getName();
+		if (node.arguments() != null && node.arguments().size() > 0)
+		{
+			over = (ASTNode) node.arguments().get(node.arguments().size()-1);
+		}
+		AddFirstOrderTask(new FirstOrderTask(over, null, node, true) {
+			@Override
+			public void run() {
+				String invoker = "this";
+				EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
+				MethodDeleteReferRequest(null, node.arguments());
+				if (node.getAnonymousClassDeclaration() != null) {
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true, null);
+				}
+			}
+		});
 		return super.visit(node);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void endVisit(EnumConstantDeclaration node) {
-		String invoker = "this";
-		EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
-		MethodDeleteReferRequest(null, node.arguments());
-		if (node.getAnonymousClassDeclaration() != null) {
-			GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true, null);
-		}
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
