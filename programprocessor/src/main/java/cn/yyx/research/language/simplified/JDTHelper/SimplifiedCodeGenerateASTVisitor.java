@@ -1344,33 +1344,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ClassInstanceCreation node) {
-		// TODO
 		// MyLogger.Info("Node Type:"+node.getType());
 		// MyLogger.Info("Body:"+node.getAnonymousClassDeclaration());
 		OneMethodInvocationOccurs(RawTypeCode(node.getType()));
-		Expression expr = node.getExpression();
-		MethodPushReferRequest(expr, node.arguments());
-		if (expr != null) {
-			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
-				@Override
-				public void run() {
-					String invoker = "new";
-					int exprhashcode = expr.hashCode();
-					String refercnt = referedcnt.GetNodeHelp(exprhashcode);
-					if (refercnt != null) {
-						invoker += ("." + refercnt);
-					}
-					MethodInvocationCode(TypeCode(node.getType(), false), invoker, node.arguments());
-					MethodDeleteReferRequest(expr, node.arguments());
-				}
-			});
-		} else {
-			MethodInvocationCode(TypeCode(node.getType(), false), "new", node.arguments());
-		}
+		MethodPushReferRequest(node.getExpression(), node.arguments());
 		if (node.getAnonymousClassDeclaration() != null) {
 			AddFirstOrderTask(new FirstOrderTask(node.getType(), null, node, true, false) {
 				@Override
 				public void run() {
+					ClassInstanceCreationDetail(node);
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true,
 							null);
 				}
@@ -1383,9 +1365,29 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(ClassInstanceCreation node) {
 		// MyLogger.Info("Node Type:"+node.getType());
 		// MyLogger.Info("Body:"+node.getAnonymousClassDeclaration());
+		if (node.getAnonymousClassDeclaration() == null) {
+			ClassInstanceCreationDetail(node);
+		}
 		super.endVisit(node);
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	protected void ClassInstanceCreationDetail(ClassInstanceCreation node)
+	{
+		Expression expr = node.getExpression();
+		String invoker = "new";
+		if (expr != null)
+		{
+			int exprhashcode = expr.hashCode();
+			String refercnt = referedcnt.GetNodeHelp(exprhashcode);
+			if (refercnt != null) {
+				invoker += ("." + refercnt);
+			}
+		}
+		MethodInvocationCode(TypeCode(node.getType(), false), invoker, node.arguments());
+		MethodDeleteReferRequest(expr, node.arguments());
+	}
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ConstructorInvocation node) {
