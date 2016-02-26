@@ -220,9 +220,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// Do nothing now.
 		// MyLogger.Info("EnumDeclaration:"+node);
 		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
-		TypeDeclarationPreCode(node, GCodeMetaInfo.EnumDeclarationHint);
+		boolean ifcontinue = TypeDeclarationPreCode(node, GCodeMetaInfo.EnumDeclarationHint);
 		OnlyVisitFieldDeclaration(node);
-		return super.visit(node);
+		return ifcontinue && super.visit(node);
 	}
 
 	@Override
@@ -232,9 +232,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(AnnotationTypeDeclaration node) {
-		TypeDeclarationPreCode(node, GCodeMetaInfo.ATInterfaceHint);
+		boolean ifcontinue = TypeDeclarationPreCode(node, GCodeMetaInfo.ATInterfaceHint);
 		OnlyVisitFieldDeclaration(node);
-		return super.visit(node);
+		return ifcontinue && super.visit(node);
 	}
 
 	@Override
