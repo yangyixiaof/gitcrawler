@@ -27,5 +27,4 @@ public class TodoList {
 	// AnnotationTypeMemberDeclaration:
 		//   [ Javadoc ] { ExtendedModifier }
 		 //      Type Identifier ( ) [ default Expression ] ;
-
 }

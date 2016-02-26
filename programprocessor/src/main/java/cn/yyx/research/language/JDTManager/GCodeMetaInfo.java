@@ -4,6 +4,8 @@ public class GCodeMetaInfo {
 	
 	public static final String AnonymousClassBegin = "AB@";
 	public static final String AnonymousClassPreHint = "HT@";
+	public static final String ATInterfaceHint = "AT@";
+	public static final String AnnotationTypeMemberDeclarationHint = "AM@";
 	public static final String ClassDeclarationHint = "CD@";
 	public static final String ClassInnerDeclarationHint = "ICD@";
 	public static final String EnumDeclarationHint = "ED@";

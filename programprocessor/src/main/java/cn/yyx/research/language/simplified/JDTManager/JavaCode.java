@@ -54,6 +54,8 @@ public abstract class JavaCode {
 		{
 			case GCodeMetaInfo.AnonymousClassBegin:
 			case GCodeMetaInfo.AnonymousClassPreHint:
+			case GCodeMetaInfo.ATInterfaceHint:
+			case GCodeMetaInfo.AnnotationTypeMemberDeclarationHint:
 			case GCodeMetaInfo.ClassDeclarationHint:
 			case GCodeMetaInfo.ClassInnerDeclarationHint:
 			case GCodeMetaInfo.EnumDeclarationHint:

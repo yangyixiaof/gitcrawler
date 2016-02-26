@@ -203,7 +203,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		return super.visit(node);
 	}
-	
+
 	@Override
 	public boolean visit(TypeDeclarationStatement node) {
 		return super.visit(node);
@@ -213,49 +213,90 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(TypeParameter node) {
 		return false;
 	}
-	
+
+	// raw string
+	@Override
+	public boolean visit(EnumDeclaration node) {
+		// Do nothing now.
+		// MyLogger.Info("EnumDeclaration:"+node);
+		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
+		TypeDeclarationPreCode(node, GCodeMetaInfo.EnumDeclarationHint);
+		OnlyVisitFieldDeclaration(node);
+		return super.visit(node);
+	}
+
+	@Override
+	public void endVisit(EnumDeclaration node) {
+		TypeDeclarationPostCode(node);
+	}
+
 	@Override
 	public boolean visit(AnnotationTypeDeclaration node) {
-		// TODO
-		System.err.println("Debugging: AnnotationTypeDeclaration . The system will exit.");
-		System.exit(1);
-		return false;
+		TypeDeclarationPreCode(node, GCodeMetaInfo.ATInterfaceHint);
+		OnlyVisitFieldDeclaration(node);
+		return super.visit(node);
+	}
+
+	@Override
+	public void endVisit(AnnotationTypeDeclaration node) {
+		TypeDeclarationPostCode(node);
 	}
 
 	@Override
 	public boolean visit(AnnotationTypeMemberDeclaration node) {
-		// TODO
-		System.err.println("Debugging: AnnotationTypeMemberDeclaration. The system will exit.");
-		System.exit(1);
-		return false;
+		runforbid.AddNodeHelp(node.getName().hashCode(), true);
+		Expression expr = node.getDefault();
+		if (expr != null) {
+			ExpressionReferPreHandle(expr, ReferenceHintLibrary.DataUse);
+		}
+		return super.visit(node);
 	}
 
 	@Override
-	public boolean visit(TypeDeclaration node) {
+	public void endVisit(AnnotationTypeMemberDeclaration node) {
+		String onecode = TypeCode(node.getType(), true) + GCodeMetaInfo.WhiteSpaceReplacer + node.getName().toString()
+				+ "()";
+		Expression expr = node.getDefault();
+		if (expr != null) {
+			ExpressionReferPostHandle(node, expr, null, GCodeMetaInfo.AnnotationTypeMemberDeclarationHint,
+					onecode + "default", false, true, false, false, false);
+		} else {
+			GenerateOneLine(onecode, false, false, false, true, GCodeMetaInfo.AnnotationTypeMemberDeclarationHint);
+		}
+		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		runforbid.DeleteNodeHelp(node.getName().hashCode());
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected void OnlyVisitFieldDeclaration(AbstractTypeDeclaration node)
+	{
+		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
+		List<BodyDeclaration> bnlist = node.bodyDeclarations();
+		Iterator<BodyDeclaration> itr = bnlist.iterator();
+		while (itr.hasNext()) {
+			BodyDeclaration bd = itr.next();
+			if (bd instanceof FieldDeclaration) {
+				bd.accept(sfpa);
+			}
+		}
+	}
 
+	protected boolean TypeDeclarationPreCode(AbstractTypeDeclaration node, String preHint) {
 		if (TypeASTHelper.IsEmptyTypeDeclaration(node)) {
 			return false;
 		}
 
 		FlushCode();
-		boolean inner = false;
 		if (FirstLevelClass == null) {
 			FirstLevelClass = node.hashCode();
-		} else {
-			inner = true;
 		}
 		EnterBlock(node);
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		String declareHint = inner ? GCodeMetaInfo.ClassInnerDeclarationHint : GCodeMetaInfo.ClassDeclarationHint;
-		GenerateOneLine(declareHint + node.getName().toString(), false, false, false, true, null);
-		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
-		node.accept(sfpa);
-		return super.visit(node);
+		GenerateOneLine(preHint + node.getName().toString(), false, false, false, true, null);
+		return true;
 	}
 
-	@Override
-	public void endVisit(TypeDeclaration node) {
-
+	protected void TypeDeclarationPostCode(AbstractTypeDeclaration node) {
 		if (TypeASTHelper.IsEmptyTypeDeclaration(node)) {
 			return;
 		}
@@ -266,6 +307,25 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		ExitBlock(node);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
+	}
+
+	@Override
+	public boolean visit(TypeDeclaration node) {
+		boolean inner = false;
+		if (FirstLevelClass != null)
+		{
+			inner = true;
+		}
+		String hint = (inner ? GCodeMetaInfo.ClassInnerDeclarationHint : GCodeMetaInfo.ClassDeclarationHint);
+		boolean ifcontinue = TypeDeclarationPreCode(node, hint);
+		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
+		node.accept(sfpa);
+		return ifcontinue && super.visit(node);
+	}
+
+	@Override
+	public void endVisit(TypeDeclaration node) {
+		TypeDeclarationPostCode(node);
 	}
 
 	@Override
@@ -291,8 +351,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			omc = (new NodeCode(argmutiple));
 		}
 		jc = acp.ExitAnonymousClass();
-		if (jc == null)
-		{
+		if (jc == null) {
 			jc = ojfc;
 		}
 		ExitBlock(node);
@@ -1291,16 +1350,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					MethodDeleteReferRequest(expr, node.arguments());
 				}
 			});
-		}
-		else
-		{
+		} else {
 			MethodInvocationCode(TypeCode(node.getType(), false), "new", node.arguments());
 		}
 		if (node.getAnonymousClassDeclaration() != null) {
 			AddFirstOrderTask(new FirstOrderTask(node.getType(), null, node, true, false) {
 				@Override
 				public void run() {
-					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true, null);
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true,
+							null);
 				}
 			});
 		}
@@ -1996,57 +2054,21 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		return false;
 	}
 
-	// raw string
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(EnumDeclaration node) {
-		// Do nothing now.
-		// MyLogger.Info("EnumDeclaration:"+node);
-		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
-		FlushCode();
-		if (FirstLevelClass == null) {
-			FirstLevelClass = node.hashCode();
-		}
-		EnterBlock(node);
-		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		GenerateOneLine(GCodeMetaInfo.EnumDeclarationHint + node.getName().toString(), false, false, false, true, null);
-		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
-		List<BodyDeclaration> bnlist = node.bodyDeclarations();
-		Iterator<BodyDeclaration> itr = bnlist.iterator();
-		while (itr.hasNext()) {
-			BodyDeclaration bd = itr.next();
-			if (bd instanceof FieldDeclaration) {
-				bd.accept(sfpa);
-			}
-		}
-		return super.visit(node);
-	}
-
-	@Override
-	public void endVisit(EnumDeclaration node) {
-		FlushCode();
-		if (FirstLevelClass == node.hashCode()) {
-			FirstLevelClass = null;
-		}
-		ExitBlock(node);
-		runforbid.DeleteNodeHelp(node.getName().hashCode());
-	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(EnumConstantDeclaration node) {
 		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
 		MethodPushReferRequest(null, node.arguments());
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		
-		/*ASTNode over = node.getName();
-		if (node.arguments() != null && node.arguments().size() > 0)
-		{
-			over = (ASTNode) node.arguments().get(node.arguments().size()-1);
-		}
-		System.err.println("over hash code:" + over.hashCode());
-		System.err.println("over content:" + over);*/
-		
+
+		/*
+		 * ASTNode over = node.getName(); if (node.arguments() != null &&
+		 * node.arguments().size() > 0) { over = (ASTNode)
+		 * node.arguments().get(node.arguments().size()-1); }
+		 * System.err.println("over hash code:" + over.hashCode());
+		 * System.err.println("over content:" + over);
+		 */
+
 		if (node.getAnonymousClassDeclaration() != null) {
 			AddFirstOrderTask(new FirstOrderTask(null, node.getAnonymousClassDeclaration(), node, false, true) {
 				@Override
@@ -2054,13 +2076,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					String invoker = "this";
 					EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
 					MethodDeleteReferRequest(null, node.arguments());
-					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true, null);
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true,
+							null);
 				}
 			});
 		}
 		return super.visit(node);
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(EnumConstantDeclaration node) {
