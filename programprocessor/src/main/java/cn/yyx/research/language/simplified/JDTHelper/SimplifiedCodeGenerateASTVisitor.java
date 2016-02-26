@@ -79,16 +79,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(AnnotationTypeDeclaration node) {
-		return false;
-	}
-
-	@Override
-	public boolean visit(AnnotationTypeMemberDeclaration node) {
-		return false;
-	}
-
-	@Override
 	public boolean visit(PackageDeclaration node) {
 		return false;
 	}
@@ -213,7 +203,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public boolean visit(TypeDeclarationStatement node) {
 		return super.visit(node);
@@ -221,6 +211,22 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeParameter node) {
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AnnotationTypeDeclaration node) {
+		// TODO
+		System.err.println("Debugging: AnnotationTypeDeclaration . The system will exit.");
+		System.exit(1);
+		return false;
+	}
+
+	@Override
+	public boolean visit(AnnotationTypeMemberDeclaration node) {
+		// TODO
+		System.err.println("Debugging: AnnotationTypeMemberDeclaration. The system will exit.");
+		System.exit(1);
 		return false;
 	}
 
