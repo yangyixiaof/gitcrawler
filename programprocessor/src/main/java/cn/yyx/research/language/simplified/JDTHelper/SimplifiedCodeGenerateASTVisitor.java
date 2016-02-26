@@ -1344,6 +1344,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ClassInstanceCreation node) {
+		// TODO
 		// MyLogger.Info("Node Type:"+node.getType());
 		// MyLogger.Info("Body:"+node.getAnonymousClassDeclaration());
 		OneMethodInvocationOccurs(RawTypeCode(node.getType()));
