@@ -221,7 +221,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("EnumDeclaration:"+node);
 		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
 		boolean ifcontinue = TypeDeclarationPreCode(node, GCodeMetaInfo.EnumDeclarationHint);
-		OnlyVisitFieldDeclaration(node);
+		OnlyVisitFieldDeclaration(node, ifcontinue);
 		return ifcontinue && super.visit(node);
 	}
 
@@ -233,7 +233,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(AnnotationTypeDeclaration node) {
 		boolean ifcontinue = TypeDeclarationPreCode(node, GCodeMetaInfo.ATInterfaceHint);
-		OnlyVisitFieldDeclaration(node);
+		OnlyVisitFieldDeclaration(node, ifcontinue);
 		return ifcontinue && super.visit(node);
 	}
 
@@ -267,9 +267,23 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 	
-	@SuppressWarnings("unchecked")
-	protected void OnlyVisitFieldDeclaration(AbstractTypeDeclaration node)
+	protected void GeneralVisitFieldDeclaration(AbstractTypeDeclaration node, boolean ifcontinue)
 	{
+		if (!ifcontinue)
+		{
+			return;
+		}
+		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
+		node.accept(sfpa);
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected void OnlyVisitFieldDeclaration(AbstractTypeDeclaration node, boolean ifcontinue)
+	{
+		if (!ifcontinue)
+		{
+			return;
+		}
 		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
 		List<BodyDeclaration> bnlist = node.bodyDeclarations();
 		Iterator<BodyDeclaration> itr = bnlist.iterator();
@@ -318,8 +332,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		String hint = (inner ? GCodeMetaInfo.ClassInnerDeclarationHint : GCodeMetaInfo.ClassDeclarationHint);
 		boolean ifcontinue = TypeDeclarationPreCode(node, hint);
-		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this);
-		node.accept(sfpa);
+		GeneralVisitFieldDeclaration(node, ifcontinue);
 		return ifcontinue && super.visit(node);
 	}
 
