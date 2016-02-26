@@ -1349,7 +1349,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		OneMethodInvocationOccurs(RawTypeCode(node.getType()));
 		MethodPushReferRequest(node.getExpression(), node.arguments());
 		if (node.getAnonymousClassDeclaration() != null) {
-			AddFirstOrderTask(new FirstOrderTask(node.getType(), null, node, true, false) {
+			AddFirstOrderTask(new FirstOrderTask(null, node.getAnonymousClassDeclaration(), node, false, true) {
 				@Override
 				public void run() {
 					ClassInstanceCreationDetail(node);
