@@ -2037,6 +2037,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			over = (ASTNode) node.arguments().get(node.arguments().size()-1);
 		}
+		
+		System.err.println("over hash code:" + over.hashCode());
+		System.err.println("over content:" + over);
+		
 		AddFirstOrderTask(new FirstOrderTask(over, null, node, true) {
 			@Override
 			public void run() {
