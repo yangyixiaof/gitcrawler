@@ -23,7 +23,7 @@ public class TodoList {
 	// a mechanism which append some extra type hint is needed.
 	
 	
-	// TODO AnnotationTypeMemberDeclaration is not handled.
+	// solved: AnnotationTypeMemberDeclaration is not handled.
 	// AnnotationTypeMemberDeclaration:
 		//   [ Javadoc ] { ExtendedModifier }
 		 //      Type Identifier ( ) [ default Expression ] ;
