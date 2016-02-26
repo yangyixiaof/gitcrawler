@@ -204,7 +204,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			lastbeforefinally = (ASTNode) node.catchClauses().get(node.catchClauses().size() - 1);
 		}
 		if (node.getFinally() != null) {
-			AddFirstOrderTask(new FirstOrderTask(lastbeforefinally, null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(lastbeforefinally, null, node, true, false) {
 				@Override
 				public void run() {
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "finally", false, false, false, true, null);
@@ -474,7 +474,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(Assignment node) {
 		ExpressionReferPreHandle(node.getLeftHandSide(), ReferenceHintLibrary.DataUpdate);
-		AddFirstOrderTask(new FirstOrderTask(node.getLeftHandSide(), node.getRightHandSide(), node, true) {
+		AddFirstOrderTask(new FirstOrderTask(node.getLeftHandSide(), node.getRightHandSide(), node, true, false) {
 			@Override
 			public void run() {
 				ExpressionReferPostHandle(node, (Expression) getPre(), node.getOperator().toString(),
@@ -525,7 +525,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "do", false, false, false, true, null);
 		Statement body = node.getBody();
 		Expression expr = node.getExpression();
-		AddFirstOrderTask(new FirstOrderTask(body, expr, node, false) {
+		AddFirstOrderTask(new FirstOrderTask(body, expr, node, false, false) {
 			@Override
 			public void run() {
 				ExpressionReferPreHandle(expr, ReferenceHintLibrary.DataUse);
@@ -546,7 +546,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(EnhancedForStatement node) {
 		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
 		runforbid.AddNodeHelp(node.getParameter().hashCode(), true);
-		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true) {
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true, false) {
 			@Override
 			public void run() {
 				String code = ExpressionReferPostHandle(node, node.getExpression(), "", "", "", false, false, false,
@@ -575,7 +575,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		Expression index = node.getIndex();
 		ExpressionReferPreHandle(array, hint);
 		referhint.AddNodeHelp(index.hashCode(), ReferenceHintLibrary.DataUse);
-		AddFirstOrderTask(new FirstOrderTask(array, index, node, true) {
+		AddFirstOrderTask(new FirstOrderTask(array, index, node, true, false) {
 			@Override
 			public void run() {
 				ExpressionReferPostHandle(node, array, "", GCodeMetaInfo.ArrayAccess, "#", true, false, true, true,
@@ -605,7 +605,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		while (itr.hasNext()) {
 			Expression expr = itr.next();
 			referhint.AddNodeHelp(expr.hashCode(), ReferenceHintLibrary.DataUse);
-			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
 				@Override
 				public void run() {
 					AppendEndInfoToLast(GCodeMetaInfo.EndOfArrayDeclarationIndexExpression);
@@ -635,7 +635,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		while (itr.hasNext()) {
 			Expression expr = itr.next();
 			referhint.AddNodeHelp(expr.hashCode(), ReferenceHintLibrary.DataUse);
-			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
 				@Override
 				public void run() {
 					AppendEndInfoToLast(GCodeMetaInfo.EndOfArrayDeclarationIndexExpression);
@@ -691,7 +691,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 		ExpressionReferPreHandle(left, hint);
 		// referhint.AddNodeHelp(left.hashCode(), hint);
-		AddFirstOrderTask(new FirstOrderTask(left, right, node, false) {
+		AddFirstOrderTask(new FirstOrderTask(left, right, node, false, false) {
 			@Override
 			public void run() {
 				ExpressionReferPostHandle(node, left, operatorcode, GCodeMetaInfo.InfixExpressionHint, "", true, false,
@@ -714,7 +714,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			Iterator<Expression> itr = extendops.iterator();
 			while (itr.hasNext()) {
 				Expression op = itr.next();
-				AddFirstOrderTask(new FirstOrderTask(pre, op, node, false) {
+				AddFirstOrderTask(new FirstOrderTask(pre, op, node, false, false) {
 					@Override
 					public void run() {
 						ExpressionReferPostHandle(node, (Expression) getPre(), operatorcode,
@@ -826,7 +826,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SwitchStatement node) {
 		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
-		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true) {
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true, false) {
 			@Override
 			public void run() {
 				ExpressionReferPostHandle(node, node.getExpression(), "switch", GCodeMetaInfo.SwitchHint, "", false,
@@ -862,7 +862,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SynchronizedStatement node) {
 		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
-		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getBody(), node, false) {
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getBody(), node, false, false) {
 			@Override
 			public void run() {
 				ExpressionReferPostHandle(node, node.getExpression(), "synchronized", GCodeMetaInfo.SynchronizedHint,
@@ -901,7 +901,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(WhileStatement node) {
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "while", false, false, false, true, null);
 		referhint.AddNodeHelp(node.getExpression().hashCode(), ReferenceHintLibrary.DataUse);
-		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true) {
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true, false) {
 			@Override
 			public void run() {
 				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "ecwhile", false, false, false, true, null);
@@ -922,7 +922,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// ReferenceHintLibrary.DataUse);
 		int exprhashcode = node.getExpression().hashCode();
 		referhint.AddNodeHelp(exprhashcode, ReferenceHintLibrary.DataUse);
-		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getThenStatement(), node, true) {
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getThenStatement(), node, true, false) {
 			@Override
 			public void run() {
 				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "then", false, false, false, true, null);
@@ -930,7 +930,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				// "", false, true, false, false, false);
 			}
 		});
-		AddFirstOrderTask(new FirstOrderTask(node.getThenStatement(), node.getElseStatement(), node, true) {
+		AddFirstOrderTask(new FirstOrderTask(node.getThenStatement(), node.getElseStatement(), node, true, false) {
 			@Override
 			public void run() {
 				if (getPost() != null) {
@@ -972,7 +972,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
 		}
 		if (!oneempty) {
-			AddFirstOrderTask(new FirstOrderTask(inis.get(inis.size() - 1), null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(inis.get(inis.size() - 1), null, node, true, false) {
 				@Override
 				public void run() {
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forIniOver", false, false, false, true, null);
@@ -980,7 +980,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			});
 		}
 		if (!twoempty) {
-			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
 				@Override
 				public void run() {
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
@@ -988,7 +988,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			});
 		}
 		if (!threeempty) {
-			AddFirstOrderTask(new FirstOrderTask(ups.get(ups.size() - 1), null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(ups.get(ups.size() - 1), null, node, true, false) {
 				@Override
 				public void run() {
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
@@ -1109,13 +1109,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referhint.AddNodeHelp(node.getElseExpression().hashCode(), ReferenceHintLibrary.DataUse);
 		}
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "CondExpBegin", false, false, false, true, null);
-		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getThenExpression(), node, false) {
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getThenExpression(), node, false, false) {
 			@Override
 			public void run() {
 				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "CondExpQM", false, false, false, true, null);
 			}
 		});
-		AddFirstOrderTask(new FirstOrderTask(node.getThenExpression(), node.getElseExpression(), node, false) {
+		AddFirstOrderTask(new FirstOrderTask(node.getThenExpression(), node.getElseExpression(), node, false, false) {
 			@Override
 			public void run() {
 				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "CondExpCM", false, false, false, true, null);
@@ -1272,7 +1272,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		Expression expr = node.getExpression();
 		MethodPushReferRequest(expr, node.arguments());
 		if (expr != null) {
-			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
 				@Override
 				public void run() {
 					String invoker = "new";
@@ -1291,7 +1291,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			MethodInvocationCode(TypeCode(node.getType(), false), "new", node.arguments());
 		}
 		if (node.getAnonymousClassDeclaration() != null) {
-			AddFirstOrderTask(new FirstOrderTask(node.getType(), null, node, true) {
+			AddFirstOrderTask(new FirstOrderTask(node.getType(), null, node, true, false) {
 				@Override
 				public void run() {
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true, null);
@@ -2032,31 +2032,37 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		AppendOtherCode(GCodeMetaInfo.EnumCorpus, node.getName().toString());
 		MethodPushReferRequest(null, node.arguments());
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		ASTNode over = node.getName();
+		
+		/*ASTNode over = node.getName();
 		if (node.arguments() != null && node.arguments().size() > 0)
 		{
 			over = (ASTNode) node.arguments().get(node.arguments().size()-1);
 		}
-		
 		System.err.println("over hash code:" + over.hashCode());
-		System.err.println("over content:" + over);
+		System.err.println("over content:" + over);*/
 		
-		AddFirstOrderTask(new FirstOrderTask(over, null, node, true) {
-			@Override
-			public void run() {
-				String invoker = "this";
-				EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
-				MethodDeleteReferRequest(null, node.arguments());
-				if (node.getAnonymousClassDeclaration() != null) {
+		if (node.getAnonymousClassDeclaration() != null) {
+			AddFirstOrderTask(new FirstOrderTask(null, node.getAnonymousClassDeclaration(), node, false, true) {
+				@Override
+				public void run() {
+					String invoker = "this";
+					EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
+					MethodDeleteReferRequest(null, node.arguments());
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "AnonymousDeclaration", false, false, false, true, null);
 				}
-			}
-		});
+			});
+		}
 		return super.visit(node);
 	}
-
+	
 	@Override
+	@SuppressWarnings("unchecked")
 	public void endVisit(EnumConstantDeclaration node) {
+		if (node.getAnonymousClassDeclaration() == null) {
+			String invoker = "this";
+			EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
+			MethodDeleteReferRequest(null, node.arguments());
+		}
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -2545,7 +2551,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				referhint.AddNodeHelp(arghashcode, ReferenceHintLibrary.DataUse);
 				AddNodeRefered(arghashcode);
 				argmutiple.push(false);
-				AddFirstOrderTask(new FirstOrderTask(arg, null, arg.getParent(), true) {
+				AddFirstOrderTask(new FirstOrderTask(arg, null, arg.getParent(), true, false) {
 					@Override
 					public void run() {
 						if (argmutiple.pop()) {

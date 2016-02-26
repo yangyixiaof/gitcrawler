@@ -8,12 +8,14 @@ public abstract class FirstOrderTask implements Runnable {
 	ASTNode post = null;
 	ASTNode infixnode = null;
 	boolean afterprerun = false;
+	private boolean afterpostrun = false;
 	
-	public FirstOrderTask(ASTNode pre, ASTNode post, ASTNode infixnode, boolean afterprerun) {
+	public FirstOrderTask(ASTNode pre, ASTNode post, ASTNode infixnode, boolean afterprerun, boolean afterpostrun) {
 		this.setPre(pre);
 		this.setPost(post);
 		this.setInfixnode(infixnode);
 		this.setAfterprerun(afterprerun);
+		this.setAfterpostrun(afterpostrun);
 	}
 	
 	public ASTNode getInfixnode() {
@@ -46,6 +48,14 @@ public abstract class FirstOrderTask implements Runnable {
 	
 	public void setAfterprerun(boolean afterprerun) {
 		this.afterprerun = afterprerun;
+	}
+
+	public boolean isBeforepostrun() {
+		return afterpostrun;
+	}
+
+	public void setAfterpostrun(boolean afterpostrun) {
+		this.afterpostrun = afterpostrun;
 	}
 	
 }
