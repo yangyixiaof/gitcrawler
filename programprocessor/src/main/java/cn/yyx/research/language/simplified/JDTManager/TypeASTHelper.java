@@ -35,9 +35,19 @@ public class TypeASTHelper {
 				boolean resempty = IsEmptyTypeDeclaration((AbstractTypeDeclaration)bd);
 				if (!resempty)
 				{
+					isempty = false;
 					break;
 				}
 	 			
+			}
+		}
+		if (clazzNode instanceof EnumDeclaration)
+		{
+			EnumDeclaration ed = (EnumDeclaration)clazzNode;
+			List<EnumConstantDeclaration> cs = ed.enumConstants();
+			if (cs != null && cs.size() > 0)
+			{
+				isempty = false;
 			}
 		}
 		return isempty;

@@ -1625,7 +1625,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(SimpleName node) {
 		int nodehashcode = node.hashCode();
 		Boolean canrun = runpermit.GetNodeHelp(nodehashcode);
-
+		
+		// testing
+		/*if (node.toString().equals("Operation"))
+		{
+			System.err.println("runpermit:" + canrun + ";runforbid:" + runforbid.GetNodeHelp(nodehashcode));
+		}*/
+		
 		if (canrun == null || canrun == false) {
 			Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 			if (forbid != null && forbid == true) {
@@ -1638,20 +1644,19 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
-
-		// MyLogger.Info("hint:"+hint);
-		// MyLogger.Info("SimpleNameParent:"+node.getParent());
-		// MyLogger.Info("SimpleNameParentType:"+node.getParent().getClass());
-
-		if (hint == null) {
-			MyLogger.Error("SimpleName:" + node);
-		}
+		
 		// MyLogger.Info("name:" + node.toString() +";hint:" + (hint ==
 		// ReferenceHintLibrary.DataDeclare)+";hint2:"+(hint ==
 		// ReferenceHintLibrary.DataUse));
 
 		boolean isfield = false;
 		String result = null;
+		
+		if (hint == null)
+		{
+			System.err.println("hint null: SimpleName:" + node + ";SimpleNameParent:"+node.getParent() + ";SimpleNameParentType:"+node.getParent().getClass());
+		}
+		
 		if (hint != ReferenceHintLibrary.NoHint) {
 			String code = null;
 			boolean hasCorrespond = false;
