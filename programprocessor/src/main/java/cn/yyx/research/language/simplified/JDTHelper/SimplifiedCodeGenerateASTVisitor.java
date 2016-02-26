@@ -2183,7 +2183,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
-			refernoline.AddNodeHelp(nodehashcode, true);
+			// TODO
+			try {
+				refernoline.AddNodeHelp(nodehashcode, true);
+			} catch (Error e) {
+				System.err.println("Conflict node content:" + node.toString());
+				System.exit(1);
+			}
 		} else {
 			GenerateOneLine(nodecode, false, false, false, false, GCodeMetaInfo.LiteralHint);
 		}
@@ -2475,6 +2481,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		} else {
 			berefered.DeleteNodeHelp(nodehashcode);
 			referedcnt.DeleteNodeHelp(nodehashcode);
+			refernoline.DeleteNodeHelp(nodehashcode);
 		}
 	}
 
@@ -2509,6 +2516,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		int typehashcode = type.hashCode();
 		berefered.DeleteNodeHelp(typehashcode);
 		referedcnt.DeleteNodeHelp(typehashcode);
+		refernoline.DeleteNodeHelp(typehashcode);
 		typesimp.DeleteNodeHelp(typehashcode);
 	}
 

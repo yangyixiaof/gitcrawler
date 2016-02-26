@@ -64,10 +64,11 @@ public class SourceCodeFileIteration {
 								corpus = ProgramProcessor.ProcessOneJavaFile(f);
 								cancontinue = true;
 							} catch (ConflictASTNodeHashCodeError e) {
-								System.err.println("Conflict! try " + trytime + "st time. wait for 20s. Doing system gc in this period.");
+								int sleeptime = 20000 + (trytime-1)*10000;
+								System.err.println("Conflict! try " + trytime + "st time. wait for " + (sleeptime/1000) + "s. Doing system gc in this period.");
 								try {
 									System.gc();
-									Thread.sleep(20000 + (trytime-1)*10000);
+									Thread.sleep(sleeptime);
 								} catch (InterruptedException e1) {
 									e1.printStackTrace();
 								}
