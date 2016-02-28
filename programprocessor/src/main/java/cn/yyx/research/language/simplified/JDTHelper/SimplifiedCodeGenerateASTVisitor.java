@@ -1296,7 +1296,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			omc = new NodeCode(argmutiple);
 		}
-		String nodecode = GCodeMetaInfo.MethodDeclarationHint + node.getName().toString();
+		String nodecode = GCodeMetaInfo.MethodDeclarationHint;
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		nodecode = nodecode + "(";
 		List<SingleVariableDeclaration> types = node.parameters();
@@ -1310,7 +1310,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (types.size() > 0) {
 			nodecode = nodecode.substring(0, nodecode.length() - 1);
 		}
-		nodecode = nodecode + ")";
+		nodecode = nodecode + ")" + node.getName().toString();
 		GenerateOneLine(nodecode, false, false, false, true, null);
 		return super.visit(node);
 	}
@@ -2183,7 +2183,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
-			// TODO
 			try {
 				refernoline.AddNodeHelp(nodehashcode, true);
 			} catch (Error e) {
