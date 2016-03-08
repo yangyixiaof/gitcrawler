@@ -263,8 +263,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		} else {
 			GenerateOneLine(onecode, false, false, false, true, GCodeMetaInfo.AnnotationTypeMemberDeclarationHint);
 		}
-		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
+		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
 	}
 	
 	protected void GeneralVisitFieldDeclaration(AbstractTypeDeclaration node, boolean ifcontinue)
