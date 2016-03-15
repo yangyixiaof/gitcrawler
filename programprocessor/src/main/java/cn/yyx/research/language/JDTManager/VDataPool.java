@@ -23,6 +23,11 @@ public class VDataPool {
 		scopes.remove(id);
 	}
 	
+	public JCScope GetJCScope(int scopeid)
+	{
+		return scopes.get(scopeid);
+	}
+	
 	public void NewlyAssignedData(OneScope scope, String data, String type)
 	{
 		JCScope dataScope = GetDataScope(scope);

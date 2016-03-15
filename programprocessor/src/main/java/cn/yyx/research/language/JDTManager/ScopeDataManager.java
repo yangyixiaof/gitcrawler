@@ -32,6 +32,21 @@ public class ScopeDataManager {
 
 	VDataPool ffvdp = new VDataPool();
 	VDataPool fcvdp = new VDataPool();
+	
+	public EnteredScopeStack GetClassStack()
+	{
+		return classstack;
+	}
+	
+	public VDataPool GetFVDataPool()
+	{
+		return fvdp;
+	}
+	
+	public VDataPool GetCVDataPool()
+	{
+		return cvdp;
+	}
 
 	public ScopeDataManager() {
 	}

@@ -2,6 +2,8 @@ package cn.yyx.research.language.JDTManager;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import cn.yyx.research.language.Utility.MyLogger;
@@ -30,6 +32,29 @@ public class JCScope {
 		// this.ID = id;
 		// this.Level = level;
 		// allDataNum = 0;
+	}
+	
+	public Map<String, String> GetContentAccordingToOffset(int offset)
+	{
+		Map<String, String> result = new TreeMap<String, String>();
+		Set<String> types = dataInOrder.keySet();
+		Iterator<String> itr = types.iterator();
+		while (itr.hasNext())
+		{
+			String type = itr.next();
+			LinkedList<String> list = dataInOrder.get(type);
+			int idx = offset;
+			int lsize = list.size();
+			if (lsize >= idx)
+			{
+				if (lsize == idx)
+				{
+					idx--;
+				}
+				result.put(type, list.get(idx));
+			}
+		}
+		return result;
 	}
 	
 	public void PushNewlyAssignedData(String data, String type)

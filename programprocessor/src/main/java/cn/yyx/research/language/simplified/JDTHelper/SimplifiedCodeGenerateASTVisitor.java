@@ -25,6 +25,7 @@ import cn.yyx.research.language.Utility.MyLogger;
 import cn.yyx.research.language.simplified.JDTManager.AnonymousClassPoolInOneJavaFile;
 import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
+import cn.yyx.research.language.simplified.JDTManager.ScopeOffsetRefHandler;
 import cn.yyx.research.language.simplified.JDTManager.TypeASTHelper;
 
 public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
@@ -59,6 +60,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	{
 		cjcs.SetDescription("Class Declaration.");
 		ljcs.SetDescription("Label Declaration.");
+	}
+	
+	public ScopeOffsetRefHandler GenerateScopeOffsetRefHandler()
+	{
+		return new ScopeOffsetRefHandler(sdm.GetClassStack(), sdm.GetFVDataPool(), sdm.GetCVDataPool(), cjcs, ljcs);
 	}
 
 	@Override

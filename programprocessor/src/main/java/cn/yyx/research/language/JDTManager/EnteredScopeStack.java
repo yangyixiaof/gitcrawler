@@ -20,6 +20,13 @@ public class EnteredScopeStack {
 		return getStack().remove(getStack().size()-1);
 	}
 	
+	public OneScope GetScopeAccordingToScopeOffset(int scope)
+	{
+		int lastidx = stack.size()-1;
+		int idx = lastidx - scope;
+		return stack.get(idx);
+	}
+	
 	public OneScope PushBack(int blockid, int level)
 	{
 		// System.out.println("pushed id: block : "+blockid);
