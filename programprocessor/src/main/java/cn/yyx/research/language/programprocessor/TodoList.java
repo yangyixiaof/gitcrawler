@@ -3,6 +3,11 @@ package cn.yyx.research.language.programprocessor;
 public class TodoList {
 	// TODO 1. how to distinguish anti-pair and similar-pair.
 	
+	// TODO scope data offset should consider back to the initial order when entering anonymous class ... ...
+	
+	// TODO for every prediction, the handle must hold update the variable and update the variable order after the prediction block is over. To do this, a queue is needed.
+	// I mean for (...) especially.
+	
 	// what is ' ? solved due to ' '.
 	// what is ') ? solved due to ' ').
 	// temporarily solved: some doesn't have hint.
