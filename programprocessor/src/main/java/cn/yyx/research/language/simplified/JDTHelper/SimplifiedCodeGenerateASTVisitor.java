@@ -722,7 +722,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
 				@Override
 				public void run() {
-					AppendEndInfoToLast(GCodeMetaInfo.EndOfArrayDeclarationIndexExpression);
+					AppendEndInfoToLast(GCodeMetaInfo.EndOfArrayInitializerElementExpression);
 				}
 			});
 		}
