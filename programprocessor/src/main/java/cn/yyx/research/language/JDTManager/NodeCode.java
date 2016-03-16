@@ -198,4 +198,22 @@ public class NodeCode {
 		return false;
 	}
 
+	public void CheckEnterMethodParam() {
+		if (codelist.size() > 0)
+		{
+			int idx = codelist.size() - 1;
+			String lastcode = codelist.get(idx);
+			if (lastcode.startsWith("DH@Em"))
+			{
+				int lidx = lastcode.lastIndexOf("Em");
+				lastcode = lastcode.substring(0, lidx);
+				codelist.set(idx, lastcode);
+				if (lastcode.equals("DH@"))
+				{
+					codelist.remove(idx);
+				}
+			}
+		}
+	}
+
 }

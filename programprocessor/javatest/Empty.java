@@ -7,22 +7,27 @@ public class Empty {
 		// int[] a = new int[10];
 		// a[1+5+6] = 0;
 		int a = 0;
-		a = m(m(1+2/4));
+		a = n(m()+100);
 	}
 	
-	public int m(int a)
+	/*public int n(int p)
 	{
-		return a;
+		return 10;
+	}
+	
+	public int m()
+	{
+		return 0;
 	}
 	
 	class TTest2
 	{
 		
-	}
+	}*/
 	
 }
-
+/*
 class tt 
 {
 	int a;
-}
+}*/

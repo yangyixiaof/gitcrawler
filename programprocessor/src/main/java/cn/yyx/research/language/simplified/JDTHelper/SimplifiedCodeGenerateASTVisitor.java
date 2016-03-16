@@ -2243,6 +2243,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected void AddFirstOrderTask(FirstOrderTask runtask) {
 		fotp.InfixNodeAddFirstOrderTask(runtask);
 	}
+	
+	protected void CheckEnterMethodParam() {
+		omc.CheckEnterMethodParam();
+	}
 
 	protected void GenerateOneLine(String nodecode, boolean couldappend, boolean mustappend, boolean mustpre,
 			boolean occupyoneline, String preHint) {
@@ -2606,14 +2610,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referhint.AddNodeHelp(exprhashcode, ReferenceHintLibrary.DataUpdate);
 			AddNodeRefered(exprhashcode);
 		}
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnterMethodParam, false, false, false, true, null);
 		if (args != null && args.size() > 0) {
-			ASTNode first = args.iterator().next();
-			AddFirstOrderTask(new FirstOrderTask(null, first, first.getParent(), false, true) {
-				@Override
-				public void run() {
-					GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnterMethodParam, false, false, false, true, null);
-				}
-			});
 			Iterator<ASTNode> itr = args.iterator();
 			while (itr.hasNext()) {
 				ASTNode arg = itr.next();
@@ -2673,6 +2671,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 		nodecode.append(post);
+		CheckEnterMethodParam();
 		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
 	}
 
@@ -2697,6 +2696,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			nodecode.append(post);
 		}
+		CheckEnterMethodParam();
 		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
 	}
 
