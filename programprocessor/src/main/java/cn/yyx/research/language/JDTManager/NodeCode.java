@@ -41,6 +41,21 @@ public class NodeCode {
 			return;
 		}
 		
+		if (codelist.size() > 0)
+		{
+			if (code.equals("DH@Em"))
+			{
+				int idx = codelist.size() - 1;
+				String lastcode = codelist.get(idx);
+				if (lastcode.startsWith("DH@Em"))
+				{
+					lastcode += "Em";
+					codelist.set(idx, lastcode);
+					return;
+				}
+			}
+		}
+		
 		// debugging
 		if (code.trim().equals("'"))
 		{
@@ -52,6 +67,8 @@ public class NodeCode {
 			System.err.println("Wrong error: what is ')?");
 			System.exit(1);
 		}
+		
+		
 		
 		// lastCodeLevel = level;
 		/*if (code == null)

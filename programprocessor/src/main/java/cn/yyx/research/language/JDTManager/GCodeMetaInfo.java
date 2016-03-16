@@ -62,6 +62,8 @@ public class GCodeMetaInfo {
 	// another display of ',' ')'
 	public static final String EndOfAPartialStatement = ",";
 	
+	public static final String EnterMethodParam = "Em";
+	
 	// public static final String ArrayInitial = "@ARI";
 	// public static final String ArrayCreation = "@ARC";
 	

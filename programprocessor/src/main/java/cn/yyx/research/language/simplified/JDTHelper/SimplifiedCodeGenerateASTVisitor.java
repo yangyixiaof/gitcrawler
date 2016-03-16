@@ -2607,6 +2607,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddNodeRefered(exprhashcode);
 		}
 		if (args != null && args.size() > 0) {
+			ASTNode first = args.iterator().next();
+			AddFirstOrderTask(new FirstOrderTask(null, first, first.getParent(), false, true) {
+				@Override
+				public void run() {
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnterMethodParam, false, false, false, true, null);
+				}
+			});
 			Iterator<ASTNode> itr = args.iterator();
 			while (itr.hasNext()) {
 				ASTNode arg = itr.next();
@@ -2619,7 +2626,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					public void run() {
 						if (argmutiple.pop()) {
 							GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAPartialStatement);
-							// AppendEndInfoToLast(GCodeMetaInfo.EndOfAPartialStatement);
 						}
 					}
 				});

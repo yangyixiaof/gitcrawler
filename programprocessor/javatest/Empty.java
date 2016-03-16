@@ -6,8 +6,13 @@ public class Empty {
 	{
 		// int[] a = new int[10];
 		// a[1+5+6] = 0;
-		// int a = 0;
-		// a = 1+2/4;
+		int a = 0;
+		a = m(m(1+2/4));
+	}
+	
+	public int m(int a)
+	{
+		return a;
 	}
 	
 	class TTest2
