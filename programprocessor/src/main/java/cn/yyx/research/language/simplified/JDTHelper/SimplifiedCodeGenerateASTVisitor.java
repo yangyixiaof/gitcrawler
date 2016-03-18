@@ -835,14 +835,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(InstanceofExpression node) {
-		ExpressionReferPreHandle(node.getLeftOperand(), ReferenceHintLibrary.DataUse);
+		ExpressionReferPreHandle(node.getLeftOperand(), ReferenceHintLibrary.DataUse);// only special assigned.
 		return super.visit(node);
 	}
 
 	@Override
 	public void endVisit(InstanceofExpression node) {
+		String typecode = TypeCode(node.getRightOperand(), true);
+		ClassNewlyAssigned(typecode);
 		ExpressionReferPostHandle(node, node.getLeftOperand(), "instanceof", GCodeMetaInfo.InstanceofExpressionHint,
-				TypeCode(node.getRightOperand(), true), true, true, false, false, false);
+				typecode, true, true, false, false, false);
 	}
 
 	@Override
@@ -1703,7 +1705,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				 * if (data.equals("a")) { MyLogger.Info("DataUpdate"); }
 				 */
 				code = GetDataOffset(data, false, false);
-				DataNewlyUsed(data, null, false, false, false, false, false);
+				// DataNewlyUsed(data, null, false, false, false, false, false);
 				break;
 			case ReferenceHintLibrary.FieldUpdate:
 				/*
@@ -1711,7 +1713,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				 */
 				isfield = true;
 				code = GetDataOffset(data, true, false);
-				DataNewlyUsed(data, null, false, false, false, true, false);
+				// DataNewlyUsed(data, null, false, false, false, true, false);
 				break;
 			case ReferenceHintLibrary.DataDeclare:
 				/*
@@ -1780,10 +1782,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		return super.visit(node);
 	}
-
+	
 	// the handle of the following types should use the helper function
-
-	@SuppressWarnings("unchecked")
+	
 	protected String TypeCode(Type node, boolean simplified) {
 		if (node == null) {
 			System.err.println("Null Type? What the fuck!");
@@ -1795,113 +1796,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		String type = RawTypeCode(node);
 		String typecode = GetClassOffset(type);
-		ClassNewlyAssigned(type);
-		if (node instanceof SimpleType || node instanceof QualifiedType || node instanceof NameQualifiedType
-				|| node instanceof WildcardType) {
-			if (typecode == null) {
-				if (node instanceof SimpleType || node instanceof QualifiedType || node instanceof NameQualifiedType) {
-					typecode = type;
-				}
-				if (node instanceof WildcardType) {
-					WildcardType wildtype = (WildcardType) node;
-					if (wildtype.getBound() == null) {
-						typecode = "?";
-					} else {
-						typecode = "?" + GCodeMetaInfo.WhiteSpaceReplacer
-								+ (wildtype.isUpperBound() ? "extends" : "super") + GCodeMetaInfo.WhiteSpaceReplacer
-								+ TypeCode(wildtype.getBound(), true);
-					}
-				}
-				if (simplified) {
-					if (node instanceof NameQualifiedType) {
-						typecode = ((NameQualifiedType) node).getName().toString();
-					}
-					if (node instanceof QualifiedType) {
-						typecode = ((QualifiedType) node).getName().toString();
-					}
-					if (node instanceof SimpleType) {
-						Name name = ((SimpleType) node).getName();
-						if (name instanceof QualifiedName) {
-							typecode = ((QualifiedName) name).getName().toString();
-						}
-					}
-				}
-			}
-		}
-		if (node instanceof ArrayType) {
-			if (typecode == null) {
-				ArrayType arraynode = (ArrayType) node;
-				Type pretype = arraynode.getElementType();
-				String simplifiedtype = "Object";
-				if (pretype instanceof PrimitiveType) {
-					simplifiedtype = pretype.toString();
-				}
-				if (simplified) {
-					int dimens = ((ArrayType) node).dimensions().size();
-					String dimenstr = "";
-					for (int i = 0; i < dimens; i++) {
-						dimenstr += "[]";
-					}
-					typecode = simplifiedtype + dimenstr;
-				} else {
-					typecode = type;
-				}
-			}
-		}
-		if (node instanceof ParameterizedType) {
-
-			// System.err.println("ParameterizedType:" + node);
-
-			if (typecode == null) {
-				ParameterizedType pt = (ParameterizedType) node;
-				// if (simplified) {
-				// typecode = TypeCode(pt.getType(), true);
-				// } else {
-				typecode = TypeCode(pt.getType(), simplified) + "<";
-				List<Type> tas = pt.typeArguments();
-				Iterator<Type> itr = tas.iterator();
-				while (itr.hasNext()) {
-					Type tt = itr.next();
-
-					// System.err.println("ParameterizedTypeSmallType :" +
-					// tt.getClass());
-
-					typecode += TypeCode(tt, simplified);
-					if (itr.hasNext()) {
-						typecode += ",";
-					}
-				}
-				typecode += ">";
-				// }
-			}
-		}
-		if (node instanceof IntersectionType) {
-			IntersectionType tnode = (IntersectionType) node;
-			List<Type> types = tnode.types();
-			Iterator<Type> itr = types.iterator();
-			typecode = "";
-			while (itr.hasNext()) {
-				Type t = itr.next();
-				String tstr = TypeCode(t, simplified);
-				typecode = typecode + "&" + tstr;
-			}
-			if (types.size() > 0) {
-				typecode = typecode.substring(1);
-			}
-		}
-		if (node instanceof UnionType) {
-			UnionType tnode = (UnionType) node;
-			List<Type> types = tnode.types();
-			Iterator<Type> itr = types.iterator();
-			typecode = "";
-			while (itr.hasNext()) {
-				Type t = itr.next();
-				String tstr = TypeCode(t, simplified);
-				typecode = typecode + "|" + tstr;
-			}
-			if (types.size() > 0) {
-				typecode = typecode.substring(1);
-			}
+		if (typecode == null) {
+			typecode = type;
 		}
 		return typecode;
 	}
@@ -1930,7 +1826,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			if (wt.getBound() == null) {
 				return "?";
 			}
-			return "?" + (wt.isUpperBound() ? " extends " : " super ") + RawTypeCode(wt.getBound());
+			return "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wt.isUpperBound() ? "extends" : "super") + GCodeMetaInfo.WhiteSpaceReplacer + RawTypeCode(wt.getBound());
 		}
 		if (node instanceof ArrayType) {
 			ArrayType at = (ArrayType) node;
