@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import cn.yyx.research.language.Utility.MyLogger;
+import cn.yyx.research.language.Utility.WarningUtil;
 
 public class JCScope {
 	
@@ -18,10 +18,10 @@ public class JCScope {
 	TreeMap<String, LinkedList<String>> dataInOrder = new TreeMap<String, LinkedList<String>>();
 	
 	// records the order of the data. To speed up the search.
-	TreeMap<String, TreeMap<String, Integer>> dataOrder = new TreeMap<String, TreeMap<String, Integer>>();
+	// TreeMap<String, TreeMap<String, Integer>> dataOrder = new TreeMap<String, TreeMap<String, Integer>>();
 	
 	// To speed up search.
-	TreeMap<String, Integer> allDataNum = new TreeMap<String, Integer>();
+	// TreeMap<String, Integer> allDataNum = new TreeMap<String, Integer>();
 	// int allDataNum = -1;
 	
 	public JCScope() {
@@ -59,157 +59,65 @@ public class JCScope {
 	
 	public void PushNewlyAssignedData(String data, String type)
 	{
-		TreeMap<String, Integer> dataorder = dataOrder.get(type);
-		if (dataorder == null)
-		{
-			dataorder = new TreeMap<String, Integer>();
-			dataOrder.put(type, dataorder);
-		}
-		Integer dorder = dataorder.get(data);
 		LinkedList<String> datainorder = dataInOrder.get(type);
 		if (datainorder == null)
 		{
 			datainorder = new LinkedList<String>();
 			dataInOrder.put(type, datainorder);
 		}
-		Integer anum = allDataNum.get(type);
-		if (anum == null)
-		{
-			anum = 0;
-			allDataNum.put(type, anum);
-		}
-		if (dorder == null)
-		{
-			// newly added data, not exists before.
-			datainorder.add(0, data);
-			dataorder.put(data, anum);
-			anum++;
-			allDataNum.put(type, anum);
-		}
-		else
-		{
-			/*if (type.equals("int"))
-			{
-				MyLogger.Info("prebegin:now used data:"+data);
-				MyLogger.Info("all num of type int:" + allDataNum.get(type));
-				Set<String> keys = dataorder.keySet();
-				Iterator<String> itr = keys.iterator();
-				while (itr.hasNext())
-				{
-					String dta = itr.next();
-					MyLogger.Info("data:" + dta + "; order:" + dataorder.get(dta));
-				}
-				MyLogger.Info("preend.");
-			}*/
-			
-			int allnum = allDataNum.get(type);
-			Iterator<String> itr = datainorder.iterator();
-			int idx = 0;
-			int dindex = allnum - dorder - 1;
-			while (itr.hasNext() && idx != dindex)
-			{
-				String idata = itr.next();
-				dataorder.put(idata, dataorder.get(idata)-1);
-				idx++;
-			}
-			dataorder.put(data, anum-1);
-			datainorder.remove(dindex);
-			datainorder.add(0, data);
-			
-			/*if (type.equals("int"))
-			{
-				MyLogger.Info("postbegin:now used data:"+data);
-				MyLogger.Info("all num of type int:" + allDataNum.get(type));
-				Set<String> keys = dataorder.keySet();
-				Iterator<String> itr2 = keys.iterator();
-				while (itr2.hasNext())
-				{
-					String dta = itr2.next();
-					MyLogger.Info("data:" + dta + "; order:" + dataorder.get(dta));
-				}
-				MyLogger.Info("postend.");
-			}*/
-		}
-		
+		datainorder.add(0, data);
 	}
 	
 	public Integer GetExactOffset(String data, String type)
 	{
-		TreeMap<String, Integer> dataorder = dataOrder.get(type);
+		LinkedList<String> dataorder = dataInOrder.get(type);
 		if (dataorder == null)
 		{
-			if (Character.isLowerCase(data.charAt(0))==true)
-			{
-				MyLogger.Error("Warning data: " + data + " : " + description + " : here is JCScope, the type of data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
-			}
+			WarningUtil.DataNoRefKindCheckAndPrint(data, description);
 			return null;
 		}
-		Integer order = dataorder.get(data);
-		if (order == null)
+		int idx = 0;
+		Iterator<String> itr = dataorder.iterator();
+		while (itr.hasNext())
 		{
-			if (Character.isLowerCase(data.charAt(0))==true)
+			String dstr = itr.next();
+			if (dstr.equals(data))
 			{
-				MyLogger.Error("Warning data: " + data + " : " + description + " : here is JCScope, the data is not declared or assigned. The system will exit. This has be improved in the future to get better compatibility.");
+				return idx;
 			}
-			return null;
+			idx++;
 		}
-		int maxOffset = allDataNum.get(type)-1;
-		return order-maxOffset;
+		WarningUtil.DataNoRefKindCheckAndPrint(data, description);
+		return null;
 	}
 	
 	public void ClearAll()
 	{
 		dataInOrder.clear();
-		dataOrder.clear();
-		// set all num to 0.
-		// allDataNum = 0;
-		allDataNum.clear();
-	}
-	
-	private boolean CheckTwoListMustBeBothNullOrNotNull(LinkedList<String> A, LinkedList<String> B)
-	{
-		boolean error = false;
-		if (A == null && B != null)
-		{
-			error = true;
-		}
-		if (A != null && B == null)
-		{
-			error = true;
-		}
-		if (error)
-		{
-			MyLogger.Error("The two list must be both null or not null.");
-			System.exit(1);
-		}
-		boolean shouldrun = true;
-		if (A == null)
-		{
-			shouldrun = false;
-		}
-		return shouldrun;
 	}
 	
 	public void ResetScope(LinkedList<String> orderedData, LinkedList<String> orderedType) {
-		ClearAll();
-		boolean shouldcontinue = CheckTwoListMustBeBothNullOrNotNull(orderedData, orderedType);
-		if (!shouldcontinue)
-		{
-			return;
-		}
-		Iterator<String> itr = orderedData.iterator();
-		Iterator<String> typeitr = orderedType.iterator();
-		while (itr.hasNext())
-		{
-			String key = itr.next();
-			String type = typeitr.next();
-			PushNewlyAssignedData(key, type);
-		}
 	}
 	
 	public void SetDescription(String description)
 	{
 		this.description = description;
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	protected Object clone() throws CloneNotSupportedException {
+		JCScope jo = (JCScope) super.clone();
+		jo.dataInOrder = new TreeMap<String, LinkedList<String>>();
+		Set<String> keys = dataInOrder.keySet();
+		Iterator<String> itr = keys.iterator();
+		while (itr.hasNext())
+		{
+			String tp = itr.next();
+			LinkedList<String> val = dataInOrder.get(tp);
+			jo.dataInOrder.put(tp, (LinkedList<String>)val.clone());
+		}
+		return jo;
 	}
 	
 }
