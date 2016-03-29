@@ -713,16 +713,20 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ArrayInitializer node) {
-		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "arrIni", false, false, false, true, null);
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.ArrayInitializerBegin, false, false, false, true, null);
 		List<Expression> list = node.expressions();
 		Iterator<Expression> itr = list.iterator();
 		while (itr.hasNext()) {
 			Expression expr = itr.next();
 			referhint.AddNodeHelp(expr.hashCode(), ReferenceHintLibrary.DataUse);
-			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
+			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false, itr.hasNext()) {
 				@Override
 				public void run() {
-					AppendEndInfoToLast(GCodeMetaInfo.EndOfArrayInitializerElementExpression);
+					if ((Boolean) getAdditionalinfo())
+					{
+						// AppendEndInfoToLast(GCodeMetaInfo.EndOfArrayInitializerElementExpression);
+						GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.ArrayInitializerSplitComma, false, false, false, true, null);
+					}
 				}
 			});
 		}
@@ -738,6 +742,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			Expression expr = itr.next();
 			referhint.DeleteNodeHelp(expr.hashCode());
 		}
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.ArrayInitializerEnd, false, false, false, true, null);
 	}
 
 	@Override

@@ -49,7 +49,10 @@ public class GCodeMetaInfo {
 	// another display of ']'
 	public static final String EndOfArrayDeclarationIndexExpression = "@]";
 	// int[] a = {..,..};
-	public static final String EndOfArrayInitializerElementExpression = "@I]";
+	// public static final String EndOfArrayInitializerElementExpression = "@I]";
+	public static final String ArrayInitializerBegin = "A{";
+	public static final String ArrayInitializerSplitComma = "A,";
+	public static final String ArrayInitializerEnd = "A}";
 	
 	public static final String LeftParenthese = "@(";
 	public static final String RightParenthese = "@)";

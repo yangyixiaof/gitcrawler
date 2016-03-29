@@ -4,10 +4,10 @@ public class Empty {
 	
 	public void HeiHei()
 	{
-		// int[] a = new int[10];
+		int[][] a = {{1,2},{2,3}};
 		// a[1+5+6] = 0;
-		int a = 0;
-		a = n(m()+100);
+		// int a = 0;
+		// a = n(m()+100);
 	}
 	
 	/*public int n(int p)
