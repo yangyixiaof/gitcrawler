@@ -75,5 +75,15 @@ public class VDataPool {
 			System.exit(1);
 		}*/
 	}
+
+	public void DeleteRecentlyAddedType(OneScope scope, String type) {
+		JCScope js = GetDataScope(scope);
+		js.DeleteRecentlyAddedType(type);
+	}
+
+	public String GenerateModifiedName(OneScope scope, String name, String type) {
+		JCScope js = GetDataScope(scope);
+		return js.GenerateModifiedName(name, type);
+	}
 	
 }

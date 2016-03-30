@@ -3,6 +3,7 @@ package cn.yyx.research.language.JDTManager;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -118,6 +119,35 @@ public class JCScope {
 			jo.dataInOrder.put(tp, (LinkedList<String>)val.clone());
 		}
 		return jo;
+	}
+
+	public void DeleteRecentlyAddedType(String type) {
+		dataInOrder.get(type).removeLast();
+	}
+
+	public String GenerateModifiedName(String name, String type) {
+		LinkedList<String> names = dataInOrder.get(type);
+		if (names == null)
+		{
+			return name;
+		}
+		else
+		{
+			int gap = 5;
+			Random ra =new Random();
+			boolean couldstop = false;
+			String modifiedname = name;
+			while (!couldstop)
+			{
+				modifiedname = name + ra.nextInt(gap);
+				if (!names.contains(modifiedname))
+				{
+					couldstop = true;
+				}
+				gap+=5;
+			}
+			return modifiedname;
+		}
 	}
 	
 }

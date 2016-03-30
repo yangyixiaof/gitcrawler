@@ -4,7 +4,7 @@ public class Empty {
 	
 	public void HeiHei()
 	{
-		int[][] a = {{1,2},{2,3}};
+		double a = 45/(1+4/2*5+a);
 		// a[1+5+6] = 0;
 		// int a = 0;
 		// a = n(m()+100);

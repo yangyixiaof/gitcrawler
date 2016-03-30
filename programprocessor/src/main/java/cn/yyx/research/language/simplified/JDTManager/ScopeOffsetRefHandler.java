@@ -57,4 +57,16 @@ public class ScopeOffsetRefHandler {
 		return ccs.GetContentAccordingToOffset(offset);
 	}
 	
+	public String GenerateNewDeclaredVariable(String name, String type)
+	{
+		String modifiedname = cvdp.GenerateModifiedName(classstack.peek(), name, type);
+		cvdp.NewlyAssignedData(classstack.peek(), modifiedname, type);
+		return modifiedname;
+	}
+	
+	public void DeleteRecentlyAddedType(String type)
+	{
+		cvdp.DeleteRecentlyAddedType(classstack.peek(), type);
+	}
+	
 }
