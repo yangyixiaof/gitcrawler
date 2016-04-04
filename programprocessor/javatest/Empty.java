@@ -8,6 +8,11 @@ public class Empty {
 		// a[1+5+6] = 0;
 		// int a = 0;
 		// a = n(m()+100);
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+			}
+		};
 	}
 	
 	/*public int n(int p)
