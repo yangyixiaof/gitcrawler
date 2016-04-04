@@ -2512,6 +2512,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddNodeRefered(exprhashcode);
 		}
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnterMethodParam, false, false, false, true, null);
+		if (expr != null)
+		{
+			argmutiple.push(false);
+			AddFirstOrderTask(new FirstOrderTask(expr, null, expr.getParent(), true, false) {
+				@Override
+				public void run() {
+					if (argmutiple.pop()) {
+						GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfMethodPreRerferedExpression);
+					}
+				}
+			});
+		}
 		if (args != null && args.size() > 0) {
 			Iterator<ASTNode> itr = args.iterator();
 			while (itr.hasNext()) {
@@ -2524,7 +2536,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					@Override
 					public void run() {
 						if (argmutiple.pop()) {
-							GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAPartialStatement);
+							GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfMethodArgument);
 						}
 					}
 				});

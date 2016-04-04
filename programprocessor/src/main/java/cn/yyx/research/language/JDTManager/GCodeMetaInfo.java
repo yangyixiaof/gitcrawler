@@ -65,6 +65,9 @@ public class GCodeMetaInfo {
 	// another display of ',' ')'
 	public static final String EndOfAPartialStatement = ",";
 	
+	// another display of ',' in method arguments.
+	public static final String EndOfMethodPreRerferedExpression = "Pr";
+	public static final String EndOfMethodArgument = "Ps";
 	public static final String EnterMethodParam = "Em";
 	
 	// public static final String ArrayInitial = "@ARI";
