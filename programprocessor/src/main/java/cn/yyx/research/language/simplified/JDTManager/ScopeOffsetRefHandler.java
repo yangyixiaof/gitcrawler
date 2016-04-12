@@ -72,13 +72,23 @@ public class ScopeOffsetRefHandler {
 				return modifiedname;
 			}
 		}
-		// cvdp.NewlyAssignedData(classstack.peek(), modifiedname, type);
 		return null;
+	}
+	
+	public void NewDeclaredVariable(String name, String type)
+	{
+		cvdp.NewlyAssignedData(classstack.peek(), name, type);
 	}
 	
 	public void DeleteRecentlyAddedType(String type)
 	{
 		cvdp.DeleteRecentlyAddedType(classstack.peek(), type);
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
 	}
 	
 }
