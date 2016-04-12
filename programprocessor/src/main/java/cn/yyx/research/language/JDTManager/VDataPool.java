@@ -81,9 +81,9 @@ public class VDataPool {
 		js.DeleteRecentlyAddedType(type);
 	}
 
-	public String GenerateModifiedName(OneScope scope, String name, String type) {
+	public String GenerateModifiedName(OneScope scope, String name, String type, int gap) {
 		JCScope js = GetDataScope(scope);
-		return js.GenerateModifiedName(name, type);
+		return js.GenerateModifiedName(name, type, gap);
 	}
 	
 }

@@ -125,7 +125,7 @@ public class JCScope {
 		dataInOrder.get(type).removeLast();
 	}
 
-	public String GenerateModifiedName(String name, String type) {
+	public String GenerateModifiedName(String name, String type, int gap) {
 		LinkedList<String> names = dataInOrder.get(type);
 		if (names == null)
 		{
@@ -133,7 +133,6 @@ public class JCScope {
 		}
 		else
 		{
-			int gap = 5;
 			Random ra =new Random();
 			boolean couldstop = false;
 			String modifiedname = name;

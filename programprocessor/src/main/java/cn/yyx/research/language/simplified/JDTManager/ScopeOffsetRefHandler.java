@@ -1,5 +1,6 @@
 package cn.yyx.research.language.simplified.JDTManager;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,11 +58,22 @@ public class ScopeOffsetRefHandler {
 		return ccs.GetContentAccordingToOffset(offset);
 	}
 	
-	public String GenerateNewDeclaredVariable(String name, String type)
+	public String GenerateNewDeclaredVariable(String name, String type, List<String> holderlist)
 	{
-		String modifiedname = cvdp.GenerateModifiedName(classstack.peek(), name, type);
-		cvdp.NewlyAssignedData(classstack.peek(), modifiedname, type);
-		return modifiedname;
+		String modifiedname = null;
+		int gap = 5;
+		boolean couldstop = false;
+		while (!couldstop && gap <= 20)
+		{
+			gap += 5;
+			modifiedname = cvdp.GenerateModifiedName(classstack.peek(), name, type, gap);
+			if (!holderlist.contains(modifiedname))
+			{
+				return modifiedname;
+			}
+		}
+		// cvdp.NewlyAssignedData(classstack.peek(), modifiedname, type);
+		return null;
 	}
 	
 	public void DeleteRecentlyAddedType(String type)
