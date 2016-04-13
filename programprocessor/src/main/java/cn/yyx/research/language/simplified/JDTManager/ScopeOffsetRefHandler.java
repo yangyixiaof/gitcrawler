@@ -67,7 +67,11 @@ public class ScopeOffsetRefHandler {
 		{
 			gap += 5;
 			modifiedname = cvdp.GenerateModifiedName(classstack.peek(), name, type, gap);
-			if (!holderlist.contains(modifiedname))
+			if (holderlist == null || holderlist.size() == 0)
+			{
+				return modifiedname;
+			}
+			if (!(holderlist.contains(modifiedname)))
 			{
 				return modifiedname;
 			}
