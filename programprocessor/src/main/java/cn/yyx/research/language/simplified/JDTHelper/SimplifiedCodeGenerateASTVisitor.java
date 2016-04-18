@@ -1313,7 +1313,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		String nodecode = GCodeMetaInfo.MethodDeclarationHint;
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		nodecode = nodecode + "(";
+		String rtcode = TypeCode(node.getReturnType2(), false);
+		nodecode = nodecode + rtcode + "(";
 		List<SingleVariableDeclaration> types = node.parameters();
 		Iterator<SingleVariableDeclaration> itr = types.iterator();
 		while (itr.hasNext()) {
