@@ -60,6 +60,8 @@ public class GCodeMetaInfo {
 	// another display of ' '
 	public static final String WhiteSpace = "'@w'";
 	
+	public static final String EnumConstantDeclarationSplitComma = "E,";
+	
 	// another display of ';'
 	public static final String EndOfAStatement = ";";
 	// another display of ',' ')'
