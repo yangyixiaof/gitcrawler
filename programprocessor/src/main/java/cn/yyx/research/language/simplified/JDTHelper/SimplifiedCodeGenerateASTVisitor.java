@@ -72,6 +72,17 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		fotp.PostIsBegin(node);
 		super.preVisit(node);
 	}
+	
+	@Override
+	public boolean preVisit2(ASTNode node) {
+		boolean fres = super.preVisit2(node);
+		Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
+		if (forbid != null && forbid == true)
+		{
+			fres = fres && false;
+		}
+		return fres;
+	}
 
 	@Override
 	public void postVisit(ASTNode node) {
@@ -606,6 +617,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement node) {
+		// TODO
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "do", false, false, false, true, null);
 		Statement body = node.getBody();
 		Expression expr = node.getExpression();
@@ -649,6 +661,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(EnhancedForStatement node) {
 		runforbid.DeleteNodeHelp(node.getParameter().hashCode());
+		// TODO
 	}
 
 	@Override
@@ -985,6 +998,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(nodecode, false, false, false, true, null);
 		return super.visit(node);
 	}
+	
+	@Override
+	public void endVisit(CatchClause node) {
+		runforbid.DeleteNodeHelp(node.getException().hashCode());
+		// TODO
+		super.endVisit(node);
+	}
 
 	// below are judge and loop related.
 
@@ -1102,7 +1122,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(VariableDeclarationExpression node) {
 		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(node.getType().toString());
+		SetVeryRecentDeclaredType(typecode);
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
 		GenerateOneLine(nodecode, false, false, false, true, null);
 		return super.visit(node);
@@ -1117,12 +1137,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(SingleVariableDeclaration node) {
 		// MyLogger.Info("SingleVariableDeclaration:" + node);
-		Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
-		SetVeryRecentDeclaredType(node.getType().toString());
+		// TODO
+		/*Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
 		if (forbid != null && forbid == true) {
 			return false;
-		}
+		}*/
 		String typecode = TypeCode(node.getType(), true);
+		SetVeryRecentDeclaredType(typecode);
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, node.extraDimensions());
 		if (!VeryRecentNotGenerateCode) {
 			GenerateOneLine(nodecode, false, false, false, true, null);
@@ -1133,7 +1154,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(SingleVariableDeclaration node) {
-		int nodehashcode = node.hashCode();
+		/*int nodehashcode = node.hashCode();
 		int namehashcode = node.getName().hashCode();
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
@@ -1143,11 +1164,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			runpermit.AddNodeHelp(namehashcode, true);
 			referhint.AddNodeHelp(namehashcode, hint);
+			SetVeryRecentDeclaredType(node.getType().toString());
 			visit(node.getName());
 			runpermit.DeleteNodeHelp(namehashcode);
 			referhint.DeleteNodeHelp(namehashcode);
 			return;
-		}
+		}*/
 		VariableDeclarationFragmentPostHandle(node.getInitializer(), node.getName());
 		SetVeryRecentDeclaredType(null);
 	}
@@ -1346,6 +1368,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		while (itr.hasNext()) {
 			SingleVariableDeclaration t = itr.next();
 			runforbid.DeleteNodeHelp(t.hashCode());
+			// TODO
 		}
 		if (isFirstLevelASTNode(node)) {
 			FlushCode();
@@ -1531,6 +1554,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(QualifiedName node) {
 		int nodehashcode = node.hashCode();
+		// TODO
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return false;
@@ -1618,6 +1642,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	protected boolean QualifiedPreHandle(ASTNode node, Name qualifier) {
 		int nodehashcode = node.hashCode();
+		// TODO
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return false;
@@ -1636,6 +1661,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("node is refered:" + NodeIsRefered(node.hashCode()));
 
 		int nodehashcode = node.hashCode();
+		//TODO
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return;
@@ -1665,6 +1691,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}*/
 		
 		if (canrun == null || canrun == false) {
+			// TODO
 			Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 			if (forbid != null && forbid == true) {
 				return false;
