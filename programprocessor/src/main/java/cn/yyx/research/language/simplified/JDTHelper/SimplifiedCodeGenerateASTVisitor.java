@@ -2666,5 +2666,20 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			return ojfc.toList();
 		}
 	}
-
+	
+	protected void NewVariableDeclared(SimpleName name, Type tp)
+	{
+		int hint = ReferenceHintLibrary.DataDeclare;
+		if (VeryRecentIsFieldDeclared) {
+			hint = ReferenceHintLibrary.FieldDeclare;
+		}
+		int namehashcode = name.hashCode();
+		runpermit.AddNodeHelp(namehashcode, true);
+		referhint.AddNodeHelp(namehashcode, hint);
+		SetVeryRecentDeclaredType(TypeCode(tp, true));
+		visit(name);
+		runpermit.DeleteNodeHelp(namehashcode);
+		referhint.DeleteNodeHelp(namehashcode);
+	}
+	
 }
