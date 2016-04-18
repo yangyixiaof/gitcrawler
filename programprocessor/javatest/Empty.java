@@ -4,7 +4,7 @@ public class Empty {
 	
 	public void HeiHei()
 	{
-		m(1,h(3,4));
+		m(1,h(p(),1+q(j())));
 		// double a = 45/(1+4/2*5+a);
 		// a[1+5+6] = 0;
 		// int a = 0;

@@ -1117,13 +1117,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(SingleVariableDeclaration node) {
 		// MyLogger.Info("SingleVariableDeclaration:" + node);
-		int namehashcode = node.getName().hashCode();
 		Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
 		SetVeryRecentDeclaredType(node.getType().toString());
 		if (forbid != null && forbid == true) {
-			runpermit.AddNodeHelp(namehashcode, true);
-			referhint.AddNodeHelp(namehashcode, ReferenceHintLibrary.DataDeclare);
-			visit(node.getName());
 			return false;
 		}
 		String typecode = TypeCode(node.getType(), true);
@@ -1141,7 +1137,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		int namehashcode = node.getName().hashCode();
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
-			endVisit(node.getName());
+			int hint = ReferenceHintLibrary.DataDeclare;
+			if (VeryRecentIsFieldDeclared) {
+				hint = ReferenceHintLibrary.FieldDeclare;
+			}
+			runpermit.AddNodeHelp(namehashcode, true);
+			referhint.AddNodeHelp(namehashcode, hint);
+			visit(node.getName());
 			runpermit.DeleteNodeHelp(namehashcode);
 			referhint.DeleteNodeHelp(namehashcode);
 			return;
@@ -2470,13 +2472,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name) {
-		int hint = ReferenceHintLibrary.DataDeclare;
-		if (VeryRecentIsFieldDeclared) {
-			hint = ReferenceHintLibrary.FieldDeclare;
-		}
 		int namehashcode = name.hashCode();
-		referhint.AddNodeHelp(namehashcode, hint);
-		runpermit.AddNodeHelp(namehashcode, true);
+		runforbid.AddNodeHelp(namehashcode, true);
 		if (iniexpr != null) {
 			referhint.AddNodeHelp(iniexpr.hashCode(), ReferenceHintLibrary.DataUse);
 			// AddNodeRefered(iniexpr.hashCode());
@@ -2494,9 +2491,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (!VeryRecentNotGenerateCode) {
 			GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAPartialStatement);
 		}
-
-		// delete hint
+		
+		// handle scope offset when end.
 		int namehashcode = name.hashCode();
+		int hint = ReferenceHintLibrary.DataDeclare;
+		if (VeryRecentIsFieldDeclared) {
+			hint = ReferenceHintLibrary.FieldDeclare;
+		}
+		runforbid.DeleteNodeHelp(namehashcode);
+		referhint.AddNodeHelp(namehashcode, hint);
+		runpermit.AddNodeHelp(namehashcode, true);
+		visit(name);
+		// delete hint
 		referhint.DeleteNodeHelp(namehashcode);
 		runpermit.DeleteNodeHelp(namehashcode);
 		if (iniexpr != null) {
