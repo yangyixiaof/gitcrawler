@@ -8,7 +8,15 @@ import java.util.TreeMap;
 
 public class VDataPool {
 	
-	Map<Integer, JCScope> scopes = new TreeMap<Integer, JCScope>();
+	Map<Integer, JCScope> scopes = null;
+	
+	public VDataPool() {
+		scopes = new TreeMap<Integer, JCScope>();
+	}
+	
+	public VDataPool(Map<Integer, JCScope> scopes) {
+		this.scopes = scopes;
+	}
 	
 	public void AScopeCreated(OneScope scope)
 	{
@@ -84,6 +92,19 @@ public class VDataPool {
 	public String GenerateModifiedName(OneScope scope, String name, String type, int gap) {
 		JCScope js = GetDataScope(scope);
 		return js.GenerateModifiedName(name, type, gap);
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		TreeMap<Integer, JCScope> scp = new TreeMap<Integer, JCScope>();
+		Set<Integer> keys = scopes.keySet();
+		Iterator<Integer> itr = keys.iterator();
+		while (itr.hasNext())
+		{
+			Integer key = itr.next();
+			scp.put(key, (JCScope) scopes.get(key).clone());
+		}
+		return new VDataPool(scp);
 	}
 	
 }

@@ -16,7 +16,7 @@ public class JCScope {
 	String description = null;
 	
 	// real data in reverse order.
-	TreeMap<String, LinkedList<String>> dataInOrder = new TreeMap<String, LinkedList<String>>();
+	TreeMap<String, LinkedList<String>> dataInOrder = null;
 	
 	// records the order of the data. To speed up the search.
 	// TreeMap<String, TreeMap<String, Integer>> dataOrder = new TreeMap<String, TreeMap<String, Integer>>();
@@ -27,12 +27,19 @@ public class JCScope {
 	
 	public JCScope() {
 		// allDataNum = 0;
+		dataInOrder = new TreeMap<String, LinkedList<String>>();
+	}
+	
+	public JCScope(String description, TreeMap<String, LinkedList<String>> dataInOrder) {
+		this.description = description;
+		this.dataInOrder = dataInOrder;
 	}
 	
 	public JCScope(int id, int level) {
 		// this.ID = id;
 		// this.Level = level;
 		// allDataNum = 0;
+		dataInOrder = new TreeMap<String, LinkedList<String>>();
 	}
 	
 	public Map<String, String> GetContentAccordingToOffset(int offset)
@@ -107,18 +114,17 @@ public class JCScope {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	protected Object clone() throws CloneNotSupportedException {
-		JCScope jo = (JCScope) super.clone();
-		jo.dataInOrder = new TreeMap<String, LinkedList<String>>();
+	public Object clone() throws CloneNotSupportedException {
+		TreeMap<String, LinkedList<String>> doo = new TreeMap<String, LinkedList<String>>();
 		Set<String> keys = dataInOrder.keySet();
 		Iterator<String> itr = keys.iterator();
 		while (itr.hasNext())
 		{
 			String tp = itr.next();
 			LinkedList<String> val = dataInOrder.get(tp);
-			jo.dataInOrder.put(tp, (LinkedList<String>)val.clone());
+			doo.put(tp, (LinkedList<String>)val.clone());
 		}
-		return jo;
+		return new JCScope(description, doo);
 	}
 
 	public void DeleteRecentlyAddedType(String type) {

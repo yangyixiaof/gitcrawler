@@ -58,7 +58,7 @@ public class ScopeOffsetRefHandler {
 		return ccs.GetContentAccordingToOffset(offset);
 	}
 	
-	public String GenerateNewDeclaredVariable(String name, String type, List<String> holderlist)
+	public String GenerateNewDeclaredVariable(String name, String type, List<String> holderlist, boolean isfield)
 	{
 		String modifiedname = null;
 		int gap = 5;
@@ -66,7 +66,14 @@ public class ScopeOffsetRefHandler {
 		while (!couldstop && gap <= 20)
 		{
 			gap += 5;
-			modifiedname = cvdp.GenerateModifiedName(classstack.peek(), name, type, gap);
+			if (isfield)
+			{
+				modifiedname = fvdp.GenerateModifiedName(classstack.peek(), name, type, gap);
+			}
+			else
+			{
+				modifiedname = cvdp.GenerateModifiedName(classstack.peek(), name, type, gap);
+			}
 			if (holderlist == null || holderlist.size() == 0)
 			{
 				return modifiedname;
@@ -79,20 +86,26 @@ public class ScopeOffsetRefHandler {
 		return null;
 	}
 	
-	public void NewDeclaredVariable(String name, String type)
+	public void NewDeclaredVariable(String name, String type, boolean isfield)
 	{
-		cvdp.NewlyAssignedData(classstack.peek(), name, type);
+		if (isfield)
+		{
+			fvdp.NewlyAssignedData(classstack.peek(), name, type);
+		}
+		else
+		{
+			cvdp.NewlyAssignedData(classstack.peek(), name, type);
+		}
 	}
 	
-	public void DeleteRecentlyAddedType(String type)
+	/*public void DeleteRecentlyAddedType(String type)
 	{
 		cvdp.DeleteRecentlyAddedType(classstack.peek(), type);
-	}
+	}*/
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return super.clone();
+		return new ScopeOffsetRefHandler((EnteredScopeStack)classstack.clone(), (VDataPool)fvdp.clone(), (VDataPool)cvdp.clone(), (JCScope)cjcs.clone(), (JCScope)ljcs.clone());
 	}
 	
 }

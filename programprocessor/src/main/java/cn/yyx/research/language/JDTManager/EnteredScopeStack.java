@@ -5,9 +5,15 @@ import java.util.Iterator;
 
 public class EnteredScopeStack {
 	
-	private ArrayList<OneScope> stack = new ArrayList<OneScope>();
+	private ArrayList<OneScope> stack = null;
 	
 	public EnteredScopeStack() {
+		stack = new ArrayList<OneScope>();
+	}
+	
+	public EnteredScopeStack(ArrayList<OneScope> stack)
+	{
+		this.stack = stack;
 	}
 	
 	public OneScope peek()
@@ -68,6 +74,17 @@ public class EnteredScopeStack {
 	public Iterator<OneScope> GetIterator()
 	{
 		return stack.iterator();
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		ArrayList<OneScope> oss = new ArrayList<OneScope>();
+		Iterator<OneScope> itr = stack.iterator();
+		while (itr.hasNext())
+		{
+			oss.add((OneScope) itr.next().clone());
+		}
+		return new EnteredScopeStack(oss);
 	}
 	
 }

@@ -31,4 +31,9 @@ public class OneScope implements Comparable<OneScope>{
 		this.level = level;
 	}
 	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 }
