@@ -2022,7 +2022,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			EnumConstantInvocationCode(node.getName().toString(), invoker, node.arguments());
 			MethodDeleteReferRequest(null, node.arguments());
 		}
-		
+		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnumConstantDeclarationSplitComma, false, false, false, true, null);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
