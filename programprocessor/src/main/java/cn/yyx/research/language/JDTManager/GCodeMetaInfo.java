@@ -54,8 +54,8 @@ public class GCodeMetaInfo {
 	public static final String ArrayInitializerSplitComma = "A,";
 	public static final String ArrayInitializerEnd = "A}";
 	
-	public static final String LeftParenthese = "@(";
-	public static final String RightParenthese = "@)";
+	public static final String LeftParenthese = "(";
+	public static final String RightParenthese = ")";
 	
 	// another display of ' '
 	public static final String WhiteSpace = "'@w'";

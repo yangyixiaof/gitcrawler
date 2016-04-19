@@ -4,6 +4,9 @@ public class Empty {
 	
 	public void HeiHei()
 	{
+		{
+			int a = ((5+6)+(8/2))/2;
+		}
 		// m(1,h(p(),1+q(j())));
 		// int a=0, b=a+1, c=a+b;
 		// int[] a = new int[10];

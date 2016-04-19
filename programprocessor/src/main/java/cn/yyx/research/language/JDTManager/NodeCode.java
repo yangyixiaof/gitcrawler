@@ -48,16 +48,30 @@ public class NodeCode {
 		
 		if (codelist.size() > 0)
 		{
+			boolean shouldreturn = false;
 			if (code.equals("DH@Em"))
 			{
-				int idx = codelist.size() - 1;
-				String lastcode = codelist.get(idx);
-				if (lastcode.startsWith("DH@Em"))
-				{
-					lastcode += "Em";
-					codelist.set(idx, lastcode);
-					return;
-				}
+				shouldreturn = MergeMark("Em");
+			}
+			if (code.equals("DH@{"))
+			{
+				shouldreturn = MergeMark("{");
+			}
+			if (code.equals("DH@}"))
+			{
+				shouldreturn = MergeMark("}");
+			}
+			if (code.equals("DH@("))
+			{
+				shouldreturn = MergeMark("(");
+			}
+			if (code.equals("DH@)"))
+			{
+				shouldreturn = MergeMark(")");
+			}
+			if (shouldreturn)
+			{
+				return;
 			}
 		}
 		
@@ -72,8 +86,6 @@ public class NodeCode {
 			System.err.println("Wrong error: what is ')?");
 			System.exit(1);
 		}
-		
-		
 		
 		// lastCodeLevel = level;
 		/*if (code == null)
@@ -137,6 +149,24 @@ public class NodeCode {
 				argmutiple.push(mut);
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * @param mergecontent
+	 * @return means whether should return directly in parent.
+	 */
+	private boolean MergeMark(String mergecontent)
+	{
+		int idx = codelist.size() - 1;
+		String lastcode = codelist.get(idx);
+		if (lastcode.startsWith("DH@" + mergecontent))
+		{
+			lastcode += mergecontent;
+			codelist.set(idx, lastcode);
+			return true;
+		}
+		return false;
 	}
 	
 	public void GenerateEndInfo(String lcode)
