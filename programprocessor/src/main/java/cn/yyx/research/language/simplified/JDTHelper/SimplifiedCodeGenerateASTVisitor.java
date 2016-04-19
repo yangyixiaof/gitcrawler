@@ -618,7 +618,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement node) {
-		// TODO
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "do", false, false, false, true, null);
 		dostmtln.AddNodeHelp(node.hashCode(), RecordCurrentLastIndex());
 		Statement body = node.getBody();
@@ -664,6 +663,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				String nodecode = GCodeMetaInfo.EnhancedFor + "for(" + TypeCode(node.getParameter().getType(), true)
 						+ ":" + code + ")";
 				GenerateOneLine(nodecode, false, false, false, true, null);
+				NewVariableDeclared(node.getParameter().getName(), node.getParameter().getType());
 			}
 		});
 		return super.visit(node);
@@ -672,7 +672,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(EnhancedForStatement node) {
 		runforbid.DeleteNodeHelp(node.getParameter().hashCode());
-		// TODO
 	}
 
 	@Override
@@ -1007,13 +1006,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		String nodecode = GCodeMetaInfo.CatchHint + "catch" + GCodeMetaInfo.WhiteSpaceReplacer
 				+ TypeCode(node.getException().getType(), true);
 		GenerateOneLine(nodecode, false, false, false, true, null);
+		NewVariableDeclared(node.getException().getName(), node.getException().getType());
 		return super.visit(node);
 	}
 	
 	@Override
 	public void endVisit(CatchClause node) {
 		runforbid.DeleteNodeHelp(node.getException().hashCode());
-		// TODO
 		super.endVisit(node);
 	}
 
@@ -1148,7 +1147,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(SingleVariableDeclaration node) {
 		// MyLogger.Info("SingleVariableDeclaration:" + node);
-		// TODO
 		/*Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
 		if (forbid != null && forbid == true) {
 			return false;
@@ -1565,11 +1563,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(QualifiedName node) {
 		int nodehashcode = node.hashCode();
-		// TODO
-		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
+		/*Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return false;
-		}
+		}*/
 		int len = PredictLength(node);
 		boolean ctn = true;
 		if (len > StrictedNameLength) {
@@ -1591,11 +1588,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(QualifiedName node) {
-		int nodehashcode = node.hashCode();
+		/*int nodehashcode = node.hashCode();
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return;
-		}
+		}*/
 		int len = PredictLength(node);
 		if (len <= StrictedNameLength) {
 			Name qualifier = node.getQualifier();
@@ -1652,12 +1649,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected boolean QualifiedPreHandle(ASTNode node, Name qualifier) {
-		int nodehashcode = node.hashCode();
-		// TODO
+		/*int nodehashcode = node.hashCode();
 		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return false;
-		}
+		}*/
 		if (qualifier != null) {
 			runforbid.AddNodeHelp(qualifier.hashCode(), true);
 		}
@@ -1672,11 +1668,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("node is refered:" + NodeIsRefered(node.hashCode()));
 
 		int nodehashcode = node.hashCode();
-		//TODO
-		Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
+		/*Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return;
-		}
+		}*/
 		String nodecode = name.toString() + (additional != null ? additionalprefixoperator + additional : "")
 				+ (qualifier != null ? "." + GetDefaultStrictedLengthOfName(qualifier) : "");
 		if (NodeIsRefered(nodehashcode)) {
@@ -1693,7 +1688,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SimpleName node) {
 		int nodehashcode = node.hashCode();
-		Boolean canrun = runpermit.GetNodeHelp(nodehashcode);
 		
 		// testing
 		/*if (node.toString().equals("Operation"))
@@ -1701,17 +1695,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			System.err.println("runpermit:" + canrun + ";runforbid:" + runforbid.GetNodeHelp(nodehashcode));
 		}*/
 		
+		/*Boolean canrun = runpermit.GetNodeHelp(nodehashcode);
 		if (canrun == null || canrun == false) {
-			// TODO
 			Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 			if (forbid != null && forbid == true) {
 				return false;
 			} else {
-				/*
-				 * if (!NodeIsRefered(nodehashcode)) { return false; }
-				 */
+				if (!NodeIsRefered(nodehashcode)) { return false; }
 			}
-		}
+		}*/
 
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
 		

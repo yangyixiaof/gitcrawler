@@ -6,9 +6,20 @@ public class Empty {
 	{
 		// m(1,h(p(),1+q(j())));
 		// int a=0, b=a+1, c=a+b;
-		int[] a = new int[10];
-		int[] b = {1,2};
-		a[b[1]] = 10;
+		// int[] a = new int[10];
+		// int[] b = {1,2};
+		// int i = 0;
+		// do{
+		//	i++;
+		// } while (i<10);
+		// int b = 0;
+		// int[] a = {1, 2, 3, 4, 5};
+		// for (int t : a)
+		// {
+		//	System.out.println(t);
+		// }
+		// System.out.println(b);
+		// a[b[1]] = 10;
 		// double a = 45/(1+4/2*5+a);
 		// a[1+5+6] = 0;
 		// int a = 0;
