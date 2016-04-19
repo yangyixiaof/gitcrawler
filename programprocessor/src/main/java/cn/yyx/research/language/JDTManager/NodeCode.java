@@ -1,7 +1,7 @@
 package cn.yyx.research.language.JDTManager;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Stack;
 
 public class NodeCode {
@@ -11,7 +11,7 @@ public class NodeCode {
 	private boolean mustAppend = false;
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 
-	ArrayList<String> codelist = new ArrayList<String>();
+	LinkedList<String> codelist = new LinkedList<String>();
 
 	public NodeCode(Stack<Boolean> argmutiple) {
 		this.argmutiple = argmutiple;
@@ -33,6 +33,11 @@ public class NodeCode {
 
 	public boolean NotInitialize() {
 		return getFirstCodeLevel() == -1;
+	}
+	
+	public int RecordCurrentLastIndex()
+	{
+		return codelist.size()-1;
 	}
 	
 	public void AddOneLineCode(String code, boolean couldappend, boolean mustappend, boolean mustpre, boolean occupyoneline, String preHint) {
@@ -213,6 +218,22 @@ public class NodeCode {
 					codelist.remove(idx);
 				}
 			}
+		}
+	}
+
+	public void MoveLastToSpecificLine(int line) {
+		String lastcnt = codelist.removeLast();
+		codelist.set(line, lastcnt);
+	}
+
+	public void MoveSpecificLineUntilLastToBeforeSpecificLine(int exprstartline, int dowhileline) {
+		int csize = codelist.size();
+		while (exprstartline < csize)
+		{
+			String es = codelist.remove(exprstartline);
+			codelist.add(dowhileline, es);
+			exprstartline++;
+			dowhileline++;
 		}
 	}
 

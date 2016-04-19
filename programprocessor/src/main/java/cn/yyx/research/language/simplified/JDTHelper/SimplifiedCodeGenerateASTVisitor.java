@@ -51,6 +51,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected NodeHelpManager<Boolean> runpermit = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<Boolean> runforbid = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<Boolean> typesimp = new NodeHelpManager<Boolean>();
+	protected NodeHelpManager<Integer> dostmtln = new NodeHelpManager<Integer>();
 	protected Map<Integer, Boolean> scopeck = new TreeMap<Integer, Boolean>();
 	protected Stack<NodeCode> omcanonystack = new Stack<NodeCode>();
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
@@ -619,11 +620,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(DoStatement node) {
 		// TODO
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "do", false, false, false, true, null);
+		dostmtln.AddNodeHelp(node.hashCode(), RecordCurrentLastIndex());
 		Statement body = node.getBody();
 		Expression expr = node.getExpression();
 		AddFirstOrderTask(new FirstOrderTask(body, expr, node, false, false) {
 			@Override
 			public void run() {
+				dostmtln.AddNodeHelp(body.hashCode(), RecordCurrentLastIndex());
 				ExpressionReferPreHandle(expr, ReferenceHintLibrary.DataUse);
 			}
 		});
@@ -634,7 +637,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(DoStatement node) {
 		ExpressionReferPostHandle(node, node.getExpression(), "while", GCodeMetaInfo.DoWhileHint, "", false, true,
 				false, false, false);
-		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		int nodehashcode = node.hashCode();
+		int bodyhashcode = node.getBody().hashCode();
+		int nodeline = dostmtln.GetNodeHelp(nodehashcode);
+		int bodyline = dostmtln.GetNodeHelp(bodyhashcode);
+		MoveLastToSpecificLine(nodeline);
+		MoveSpecificLineUntilLastToBeforeSpecificLine(bodyline+1, nodeline);
+		dostmtln.DeleteNodeHelp(nodehashcode);
+		dostmtln.DeleteNodeHelp(bodyhashcode);
+		// GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
 		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 	}
 
@@ -2167,6 +2178,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			omc = (new NodeCode(argmutiple));
 		}
 	}
+	
+	protected void MoveSpecificLineUntilLastToBeforeSpecificLine(int exprstartline, int dowhileline) {
+		omc.MoveSpecificLineUntilLastToBeforeSpecificLine(exprstartline, dowhileline);
+	}
+	
+	protected void MoveLastToSpecificLine(int line) {
+		omc.MoveLastToSpecificLine(line);
+	}
 
 	protected void AppendOtherCode(String corpus, String code) {
 		ocm.AppendOtherCode(corpus, code);
@@ -2183,6 +2202,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected void GenerateOneLine(String nodecode, boolean couldappend, boolean mustappend, boolean mustpre,
 			boolean occupyoneline, String preHint) {
 		omc.AddOneLineCode(nodecode, couldappend, mustappend, mustpre, occupyoneline, preHint);
+	}
+	
+	protected int RecordCurrentLastIndex()
+	{
+		return omc.RecordCurrentLastIndex();
 	}
 
 	protected void GenerateEndInfo(String lcode) {

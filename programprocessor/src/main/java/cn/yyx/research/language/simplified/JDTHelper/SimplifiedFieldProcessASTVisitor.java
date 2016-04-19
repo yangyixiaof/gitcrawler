@@ -32,6 +32,7 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		runpermit = scga.runpermit;
 		runforbid = scga.runforbid;
 		typesimp = scga.typesimp;
+		dostmtln = scga.dostmtln;
 		omcanonystack = scga.omcanonystack;
 		argmutiple = scga.argmutiple;
 		omc = scga.omc;
