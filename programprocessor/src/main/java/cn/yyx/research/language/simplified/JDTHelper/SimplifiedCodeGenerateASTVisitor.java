@@ -1353,6 +1353,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			runforbid.AddNodeHelp(t.hashCode(), true);
 			String typecode = TypeCode(t.getType(), false);
 			nodecode = nodecode + typecode + ",";
+			NewVariableDeclared(t.getName(), t.getType());
 		}
 		if (types.size() > 0) {
 			nodecode = nodecode.substring(0, nodecode.length() - 1);
@@ -1377,7 +1378,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		while (itr.hasNext()) {
 			SingleVariableDeclaration t = itr.next();
 			runforbid.DeleteNodeHelp(t.hashCode());
-			// TODO
 		}
 		if (isFirstLevelASTNode(node)) {
 			FlushCode();
