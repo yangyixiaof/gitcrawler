@@ -10,6 +10,7 @@ public class GCodeMetaInfo {
 	public static final String ClassInnerDeclarationHint = "ICD@";
 	public static final String EnumDeclarationHint = "ED@";
 	public static final String MethodDeclarationHint = "MD@";
+	public static final String ConstructionDeclarationHint = "CR@";
 	public static final String EnumConstantDeclarationHint = "EMD@";
 	public static final String LabelDeclarationHint = "LD@";
 	public static final String VariableDeclarationHint = "VD@";

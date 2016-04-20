@@ -1344,7 +1344,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		String nodecode = GCodeMetaInfo.MethodDeclarationHint;
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
-		String rtcode = TypeCode(node.getReturnType2(), false);
+		String rtcode = GCodeMetaInfo.ConstructionDeclarationHint;
+		Type rt2 = node.getReturnType2();
+		if (rt2 != null)
+		{
+			// is construction function.
+			// System.err.print("MethodDeclaration:"+node);
+			// System.exit(1);
+			rtcode = TypeCode(rt2, true);
+		}
 		nodecode = nodecode + rtcode + "(";
 		List<SingleVariableDeclaration> types = node.parameters();
 		Iterator<SingleVariableDeclaration> itr = types.iterator();
