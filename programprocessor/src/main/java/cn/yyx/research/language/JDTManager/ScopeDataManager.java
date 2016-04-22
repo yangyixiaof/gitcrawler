@@ -295,7 +295,7 @@ public class ScopeDataManager {
 			}
 			OneScope currentscope = classstack.getScope(classstack.getSize() - 1);
 			String indicator = nowinfo.isFinal() ? (nowinfo.isField() ? "D" : "X") : (nowinfo.isField() ? "F" : "C");
-			return "$" + indicator + Math.abs(dataScope.getLevel() - currentscope.getLevel())
+			return "@" + indicator + Math.abs(dataScope.getLevel() - currentscope.getLevel())
 					+ GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(exactoffset);
 		} else {
 			if (Character.isLowerCase(data.charAt(0)) == true) {

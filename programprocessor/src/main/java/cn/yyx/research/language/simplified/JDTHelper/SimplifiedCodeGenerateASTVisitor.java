@@ -2233,7 +2233,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (offset == null) {
 			return null;
 		}
-		return "$K" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(offset);
+		return "@" + "K" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(offset);
 	}
 
 	protected void LabelNewlyAssigned(String label) {
@@ -2245,7 +2245,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (offset == null) {
 			return null;
 		}
-		return "$L" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(offset);
+		return "@" + "L" + 0 + GCodeMetaInfo.OffsetSpiliter + OffsetLibrary.GetOffsetDescription(offset);
 	}
 
 	protected void DataNewlyUsed(String data, String type, boolean isfianl, boolean isFieldDeclare,

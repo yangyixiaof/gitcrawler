@@ -21,7 +21,7 @@ public class OffsetLibrary {
 		return result;
 	}
 	
-	public static String GetAdjacentRefCode(boolean ispositive)
+	/*public static String GetAdjacentRefCode(boolean ispositive)
 	{
 		String pre = "";
 		if (ispositive)
@@ -33,7 +33,7 @@ public class OffsetLibrary {
 			pre = "$-";
 		}
 		return pre + "aj#";
-	}
+	}*/
 	
 	/*public static String GetOffsetDescription(int dataline, int currline)
 	{

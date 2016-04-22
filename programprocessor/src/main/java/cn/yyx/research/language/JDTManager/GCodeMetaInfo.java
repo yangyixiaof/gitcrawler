@@ -97,7 +97,7 @@ public class GCodeMetaInfo {
 	
 	public static final String ContentHolder = "<!%CH!>";
 	
-	public static final String DataRefIndicator = "$";
+	// public static final String DataRefIndicator = "$";
 	
 	public static final String HackedNoType = "<$NT$>";
 	
