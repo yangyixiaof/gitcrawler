@@ -2410,6 +2410,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (dimens != null && dimens.size() > 0) {
 			Iterator<Dimension> itr = dimens.iterator();
 			while (itr.hasNext()) {
+				itr.next();
 				dimenstr += "[]";
 			}
 		}
@@ -2529,14 +2530,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name, String typecode, List<Dimension> extradimens) {
-		if (typecode != null && !typecode.equals(""))
+		if (typecode == null || typecode.equals(""))
 		{
-			SetVeryRecentDeclaredType(GenerateVariableDeclarationType(typecode, extradimens));
+			typecode = GetVeryRecentDeclaredType();
 		}
-		else
-		{
-			SetVeryRecentDeclaredType(GenerateVariableDeclarationType(GetVeryRecentDeclaredType(), extradimens));
-		}
+		SetVeryRecentDeclaredType(GenerateVariableDeclarationType(typecode, extradimens));
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, extradimens);
 		// if (!VeryRecentNotGenerateCode) {
 		GenerateOneLine(nodecode, false, false, false, true, null);
