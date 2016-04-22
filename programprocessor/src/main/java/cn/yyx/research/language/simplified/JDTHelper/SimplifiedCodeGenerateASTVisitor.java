@@ -1152,12 +1152,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			return false;
 		}*/
 		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(typecode);
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, node.extraDimensions());
+		// SetVeryRecentDeclaredType(nodecode);
 		if (!VeryRecentNotGenerateCode) {
 			GenerateOneLine(nodecode, false, false, false, true, null);
 		}
-		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName());
+		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), typecode, node.extraDimensions());
 		return super.visit(node);
 	}
 
@@ -1180,7 +1180,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			return;
 		}*/
 		VariableDeclarationFragmentPostHandle(node.getInitializer(), node.getName());
-		SetVeryRecentDeclaredType(null);
+		// SetVeryRecentDeclaredType(null);
 	}
 
 	@Override
@@ -1205,14 +1205,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(VariableDeclarationStatement node) {
-		SetVeryRecentDeclaredType(null);
 		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		SetVeryRecentDeclaredType(null);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean visit(VariableDeclarationFragment node) {
-		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName());
+		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), null, node.extraDimensions());
 		return super.visit(node);
 	}
 
@@ -2401,17 +2402,21 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 	}
 
-	protected String GenerateVariableDeclarationTypeCode(String typecode, List<ASTNode> dimens) {
+	protected String GenerateVariableDeclarationTypeCode(String typecode, List<Dimension> dimens) {
+		return GCodeMetaInfo.VariableDeclarationHint + GenerateVariableDeclarationType(typecode, dimens);
+	}
+	
+	protected String GenerateVariableDeclarationType(String typecode, List<Dimension> dimens) {
 		String dimenstr = "";
 		if (dimens != null && dimens.size() > 0) {
-			Iterator<ASTNode> itr = dimens.iterator();
+			Iterator<Dimension> itr = dimens.iterator();
 			while (itr.hasNext()) {
-				dimenstr += itr.next().toString();
+				dimenstr += "[]";
 			}
 		}
-		return GCodeMetaInfo.VariableDeclarationHint + typecode + dimenstr;
+		return typecode + dimenstr;
 	}
-
+	
 	protected boolean CheckAppend() {
 		return omc.CheckAppend();
 	}
@@ -2524,7 +2529,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(nodecode, false, false, false, true, null);
 	}
 
-	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name) {
+	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name, String typecode, List<Dimension> extradimens) {
+		if (typecode != null && !typecode.equals(""))
+		{
+			SetVeryRecentDeclaredType(GenerateVariableDeclarationType(typecode, extradimens));
+		}
+		else
+		{
+			SetVeryRecentDeclaredType(GenerateVariableDeclarationType(GetVeryRecentDeclaredType(), extradimens));
+		}
 		int namehashcode = name.hashCode();
 		runforbid.AddNodeHelp(namehashcode, true);
 		if (iniexpr != null) {
@@ -2562,6 +2575,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			// DeleteNodeRefered(iniexpr.hashCode());
 			referhint.DeleteNodeHelp(iniexpr.hashCode());
 		}
+		SetVeryRecentDeclaredType(null);
 	}
 
 	protected void MethodPushReferRequest(Expression expr, List<ASTNode> args) {
