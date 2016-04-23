@@ -23,10 +23,10 @@ public class FDBigInt {
 			b = other.data;
 			m = other.nWords;
 		} else {
-			/*a = other.data;
+			a = other.data;
 			n = other.nWords;
 			b = this.data;
-			m = this.nWords;*/
+			m = this.nWords;
 		}
 		/*int r[] = new int[n];
 		for (i = 0; i < n; i++) {
