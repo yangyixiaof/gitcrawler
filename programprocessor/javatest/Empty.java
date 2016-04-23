@@ -4,7 +4,8 @@ public class Empty {
 	
 	public void HeiHei()
 	{
-		Object a = this;
+		// CacheControlUrlConnection.super.getInputStream();
+		// Object a = this;
 		// int a[], b[];
 		// int n, m;
 		// {
