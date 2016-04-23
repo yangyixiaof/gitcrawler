@@ -187,15 +187,15 @@ public class NodeCode {
 	public void AppendEndInfoToLast(String apdcode) {
 		if (apdcode.equals(";"))
 		{
-			CheckAndDeletePartialEnd();
+			CheckAndDeletePartialEndAndFullEnd();
 		}
 		AppendToLast(apdcode);
 	}
 	
-	private void CheckAndDeletePartialEnd() {
+	private void CheckAndDeletePartialEndAndFullEnd() {
 		int idx = codelist.size() - 1;
 		String lastcode = codelist.get(idx);
-		if (lastcode.endsWith(","))
+		if (lastcode.endsWith(",") || lastcode.endsWith(";"))
 		{
 			lastcode = lastcode.substring(0, lastcode.length()-1);
 			codelist.set(idx, lastcode);

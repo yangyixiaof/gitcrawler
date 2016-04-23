@@ -3,16 +3,13 @@ package cn.yyx.research.language.programprocessor;
 public class FDBigInt {
 	
 	int nWords; // number of words used
-	int data[]; // value: data[0] is least significant
+	/*int data[]; // value: data[0] is least significant
 	
 	private FDBigInt(int[] d, int n) {
 		data = d;
 		nWords = n;
 	}
 	
-	/*
-	 * Add one FDBigInt to another. Return a FDBigInt
-	 */
 	public FDBigInt add(FDBigInt other) {
 		int i;
 		int a[], b[];
@@ -48,6 +45,6 @@ public class FDBigInt {
 			return new FDBigInt(s, i);
 		}
 		return new FDBigInt(r, i);
-	}
+	}*/
 	
 }

@@ -94,15 +94,15 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		// System.out.println("FieldDeclaration:" + node + ";typeclass:" + node.getType().getClass());
 		String typecode = TypeCode(node.getType(), true);
 		SetVeryRecentDeclaredType(typecode);
-		String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
-		GenerateOneLine(nodecode, false, false, false, true, null);
+		// String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
+		// GenerateOneLine(nodecode, false, false, false, true, null);
 		VeryRecentIsFieldDeclared = true;
 		return true;
 	}
 	
 	@Override
 	public void endVisit(FieldDeclaration node) {
-		SetVeryRecentDeclaredType(null);
+		// SetVeryRecentDeclaredType(null);
 		VeryRecentIsFieldDeclared = false;
 		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 	}
