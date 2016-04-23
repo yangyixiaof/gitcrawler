@@ -1135,8 +1135,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(VariableDeclarationExpression node) {
-		// TODO
-		System.out.println("VariableDeclarationExpression:"+node);
+		// System.out.println("VariableDeclarationExpression:"+node);
 		String typecode = TypeCode(node.getType(), true);
 		SetVeryRecentDeclaredType(typecode);
 		// String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
@@ -1152,8 +1151,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(SingleVariableDeclaration node) {
-		// TODO
-		System.out.println("SingleVariableDeclaration:"+node);
+		// System.out.println("SingleVariableDeclaration:"+node);
 		// MyLogger.Info("SingleVariableDeclaration:" + node);
 		/*Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
 		if (forbid != null && forbid == true) {
@@ -1197,8 +1195,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(VariableDeclarationStatement node) {
-		// TODO
-		System.out.println("VariableDeclarationStatement:"+node);
+		// System.out.println("VariableDeclarationStatement:"+node);
 		// MyLogger.Error("VariableDeclarationStatement:"+node);
 		// MyLogger.Error("VariableDeclarationStatementType:"+node.getType());
 		String typecode = TypeCode(node.getType(), true);
