@@ -1,11 +1,15 @@
 package cn.yyx.research.language.simplified.JDTHelper;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 
@@ -24,6 +28,8 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		cjcs = scga.cjcs;
 		ljcs = scga.ljcs;
 		FirstLevelClass = scga.FirstLevelClass;
+		VeryRecentDeclaredType = scga.VeryRecentDeclaredType;
+		fielddeclared = scga.fielddeclared;
 		berefered = scga.berefered;
 		bereferedAlready = scga.bereferedAlready;
 		referedcnt = scga.referedcnt;
@@ -33,6 +39,7 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		runforbid = scga.runforbid;
 		typesimp = scga.typesimp;
 		dostmtln = scga.dostmtln;
+		scopeck = scga.scopeck;
 		omcanonystack = scga.omcanonystack;
 		argmutiple = scga.argmutiple;
 		omc = scga.omc;
@@ -90,20 +97,36 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean visit(FieldDeclaration node) {
 		// System.out.println("FieldDeclaration:" + node + ";typeclass:" + node.getType().getClass());
 		String typecode = TypeCode(node.getType(), true);
 		SetVeryRecentDeclaredType(typecode);
 		// String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
 		// GenerateOneLine(nodecode, false, false, false, true, null);
-		VeryRecentIsFieldDeclared = true;
+		List<VariableDeclarationFragment> fs = node.fragments();
+		Iterator<VariableDeclarationFragment> itr = fs.iterator();
+		while (itr.hasNext())
+		{
+			VariableDeclarationFragment vdf = itr.next();
+			fielddeclared.AddNodeHelp(vdf.getName().hashCode(), true);
+		}
+		// VeryRecentIsFieldDeclared = true;
 		return true;
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public void endVisit(FieldDeclaration node) {
-		// SetVeryRecentDeclaredType(null);
-		VeryRecentIsFieldDeclared = false;
+		SetVeryRecentDeclaredType(null);
+		List<VariableDeclarationFragment> fs = node.fragments();
+		Iterator<VariableDeclarationFragment> itr = fs.iterator();
+		while (itr.hasNext())
+		{
+			VariableDeclarationFragment vdf = itr.next();
+			fielddeclared.DeleteNodeHelp(vdf.getName().hashCode());
+		}
+		// VeryRecentIsFieldDeclared = false;
 		AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
 	}
 	

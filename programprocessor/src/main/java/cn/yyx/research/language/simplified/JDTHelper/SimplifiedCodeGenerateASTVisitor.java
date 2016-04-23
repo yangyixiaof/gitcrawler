@@ -41,7 +41,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected JCScope ljcs = new JCScope();
 	protected Integer FirstLevelClass = null;
 	protected Stack<String> VeryRecentDeclaredType = new Stack<String>();
-	protected boolean VeryRecentIsFieldDeclared = false;
+	// protected boolean VeryRecentIsFieldDeclared = false;
+	protected NodeHelpManager<Boolean> fielddeclared = new NodeHelpManager<Boolean>();
 	// protected boolean VeryRecentNotGenerateCode = false;
 	protected NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<Boolean> bereferedAlready = new NodeHelpManager<Boolean>();
@@ -2561,7 +2562,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// handle scope offset when end.
 		int namehashcode = name.hashCode();
 		int hint = ReferenceHintLibrary.DataDeclare;
-		if (VeryRecentIsFieldDeclared) {
+		Boolean isfield = fielddeclared.GetNodeHelp(namehashcode);
+		if (isfield != null && isfield == true) {
 			hint = ReferenceHintLibrary.FieldDeclare;
 		}
 		runforbid.DeleteNodeHelp(namehashcode);
@@ -2712,11 +2714,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	protected void NewVariableDeclared(SimpleName name, String tp)
 	{
+		int namehashcode = name.hashCode();
 		int hint = ReferenceHintLibrary.DataDeclare;
-		if (VeryRecentIsFieldDeclared) {
+		Boolean isfield = fielddeclared.GetNodeHelp(namehashcode);
+		if (isfield != null && isfield == true) {
 			hint = ReferenceHintLibrary.FieldDeclare;
 		}
-		int namehashcode = name.hashCode();
 		runpermit.AddNodeHelp(namehashcode, true);
 		referhint.AddNodeHelp(namehashcode, hint);
 		SetVeryRecentDeclaredType(tp);
