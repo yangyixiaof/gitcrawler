@@ -131,6 +131,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
 		}
+		else
+		{
+			System.err.println("This Expression not refered?");
+			System.exit(1);
+		}
 		return false;
 	}
 
@@ -1269,22 +1274,22 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		int nodehashcode = node.hashCode();
 		Integer hint = referhint.GetNodeHelp(nodehashcode);
 		ASTNode expr = node.getExpression();
-		runforbid.AddNodeHelp(node.getName().hashCode(), true);
+		String exprcontent = expr.toString();
 		int exprhashcode = expr.hashCode();
+		int namehashcode = node.getName().hashCode();
 		/*
 		 * if (expr instanceof FieldAccess || expr instanceof SuperFieldAccess)
 		 * { AddNodeRefered(exprhashcode); referhint.AddNodeHelp(exprhashcode,
 		 * hint); }
 		 */
-		if (expr instanceof ThisExpression) {
-			int namehashcode = node.getName().hashCode();
-			runpermit.AddNodeHelp(namehashcode, true);
+		if (expr instanceof ThisExpression && exprcontent.equals("this")) {
 			Integer changedhint = ReferenceHintLibrary.ChangeHintHighByteToField(hint);
 			referhint.AddNodeHelp(namehashcode, changedhint);
 			AddNodeRefered(namehashcode);
 		} else {
-			AddNodeRefered(exprhashcode);
+			runforbid.AddNodeHelp(namehashcode, true);
 			referhint.AddNodeHelp(exprhashcode, hint);
+			AddNodeRefered(exprhashcode);
 		}
 		return super.visit(node);
 	}
@@ -1293,18 +1298,27 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	// Must Ensure.
 	@Override
 	public void endVisit(FieldAccess node) {
-		String nodecode = "";
+		String nodecode = null;
 		ASTNode expr = node.getExpression();
-		if (expr instanceof ThisExpression) {
-			int namehashcode = node.getName().hashCode();
+		String exprcontent = expr.toString();
+		int exprhashcode = expr.hashCode();
+		int namehashcode = node.getName().hashCode();
+		if (expr instanceof ThisExpression && exprcontent.equals("this")) {
 			nodecode = referedcnt.GetNodeHelp(namehashcode);
+			referhint.DeleteNodeHelp(namehashcode);
+			DeleteNodeRefered(namehashcode);
 		} else {
 			String exprcode = referedcnt.GetNodeHelp(expr.hashCode());
 			if (exprcode == null || exprcode.equals("")) {
 				exprcode = GCodeMetaInfo.PreExist;
 			}
 			nodecode = node.getName().toString() + "." + exprcode;
+			runforbid.DeleteNodeHelp(node.getName().hashCode());
+			referhint.DeleteNodeHelp(exprhashcode);
+			DeleteNodeRefered(exprhashcode);
 		}
+		
+		// really generating codes.
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
@@ -1312,27 +1326,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		} else {
 			GenerateOneLine(nodecode, true, false, false, false, GCodeMetaInfo.FieldAccessHint);
 		}
-
-		// delete hint.
-		runforbid.DeleteNodeHelp(node.getName().hashCode());
-		int exprhashcode = expr.hashCode();
-		/*
-		 * if (expr instanceof FieldAccess) { DeleteNodeRefered(exprhashcode);
-		 * referhint.DeleteNodeHelp(exprhashcode); }
-		 */
-		if (expr instanceof ThisExpression) {
-			int namehashcode = node.getName().hashCode();
-			runpermit.DeleteNodeHelp(namehashcode);
-			referhint.DeleteNodeHelp(namehashcode);
-			DeleteNodeRefered(namehashcode);
-		} else {
-			DeleteNodeRefered(exprhashcode);
-			referhint.DeleteNodeHelp(exprhashcode);
-		}
 	}
-
+	
 	// below are most important method related : MethodDeclaration.
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodDeclaration node) {
