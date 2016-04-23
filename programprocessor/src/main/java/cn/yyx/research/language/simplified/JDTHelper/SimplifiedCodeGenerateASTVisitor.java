@@ -1721,7 +1721,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SimpleName node) {
 		
-		// TODO
 		// Integer ht = referhint.GetNodeHelp(node.hashCode());
 		// ReferenceHint rh = ReferenceHintLibrary.ParseReferenceHint(ht);
 		// System.out.println("SimpleName:"+node + ";hint-high:" + (rh.getDataType() >> (ReferenceHintLibrary.MaskLength+1)) + ";hint-low:" + rh.getWayUse());
