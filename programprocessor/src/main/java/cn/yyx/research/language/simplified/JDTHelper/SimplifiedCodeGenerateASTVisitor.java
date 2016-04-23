@@ -45,7 +45,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected NodeHelpManager<Boolean> fielddeclared = new NodeHelpManager<Boolean>();
 	// protected boolean VeryRecentNotGenerateCode = false;
 	protected NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
-	protected NodeHelpManager<Boolean> bereferedAlready = new NodeHelpManager<Boolean>();
+	// protected NodeHelpManager<Boolean> bereferedAlready = new NodeHelpManager<Boolean>();
 	protected NodeHelpManager<String> referedcnt = new NodeHelpManager<String>();
 	protected NodeHelpManager<Integer> referhint = new NodeHelpManager<Integer>();
 	protected NodeHelpManager<Boolean> refernoline = new NodeHelpManager<Boolean>();
@@ -1296,13 +1296,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		 */
 		if (expr instanceof ThisExpression && exprcontent.equals("this")) {
 			Integer changedhint = ReferenceHintLibrary.ChangeHintHighByteToField(hint);
-			referhint.AddNodeHelp(namehashcode, changedhint);
-			AddNodeRefered(namehashcode);
+			// referhint.AddNodeHelp(namehashcode, changedhint);
+			AddNodeRefered(namehashcode, changedhint);
 			runforbid.AddNodeHelp(exprhashcode, true);
 		} else {
 			runforbid.AddNodeHelp(namehashcode, true);
-			referhint.AddNodeHelp(exprhashcode, hint);
-			AddNodeRefered(exprhashcode);
+			// referhint.AddNodeHelp(exprhashcode, hint);
+			AddNodeRefered(exprhashcode, hint);
 		}
 		return super.visit(node);
 	}
@@ -1507,7 +1507,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		if (node.getQualifier() != null) {
 			// runforbid.AddNodeHelp(node.getQualifier().hashCode(), true);
-			AddNodeRefered(node.getQualifier().hashCode());
+			AddNodeRefered(node.getQualifier().hashCode(), ReferenceHintLibrary.DataUse);
 		}
 		return super.visit(node);
 	}
@@ -1682,8 +1682,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}*/
 		if (qualifier != null) {
 			int qualihashcode = qualifier.hashCode();
-			AddNodeRefered(qualihashcode);
-			referhint.AddNodeHelp(qualihashcode, referhint.GetNodeHelp(node.hashCode()));
+			AddNodeRefered(qualihashcode, referhint.GetNodeHelp(node.hashCode()));
 			// runforbid.AddNodeHelp(, true);
 		}
 		if (sname != null)
@@ -2327,18 +2326,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		return false;
 	}
 
-	protected boolean NodeIsAlreadyRefered(int nodehashcode) {
+	/*protected boolean NodeIsAlreadyRefered(int nodehashcode) {
 		Boolean isrefered = bereferedAlready.GetNodeHelp(nodehashcode);
 		if (isrefered != null && isrefered == true) {
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 	protected void ExpressionReferPreHandle(Expression expr, int referenceHint) {
 		int exprhashcode = expr.hashCode();
-		referhint.AddNodeHelp(exprhashcode, referenceHint);
-		AddNodeRefered(exprhashcode);
+		// referhint.AddNodeHelp(exprhashcode, referenceHint);
+		AddNodeRefered(exprhashcode, referenceHint);
 	}
 
 	protected String ExpressionReferPostHandle(ASTNode node, Expression expr, String operator, String operatorHint,
@@ -2482,22 +2481,27 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 	}
 
-	protected void AddNodeRefered(int nodehashcode) {
-		if (NodeIsRefered(nodehashcode)) {
-			bereferedAlready.AddNodeHelp(nodehashcode, true);
-		} else {
-			berefered.AddNodeHelp(nodehashcode, true);
+	protected void AddNodeRefered(int nodehashcode, Integer hint) {
+		// if (NodeIsRefered(nodehashcode)) {
+		//	bereferedAlready.AddNodeHelp(nodehashcode, true);
+		// } else {
+		berefered.AddNodeHelp(nodehashcode, true);
+		if (hint != null)
+		{
+			referhint.AddNodeHelp(nodehashcode, hint);
 		}
+		// }
 	}
 
 	protected void DeleteNodeRefered(int nodehashcode) {
-		if (NodeIsAlreadyRefered(nodehashcode)) {
-			bereferedAlready.DeleteNodeHelp(nodehashcode);
-		} else {
-			berefered.DeleteNodeHelp(nodehashcode);
-			referedcnt.DeleteNodeHelp(nodehashcode);
-			refernoline.DeleteNodeHelp(nodehashcode);
-		}
+		// if (NodeIsAlreadyRefered(nodehashcode)) {
+		//	bereferedAlready.DeleteNodeHelp(nodehashcode);
+		// } else {
+		berefered.DeleteNodeHelp(nodehashcode);
+		referedcnt.DeleteNodeHelp(nodehashcode);
+		refernoline.DeleteNodeHelp(nodehashcode);
+		referhint.DeleteNodeHelp(nodehashcode);
+		// }
 	}
 
 	public Map<String, String> GetGeneratedCode() {
@@ -2555,8 +2559,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (label != null) {
 			int namehashcode = label.hashCode();
 			runpermit.AddNodeHelp(namehashcode, true);
-			referhint.AddNodeHelp(namehashcode, ReferenceHintLibrary.LabelUse);
-			AddNodeRefered(namehashcode);
+			// referhint.AddNodeHelp(namehashcode, ReferenceHintLibrary.LabelUse);
+			AddNodeRefered(namehashcode, ReferenceHintLibrary.LabelUse);
 		}
 	}
 
@@ -2627,8 +2631,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected void MethodPushReferRequest(Expression expr, List<ASTNode> args) {
 		if (expr != null) {
 			int exprhashcode = expr.hashCode();
-			referhint.AddNodeHelp(exprhashcode, ReferenceHintLibrary.DataUpdate);
-			AddNodeRefered(exprhashcode);
+			// referhint.AddNodeHelp(exprhashcode, ReferenceHintLibrary.DataUpdate);
+			AddNodeRefered(exprhashcode, ReferenceHintLibrary.DataUpdate);
 		}
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnterMethodParam, false, false, false, true, null);
 		if (expr != null)
@@ -2648,8 +2652,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			while (itr.hasNext()) {
 				ASTNode arg = itr.next();
 				int arghashcode = arg.hashCode();
-				referhint.AddNodeHelp(arghashcode, ReferenceHintLibrary.DataUse);
-				AddNodeRefered(arghashcode);
+				// referhint.AddNodeHelp(arghashcode, ReferenceHintLibrary.DataUse);
+				AddNodeRefered(arghashcode, ReferenceHintLibrary.DataUse);
 				argmutiple.push(false);
 				AddFirstOrderTask(new FirstOrderTask(arg, null, arg.getParent(), true, false) {
 					@Override
