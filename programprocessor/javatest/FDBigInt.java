@@ -3,7 +3,7 @@ package cn.yyx.research.language.programprocessor;
 public class FDBigInt {
 	
 	int nWords; // number of words used
-	int data[]; // value: data[0] is least significant
+	// int data[]; // value: data[0] is least significant
 	
 	/*private FDBigInt(int[] d, int n) {
 		data = d;
@@ -11,10 +11,10 @@ public class FDBigInt {
 	}*/
 	
 	public FDBigInt add(FDBigInt other) {
-		int i;
+		/*int i;
 		int a[], b[];
 		int n, m;
-		long c = 0L;
+		long c = 0L;*/
 		// arrange such that a.nWords >= b.nWords;
 		// n = a.nWords, m = b.nWords
 		if (this.nWords >= other.nWords) {
