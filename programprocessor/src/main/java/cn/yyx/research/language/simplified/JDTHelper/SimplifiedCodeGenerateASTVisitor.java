@@ -145,7 +145,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(ThisExpression node) {
-		QualifiedPostHandle(node, node.getQualifier(), "this", null, null, null);
+		QualifiedPostHandle(node, node.getQualifier(), "this", null, null, null, true);
 		super.endVisit(node);
 	}
 	
@@ -553,7 +553,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// qualified reference should be considered more carefully.
 		Name qualifier = node.getQualifier();
 		Name name = node.getName();
-		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), "super", "::");
+		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), "super", "::", true);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -1579,7 +1579,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(SuperFieldAccess node) {
 		Name qualifier = node.getQualifier();
 		Name name = node.getName();
-		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), "super", ".");
+		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), "super", ".", true);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -1619,7 +1619,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}*/
 		Name qualifier = node.getQualifier();
 		Name name = node.getName();
-		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), null, null);
+		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), null, null, true);
 		/*int len = PredictLength(node);
 		if (len <= StrictedNameLength) {
 			Name qualifier = ;
@@ -1693,7 +1693,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 	
 	protected void QualifiedPostHandle(ASTNode node, Name qualifier, String namestr, Integer namehashcode, String additional,
-			String additionalprefixoperator) {
+			String additionalprefixoperator, boolean mustberefered) {
 
 		// MyLogger.Info("node:" + node);
 		// MyLogger.Info("qualifier:" + qualifier);
@@ -1721,6 +1721,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
 			refernoline.AddNodeHelp(nodehashcode, true);
 		} else {
+			if (mustberefered)
+			{
+				System.err.println("this must be refered, but not.");
+				System.exit(1);
+			}
 			GenerateOneLine(nodecode, true, false, false, false, GCodeMetaInfo.QualifiedHint);
 		}
 		if (qualifier != null) {
