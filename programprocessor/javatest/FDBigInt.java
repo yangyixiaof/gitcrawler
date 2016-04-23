@@ -43,8 +43,9 @@ public class FDBigInt {
 			JVM.unchecked_int_arraycopy(r, 0, s, 0, r.length);
 			s[i++] = (int) c;
 			return new FDBigInt(s, i);
-		}*/
-		return new FDBigInt(r, i);
+		}
+		return new FDBigInt(r, i);*/
+		return null;
 	}
 	
 }

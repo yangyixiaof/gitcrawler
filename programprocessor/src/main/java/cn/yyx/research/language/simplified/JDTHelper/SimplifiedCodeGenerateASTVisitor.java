@@ -19,6 +19,7 @@ import cn.yyx.research.language.JDTManager.NodeHelpManager;
 import cn.yyx.research.language.JDTManager.OffsetLibrary;
 import cn.yyx.research.language.JDTManager.OneJavaFileCode;
 import cn.yyx.research.language.JDTManager.OtherCodeManager;
+import cn.yyx.research.language.JDTManager.ReferenceHint;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.Utility.MyLogger;
@@ -1287,6 +1288,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			Integer changedhint = ReferenceHintLibrary.ChangeHintHighByteToField(hint);
 			referhint.AddNodeHelp(namehashcode, changedhint);
 			AddNodeRefered(namehashcode);
+			runforbid.AddNodeHelp(exprhashcode, true);
 		} else {
 			runforbid.AddNodeHelp(namehashcode, true);
 			referhint.AddNodeHelp(exprhashcode, hint);
@@ -1308,6 +1310,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			nodecode = referedcnt.GetNodeHelp(namehashcode);
 			referhint.DeleteNodeHelp(namehashcode);
 			DeleteNodeRefered(namehashcode);
+			runforbid.DeleteNodeHelp(exprhashcode);
 		} else {
 			String exprcode = referedcnt.GetNodeHelp(expr.hashCode());
 			if (exprcode == null || exprcode.equals("")) {
@@ -1696,7 +1699,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SimpleName node) {
-		int nodehashcode = node.hashCode();
+		
+		// TODO
+		Integer ht = referhint.GetNodeHelp(node.hashCode());
+		ReferenceHint rh = ReferenceHintLibrary.ParseReferenceHint(ht);
+		System.out.println("SimpleName:"+node + ";hint-high:" + (rh.getDataType() >> (ReferenceHintLibrary.MaskLength+1)) + ";hint-low:" + rh.getWayUse());
 		
 		// testing
 		/*if (node.toString().equals("Operation"))
@@ -1713,13 +1720,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				if (!NodeIsRefered(nodehashcode)) { return false; }
 			}
 		}*/
-
+		// MyLogger.Info("name:" + node.toString() +";hint:" + (referhint.GetNodeHelp(node.hashCode()) ==
+		// ReferenceHintLibrary.DataDeclare)+";hint2:"+(referhint.GetNodeHelp(node.hashCode()) ==
+		// ReferenceHintLibrary.DataUse));
+		
+		int nodehashcode = node.hashCode();
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
 		
-		// MyLogger.Info("name:" + node.toString() +";hint:" + (hint ==
-		// ReferenceHintLibrary.DataDeclare)+";hint2:"+(hint ==
-		// ReferenceHintLibrary.DataUse));
-
 		boolean isfield = false;
 		String result = null;
 		

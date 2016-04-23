@@ -5,9 +5,9 @@ public class ReferenceHintLibrary {
 	public static final int MaskLength = 5;
 	public static final int Mask = (1 << 6) - 1;
 	
-	public static final int Declare = 1 << 1;
-	public static final int Update = 1 << 2;
-	public static final int Use = 1 << 3;
+	public static final int Declare = 1 << 0;
+	public static final int Update = 1 << 1;
+	public static final int Use = 1 << 2;
 	
 	public static final int Field = 1 << 6;
 	public static final int Data = 1 << 7;
