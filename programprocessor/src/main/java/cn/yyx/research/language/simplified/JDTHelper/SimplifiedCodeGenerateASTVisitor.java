@@ -1270,6 +1270,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(FieldAccess node) {
+		// TODO
+		System.err.println("FieldAccess:"+node);
 		// MyLogger.Info("FieldAccess:"+node);
 		// MyLogger.Info("FieldAccessName:"+node.getName());
 		// MyLogger.Info("FieldAccessExpr:"+node.getExpression());
@@ -1574,11 +1576,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(QualifiedName node) {
-		int nodehashcode = node.hashCode();
+		// TODO
+		System.out.println("QualifiedName:"+node);
 		/*Boolean forbid = runforbid.GetNodeHelp(nodehashcode);
 		if (forbid != null && forbid == true) {
 			return false;
 		}*/
+		int nodehashcode = node.hashCode();
 		int len = PredictLength(node);
 		boolean ctn = true;
 		if (len > StrictedNameLength) {
