@@ -121,7 +121,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(ThisExpression node) {
-		int nodehashcode = node.hashCode();
+		QualifiedPreHandle(node, node.getQualifier(), null);
+		/*int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
 			String nodecode = "this";
 			Name name = node.getQualifier();
@@ -138,10 +139,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			System.err.println("This Expression not refered?");
 			System.exit(1);
-		}
+		}*/
 		return false;
 	}
-
+	
+	@Override
+	public void endVisit(ThisExpression node) {
+		QualifiedPostHandle(node, node.getQualifier(), "this", null, null, null);
+		super.endVisit(node);
+	}
+	
 	@Override
 	public boolean visit(TagElement node) {
 		return false;
@@ -544,7 +551,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(SuperMethodReference node) {
 		// qualified reference should be considered more carefully.
-		QualifiedPostHandle(node, node.getQualifier(), node.getName(), "super", "::");
+		Name qualifier = node.getQualifier();
+		Name name = node.getName();
+		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), "super", "::");
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -1570,8 +1579,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(SuperFieldAccess node) {
 		Name qualifier = node.getQualifier();
 		Name name = node.getName();
-		QualifiedPostHandle(node, qualifier, name, "super", ".");
-
+		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), "super", ".");
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -1609,7 +1617,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (forbid != null && forbid == true) {
 			return;
 		}*/
-		QualifiedPostHandle(node, node.getQualifier(), node.getName(), null, null);
+		Name qualifier = node.getQualifier();
+		Name name = node.getName();
+		QualifiedPostHandle(node, qualifier, name.toString(), name.hashCode(), null, null);
 		/*int len = PredictLength(node);
 		if (len <= StrictedNameLength) {
 			Name qualifier = ;
@@ -1676,11 +1686,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referhint.AddNodeHelp(qualihashcode, referhint.GetNodeHelp(node.hashCode()));
 			// runforbid.AddNodeHelp(, true);
 		}
-		runforbid.AddNodeHelp(sname.hashCode(), true);
+		if (sname != null)
+		{
+			runforbid.AddNodeHelp(sname.hashCode(), true);
+		}
 		return true;
 	}
 	
-	protected void QualifiedPostHandle(ASTNode node, Name qualifier, Name name, String additional,
+	protected void QualifiedPostHandle(ASTNode node, Name qualifier, String namestr, Integer namehashcode, String additional,
 			String additionalprefixoperator) {
 
 		// MyLogger.Info("node:" + node);
@@ -1702,7 +1715,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			qualicnt = "." + ref;
 		}
-		String nodecode = name.toString() + (additional != null ? additionalprefixoperator + additional : "")
+		String nodecode = namestr + (additional != null ? additionalprefixoperator + additional : "")
 				+ qualicnt;
 		// GetDefaultStrictedLengthOfName(qualifier)
 		if (NodeIsRefered(nodehashcode)) {
@@ -1715,6 +1728,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			int qualihashcode = qualifier.hashCode();
 			DeleteNodeRefered(qualihashcode);
 			referhint.DeleteNodeHelp(qualihashcode);
+		}
+		if (namehashcode != null)
+		{
+			runforbid.DeleteNodeHelp(namehashcode);
 		}
 	}
 

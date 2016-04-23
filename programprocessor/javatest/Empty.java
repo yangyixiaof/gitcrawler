@@ -4,8 +4,9 @@ public class Empty {
 	
 	public void HeiHei()
 	{
-		int a[], b[];
-		int n, m;
+		Object a = this;
+		// int a[], b[];
+		// int n, m;
 		// {
 		//	int a = ((5+6)+(8/2))/2;
 		// }
