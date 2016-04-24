@@ -2733,8 +2733,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		nodecode.append(invoker);
 		Iterator<ASTNode> itr = args.iterator();
 		while (itr.hasNext()) {
-			ASTNode arg = itr.next();
 			nodecode.append(",");
+			ASTNode arg = itr.next();
 			String argcnt = referedcnt.GetNodeHelp(arg.hashCode());
 			if (argcnt == null) {
 				nodecode.append(GCodeMetaInfo.PreExist);
@@ -2750,15 +2750,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected void EnumConstantInvocationCode(String enumConstantName, String invoker, List<Expression> arguments) {
 		StringBuilder nodecode = new StringBuilder("");
 		nodecode.append(GCodeMetaInfo.EnumConstantDeclarationHint + enumConstantName);
+		String pre = "(";
+		String post = ")";
+		nodecode.append(pre);
+		nodecode.append(invoker);
 		if (arguments != null && arguments.size() > 0) {
-			String pre = "(";
-			String post = ")";
-			nodecode.append(pre);
-			nodecode.append(invoker);
 			Iterator<Expression> itr = arguments.iterator();
 			while (itr.hasNext()) {
-				ASTNode arg = itr.next();
 				nodecode.append(",");
+				ASTNode arg = itr.next();
 				String argcnt = referedcnt.GetNodeHelp(arg.hashCode());
 				if (argcnt == null) {
 					nodecode.append(GCodeMetaInfo.PreExist);
@@ -2766,8 +2766,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					nodecode.append(argcnt);
 				}
 			}
-			nodecode.append(post);
 		}
+		nodecode.append(post);
 		CheckEnterMethodParam();
 		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
 	}
