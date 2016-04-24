@@ -1040,8 +1040,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(WhileStatement node) {
-		// TODO
-		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "while", false, false, false, true, null);
+		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
+		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true, false) {
+			@Override
+			public void run() {
+				ExpressionReferPostHandle(node, node.getExpression(), "while", GCodeMetaInfo.WhileStatementHint, "", false,
+						true, false, false, false);
+			}
+		});
+		return super.visit(node);
+		/*GenerateOneLine(GCodeMetaInfo.DescriptionHint + "while", false, false, false, true, null);
 		referhint.AddNodeHelp(node.getExpression().hashCode(), ReferenceHintLibrary.DataUse);
 		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true, false) {
 			@Override
@@ -1049,7 +1057,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "ecwhile", false, false, false, true, null);
 			}
 		});
-		return super.visit(node);
+		return super.visit(node);*/
 	}
 
 	@Override
@@ -1059,15 +1067,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(IfStatement node) {
-		// TODO
-		GenerateOneLine(GCodeMetaInfo.IfStatementHint + "if", false, false, false, true, null);
+		// GenerateOneLine(GCodeMetaInfo.IfStatementHint + "if", false, false, false, true, null);
 		// ExpressionReferPreHandle(node.getExpression(),
 		// ReferenceHintLibrary.DataUse);
-		int exprhashcode = node.getExpression().hashCode();
-		referhint.AddNodeHelp(exprhashcode, ReferenceHintLibrary.DataUse);
+		
+		// int exprhashcode = node.getExpression().hashCode();
+		// referhint.AddNodeHelp(exprhashcode, ReferenceHintLibrary.DataUse);
+		ExpressionReferPreHandle(node.getExpression(), ReferenceHintLibrary.DataUse);
 		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), node.getThenStatement(), node, true, false) {
 			@Override
 			public void run() {
+				ExpressionReferPostHandle(node, node.getExpression(), "if", GCodeMetaInfo.IfStatementHint, "", false,
+						true, false, false, false);
 				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "then", false, false, false, true, null);
 				// ExpressionReferPostHandle(node, (Expression)getPre(), "", "",
 				// "", false, true, false, false, false);
@@ -1083,7 +1094,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		});
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public void endVisit(IfStatement node) {
 		referhint.DeleteNodeHelp(node.getExpression().hashCode());

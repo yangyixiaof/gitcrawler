@@ -1,20 +1,25 @@
 package cn.yyx.research.language.Utility;
 
 public class Empty {
-	
-	public void HeiHei()
-	{
-		new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                PixelFormat.TRANSLUCENT);
+
+	public void HeiHei() {
+		if (mi())
+		{
+			System.out.println("haha");
+		} else
+		{
+			System.out.println("heihei");
+		}
+		// new WindowManager.LayoutParams(
+		//		WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+		//		PixelFormat.TRANSLUCENT);
 		// Class<? extends Annotation> a;
 		// CacheControlUrlConnection.super.getInputStream();
 		// Object a = this;
 		// int a[], b[];
 		// int n, m;
 		// {
-		//	int a = ((5+6)+(8/2))/2;
+		// int a = ((5+6)+(8/2))/2;
 		// }
 		// m(1,h(p(),1+q(j())));
 		// int a=0, b=a+1, c=a+b;
@@ -22,13 +27,13 @@ public class Empty {
 		// int[] b = {1,2};
 		// int i = 0;
 		// do{
-		//	i++;
+		// i++;
 		// } while (i<10);
 		// int b = 0;
 		// int[] a = {1, 2, 3, 4, 5};
 		// for (int t : a)
 		// {
-		//	System.out.println(t);
+		// System.out.println(t);
 		// }
 		// System.out.println(b);
 		// a[b[1]] = 10;
@@ -37,25 +42,18 @@ public class Empty {
 		// int a = 0;
 		// a = n(m()+100);
 	}
-	
-	/*public int n(int p)
-	{
-		return 10;
-	}
-	
-	public int m()
-	{
-		return 0;
-	}
-	
-	class TTest2
-	{
-		
-	}*/
-	
+
+	/*
+	 * public int n(int p) { return 10; }
+	 * 
+	 * public int m() { return 0; }
+	 * 
+	 * class TTest2 {
+	 * 
+	 * }
+	 */
+
 }
 /*
-class tt 
-{
-	int a;
-}*/
+ * class tt { int a; }
+ */
