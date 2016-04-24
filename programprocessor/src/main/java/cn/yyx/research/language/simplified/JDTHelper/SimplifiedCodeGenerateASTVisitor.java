@@ -1889,9 +1889,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (node instanceof PrimitiveType) {
 			return node.toString();
 		}
-		System.out.println("RawTypeCode:"+node);
+		// System.out.println("RawTypeCode:"+node);
 		String type = RawTypeCode(node);
-		System.out.println("TypeCode:"+type);
+		// System.out.println("TypeCode:"+type);
 		String typecode = GetClassOffset(type);
 		if (typecode == null) {
 			typecode = type;
