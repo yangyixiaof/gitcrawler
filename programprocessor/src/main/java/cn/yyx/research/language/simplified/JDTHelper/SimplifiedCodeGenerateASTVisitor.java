@@ -1269,7 +1269,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(ConditionalExpression node) {
-		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "CondExpEnd", false, false, false, true, null);
+		// GenerateOneLine(GCodeMetaInfo.DescriptionHint + "CondExpEnd", false, false, false, true, null);
 		referhint.DeleteNodeHelp(node.getExpression().hashCode());
 		referhint.DeleteNodeHelp(node.getThenExpression().hashCode());
 		referhint.DeleteNodeHelp(node.getElseExpression().hashCode());
