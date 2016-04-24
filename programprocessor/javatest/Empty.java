@@ -4,6 +4,7 @@ public class Empty {
 	
 	public void HeiHei()
 	{
+		Class<? extends Annotation> a;
 		// CacheControlUrlConnection.super.getInputStream();
 		// Object a = this;
 		// int a[], b[];
