@@ -3,13 +3,17 @@ package cn.yyx.research.language.Utility;
 public class Empty {
 
 	public void HeiHei() {
-		if (mi())
-		{
-			System.out.println("haha");
-		} else
+		do
 		{
 			System.out.println("heihei");
-		}
+		} while (mi());
+		// if (mi())
+		// {
+		//	System.out.println("haha");
+		// } else
+		// {
+		//	System.out.println("heihei");
+		// }
 		// new WindowManager.LayoutParams(
 		//		WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 		//		PixelFormat.TRANSLUCENT);
