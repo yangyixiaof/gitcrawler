@@ -4,7 +4,11 @@ public class Empty {
 	
 	public void HeiHei()
 	{
-		Class<? extends Annotation> a;
+		new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+		// Class<? extends Annotation> a;
 		// CacheControlUrlConnection.super.getInputStream();
 		// Object a = this;
 		// int a[], b[];

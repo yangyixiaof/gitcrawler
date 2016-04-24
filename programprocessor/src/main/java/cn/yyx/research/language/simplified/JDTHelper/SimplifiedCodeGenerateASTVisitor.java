@@ -1721,11 +1721,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
 			refernoline.AddNodeHelp(nodehashcode, true);
 		} else {
-			if (mustberefered)
-			{
-				System.err.println("this must be refered, but not.");
-				System.exit(1);
-			}
+			//if (mustberefered)
+			//{
+			//	System.err.println("this must be refered, but not. Node:" + node + ";NodeParent:" + node.getParent());
+			//	System.exit(1);
+			//}
 			GenerateOneLine(nodecode, true, false, false, false, GCodeMetaInfo.QualifiedHint);
 		}
 		if (qualifier != null) {
