@@ -48,7 +48,7 @@ public class GCodeMetaInfo {
 	public static final String ArrayAccess = "[@";
 	
 	// another display of ']'
-	public static final String EndOfArrayDeclarationIndexExpression = "@]";
+	public static final String EndOfArrayDeclarationIndexExpression = "]";
 	// int[] a = {..,..};
 	// public static final String EndOfArrayInitializerElementExpression = "@I]";
 	public static final String ArrayInitializerBegin = "A{";
