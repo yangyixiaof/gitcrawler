@@ -49,9 +49,9 @@ public class NodeCode {
 		if (codelist.size() > 0)
 		{
 			boolean shouldreturn = false;
-			if (code.equals("DH@Em"))
+			if (code.equals("DH@" + GCodeMetaInfo.EnterMethodParam))
 			{
-				shouldreturn = MergeMark("Em");
+				shouldreturn = MergeMark(GCodeMetaInfo.EnterMethodParam);
 			}
 			if (code.equals("DH@{"))
 			{
@@ -238,9 +238,9 @@ public class NodeCode {
 		{
 			int idx = codelist.size() - 1;
 			String lastcode = codelist.get(idx);
-			if (lastcode.startsWith("DH@Em"))
+			if (lastcode.startsWith("DH@" + GCodeMetaInfo.EnterMethodParam))
 			{
-				int lidx = lastcode.lastIndexOf("Em");
+				int lidx = lastcode.lastIndexOf(GCodeMetaInfo.EnterMethodParam);
 				lastcode = lastcode.substring(0, lidx);
 				codelist.set(idx, lastcode);
 				if (lastcode.equals("DH@"))
