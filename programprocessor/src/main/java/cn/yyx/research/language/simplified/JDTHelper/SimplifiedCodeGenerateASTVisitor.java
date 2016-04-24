@@ -58,8 +58,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	protected NodeCode omc = new NodeCode(argmutiple);
 	
-	
-	public static final int StrictedTypeLength = 2;
+	// type just use the last element.
+	// public static final int StrictedTypeLength = 2;
 
 	{
 		cjcs.SetDescription("Class Declaration.");
@@ -1498,7 +1498,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		MethodInvocationCode("super", invoker, node.arguments());
 		MethodDeleteReferRequest(expr, node.arguments());
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(SuperMethodInvocation node) {
@@ -1511,7 +1511,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		return super.visit(node);
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(SuperMethodInvocation node) {
@@ -1889,7 +1889,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (node instanceof PrimitiveType) {
 			return node.toString();
 		}
+		System.out.println("RawTypeCode:"+node);
 		String type = RawTypeCode(node);
+		System.out.println("TypeCode:"+type);
 		String typecode = GetClassOffset(type);
 		if (typecode == null) {
 			typecode = type;
@@ -1905,7 +1907,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			return code.substring(widx + 1);
 		}
 		if (node instanceof SimpleType) {
-			return GetStrictedName(((SimpleType) node).getName(), StrictedTypeLength);
+			return GetFirstElementName(((SimpleType) node).getName());
+			// GetStrictedName(((SimpleType) node).getName(), StrictedTypeLength)
 		}
 		if (node instanceof QualifiedType) {
 			QualifiedType qn = (QualifiedType) node;
@@ -1913,8 +1916,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		if (node instanceof NameQualifiedType) {
 			NameQualifiedType nt = (NameQualifiedType) node;
-			return nt.getName().toString() + "."
-					+ GetStrictedName(((NameQualifiedType) node).getQualifier(), StrictedTypeLength - 1);
+			return nt.getName().toString() + "." + GetFirstElementName(((NameQualifiedType) node).getQualifier());
+					// + GetStrictedName(((NameQualifiedType) node).getQualifier(), StrictedTypeLength - 1);
 		}
 		if (node instanceof WildcardType) {
 			WildcardType wt = (WildcardType) node;
@@ -1988,8 +1991,23 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		System.exit(1);
 		return null;
 	}
+	
+	protected String GetFirstElementName(Name name)
+	{
+		if (name instanceof QualifiedName)
+		{
+			return ((QualifiedName) name).getName().toString();
+		}
+		if (name instanceof SimpleName)
+		{
+			return name.toString();
+		}
+		System.err.println("Name is not QualifiedName or SimpleName, what is that?");
+		System.exit(1);
+		return null;
+	}
 
-	protected String GetStrictedName(Name name, int alreadylen) {
+	/*protected String GetStrictedName(Name name, int alreadylen) {
 		String result = null;
 		if (name != null && alreadylen > 0) {
 			if (name instanceof QualifiedName) {
@@ -2005,7 +2023,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 		return result;
-	}
+	}*/
 
 	@Override
 	public boolean visit(IntersectionType node) {
