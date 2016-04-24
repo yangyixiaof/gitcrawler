@@ -1040,6 +1040,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(WhileStatement node) {
+		// TODO
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "while", false, false, false, true, null);
 		referhint.AddNodeHelp(node.getExpression().hashCode(), ReferenceHintLibrary.DataUse);
 		AddFirstOrderTask(new FirstOrderTask(node.getExpression(), null, node, true, false) {
@@ -1058,6 +1059,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(IfStatement node) {
+		// TODO
 		GenerateOneLine(GCodeMetaInfo.IfStatementHint + "if", false, false, false, true, null);
 		// ExpressionReferPreHandle(node.getExpression(),
 		// ReferenceHintLibrary.DataUse);
