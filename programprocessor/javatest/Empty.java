@@ -1,9 +1,14 @@
 package cn.yyx.research.language.Utility;
 
 public class Empty {
-
+	
+	ParameterizedTypes2<Number>.Inner<String> concreteInner()
+	{
+		return null;
+	}
+	
 	public void HeiHei() {
-		Class<?>[] ar = {A.class, B.class};
+		// Class<?>[] ar = {A.class, B.class};
 		// do
 		// {
 		//	System.out.println("heihei");

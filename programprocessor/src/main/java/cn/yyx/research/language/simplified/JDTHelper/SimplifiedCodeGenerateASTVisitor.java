@@ -1429,7 +1429,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(ClassInstanceCreation node) {
 		// MyLogger.Info("Node Type:"+node.getType());
 		// MyLogger.Info("Body:"+node.getAnonymousClassDeclaration());
-		OneMethodInvocationOccurs(RawTypeCode(node.getType()));
+		OneMethodInvocationOccurs(RawTypeCode(node.getType(), null));
 		MethodPushReferRequest(node.getExpression(), node.arguments());
 		if (node.getAnonymousClassDeclaration() != null) {
 			AddFirstOrderTask(new FirstOrderTask(null, node.getAnonymousClassDeclaration(), node, false, true) {
@@ -1903,7 +1903,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			return node.toString();
 		}
 		// System.out.println("RawTypeCode:"+node);
-		String type = RawTypeCode(node);
+		String type = RawTypeCode(node, null);
 		// System.out.println("TypeCode:"+type);
 		String typecode = GetClassOffset(type);
 		if (typecode == null) {
@@ -1913,7 +1913,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected String RawTypeCode(Type node) {
+	protected String RawTypeCode(Type node, String parameterized) {
+		
+		System.out.println("Type:" + node);
+		System.out.println("TypeClass:" + node.getClass());
+		
 		if (node instanceof PrimitiveType) {
 			String code = ((PrimitiveType) node).toString().trim();
 			int widx = code.lastIndexOf(' ');
@@ -1925,7 +1929,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		if (node instanceof QualifiedType) {
 			QualifiedType qn = (QualifiedType) node;
-			return qn.getName().toString() + RawTypeCode(qn.getQualifier());
+			String qnname = qn.getName().toString();
+			if (parameterized != null)
+			{
+				qnname += parameterized;
+			}
+			return qnname + "." + RawTypeCode(qn.getQualifier(), null);
 		}
 		if (node instanceof NameQualifiedType) {
 			NameQualifiedType nt = (NameQualifiedType) node;
@@ -1937,7 +1946,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			if (wt.getBound() == null) {
 				return "?";
 			}
-			return "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wt.isUpperBound() ? "extends" : "super") + GCodeMetaInfo.WhiteSpaceReplacer + RawTypeCode(wt.getBound());
+			return "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wt.isUpperBound() ? "extends" : "super") + GCodeMetaInfo.WhiteSpaceReplacer + RawTypeCode(wt.getBound(), null);
 		}
 		if (node instanceof ArrayType) {
 			ArrayType at = (ArrayType) node;
@@ -1946,21 +1955,22 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			for (int i = 0; i < dimens; i++) {
 				dimenstr += "[]";
 			}
-			return RawTypeCode(at.getElementType()) + dimenstr;
+			return RawTypeCode(at.getElementType(), null) + dimenstr;
 		}
 		if (node instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) node;
-			String result = RawTypeCode(pt.getType()) + "<";
+			String param = "<";
 			List<Type> tas = pt.typeArguments();
 			Iterator<Type> itr = tas.iterator();
 			while (itr.hasNext()) {
 				Type tt = itr.next();
-				result += RawTypeCode(tt);
+				param += RawTypeCode(tt, null);
 				if (itr.hasNext()) {
-					result += ",";
+					param += ",";
 				}
 			}
-			result += ">";
+			param += ">";
+			String result = RawTypeCode(pt.getType(), param);
 			return result;
 		}
 		if (node instanceof UnionType) {
@@ -1971,7 +1981,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			boolean first = true;
 			while (itr.hasNext()) {
 				Type t = itr.next();
-				String tstr = RawTypeCode(t);
+				String tstr = RawTypeCode(t, null);
 				if (first) {
 					result = tstr;
 					first = false;
@@ -1989,7 +1999,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			boolean first = true;
 			while (itr.hasNext()) {
 				Type t = itr.next();
-				String tstr = RawTypeCode(t);
+				String tstr = RawTypeCode(t, null);
 				if (first) {
 					result = tstr;
 					first = false;
