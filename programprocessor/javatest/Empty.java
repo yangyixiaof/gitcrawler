@@ -3,10 +3,11 @@ package cn.yyx.research.language.Utility;
 public class Empty {
 
 	public void HeiHei() {
-		do
-		{
-			System.out.println("heihei");
-		} while (mi());
+		Class<?>[] ar = {A.class, B.class};
+		// do
+		// {
+		//	System.out.println("heihei");
+		// } while (mi());
 		// if (mi())
 		// {
 		//	System.out.println("haha");
