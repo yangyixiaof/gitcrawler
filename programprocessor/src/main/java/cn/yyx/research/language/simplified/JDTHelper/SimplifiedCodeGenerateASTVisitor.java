@@ -1915,8 +1915,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	protected String RawTypeCode(Type node, String parameterized) {
 		
-		System.out.println("Type:" + node);
-		System.out.println("TypeClass:" + node.getClass());
+		// System.out.println("Type:" + node);
+		// System.out.println("TypeClass:" + node.getClass());
 		
 		if (node instanceof PrimitiveType) {
 			String code = ((PrimitiveType) node).toString().trim();
