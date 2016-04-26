@@ -84,7 +84,7 @@ public class BigDirectory {
 		}
 	}
 
-	public void AppendOneFileToTheBigFile(File tf) {
+	/*public void AppendOneFileToTheBigFile(File tf) {
 		String separator = File.separator;
 		File currfile = new File(mBigFileDirectory.getAbsolutePath() + separator + nowmax+".txt");
 		if (!currfile.exists())
@@ -116,6 +116,6 @@ public class BigDirectory {
 				}
 			}
 		}
-	}
+	}*/
 
 }

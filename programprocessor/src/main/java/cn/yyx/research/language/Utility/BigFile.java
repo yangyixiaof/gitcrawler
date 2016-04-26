@@ -1,8 +1,6 @@
 package cn.yyx.research.language.Utility;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 public class BigFile {
@@ -25,11 +23,11 @@ public class BigFile {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		mBigFile.appendContent(onecnt+"\n");
+		mBigFile.appendContent(onecnt); // +"\n"
 		mBigFile.End();
 	}
 	
-	public void AppendOneFileToTheBigFile(File onefile) {
+	/*public void AppendOneFileToTheBigFile(File onefile) {
 		try {
 			mBigFile.Begin();
 		} catch (IOException e) {
@@ -44,7 +42,7 @@ public class BigFile {
 				tempString = tempString.trim();
 				if (!tempString.equals(""))
 				{
-					mBigFile.appendContent(tempString+"\n");
+					mBigFile.appendContent(tempString); // + "\n"
 				}
 			}
 			reader.close();
@@ -60,6 +58,6 @@ public class BigFile {
 			}
 		}
 		mBigFile.End();
-	}
+	}*/
 	
 }
