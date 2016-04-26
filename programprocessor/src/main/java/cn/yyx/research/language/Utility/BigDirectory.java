@@ -12,7 +12,7 @@ public class BigDirectory {
 	
 	public static String PrefixDirectory  = "BigDirectory";
 	
-	public static final int OneFileMaxMB = 5;
+	public static final int OneFileMaxMB = 2;
 	public BigDirectory(String bigfiledir) throws Exception {
 		mBigFileDirectory = new File(PrefixDirectory.equals("")?"":(PrefixDirectory + "/" + bigfiledir));
 		if (!mBigFileDirectory.exists()) {
