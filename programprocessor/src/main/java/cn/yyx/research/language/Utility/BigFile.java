@@ -23,7 +23,7 @@ public class BigFile {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		mBigFile.appendContent(onecnt); // +"\n"
+		mBigFile.appendContent(onecnt + "\n");
 		mBigFile.End();
 	}
 	
