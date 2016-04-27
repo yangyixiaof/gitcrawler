@@ -27,6 +27,10 @@ public abstract class JavaCode {
 		}
 	}
 	
+	public int getAllWords() {
+		return codes.size();
+	}
+	
 	public boolean IsEmpty() {
 		return sb.length() == 0;
 	}

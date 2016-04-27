@@ -7,30 +7,34 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import cn.yyx.research.language.Utility.CorpusContentPair;
+import cn.yyx.research.language.simplified.JDTManager.ContentsAndWords;
 
 public class OtherCodeManager {
 	
-	private Map<String, String> othercodemap = new TreeMap<String, String>();
+	private Map<String, ContentsAndWords> othercodemap = new TreeMap<String, ContentsAndWords>();
+	// private Map<String, Integer> otherwordsmap = new TreeMap<String, Integer>();
 	
 	public OtherCodeManager() {
 	}
 	
 	public void AppendOtherCode(String key, String value)
 	{
-		String ocode = getOtherCodeMap().get(key);
+		ContentsAndWords ocode = getOtherCodeMap().get(key);
+		// Integer owords = getOtherWordsMap().get(key);
 		if (ocode == null)
 		{
-			ocode = "";
+			ocode = new ContentsAndWords("", 0);
 		}
 		// ocode.equals("") || 
 		String trimvalue = value.trim();
 		if (trimvalue.equals("."))
 		{
-			ocode += trimvalue;
+			ocode.setContent(ocode.getContent() + trimvalue);
 		}
 		else
 		{
-			ocode += " " + trimvalue;
+			ocode.setContent(ocode.getContent() + " " + trimvalue);
+			ocode.setWords(ocode.getWords() + 1);
 		}
 		getOtherCodeMap().put(key, ocode);
 	}
@@ -42,19 +46,29 @@ public class OtherCodeManager {
 		while (itr.hasNext())
 		{
 			String corpus = itr.next();
-			String content = getOtherCodeMap().get(corpus);
-			CorpusContentPair ccp = new CorpusContentPair(corpus, content);
+			ContentsAndWords ocm = getOtherCodeMap().get(corpus);
+			String content = ocm.getContent();
+			int words = ocm.getWords();
+			CorpusContentPair ccp = new CorpusContentPair(corpus, content, words);
 			result.add(ccp);
 		}
 		return result;
 	}
 
-	public Map<String, String> getOtherCodeMap() {
+	public Map<String, ContentsAndWords> getOtherCodeMap() {
 		return othercodemap;
 	}
 
-	public void setOthercodemap(Map<String, String> othercodemap) {
+	/*public Map<String, Integer> getOtherWordsMap() {
+		return otherwordsmap;
+	}*/
+
+	/*public void setOtherwordsmap(Map<String, Integer> otherwordsmap) {
+		this.otherwordsmap = otherwordsmap;
+	}*/
+
+	/*public void setOthercodemap(Map<String, String> othercodemap) {
 		this.othercodemap = othercodemap;
-	}
+	}*/
 	
 }

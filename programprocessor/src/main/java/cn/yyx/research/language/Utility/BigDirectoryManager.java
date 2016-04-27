@@ -28,7 +28,7 @@ public class BigDirectoryManager {
 		for (CorpusContentPair ccp : corpuses)
 		{
 			BigDirectory bd = GetBigDirectory(ccp.getCorpus());
-			bd.AppendOneContentToTheBigFile(ccp.getContent());
+			bd.AppendOneContentToTheBigFile(ccp.getContent(), ccp.getWords());
 		}
 	}
 }

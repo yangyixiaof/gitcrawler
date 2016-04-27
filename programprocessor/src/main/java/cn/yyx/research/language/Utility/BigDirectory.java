@@ -50,7 +50,7 @@ public class BigDirectory {
 		return max;
 	}
 	
-	public void AppendOneContentToTheBigFile(String content) {
+	public void AppendOneContentToTheBigFile(String content, int words) {
 		String separator = File.separator;
 		File currfile = new File(mBigFileDirectory.getAbsolutePath() + separator + nowmax+".txt");
 		if (!currfile.exists())
@@ -67,7 +67,7 @@ public class BigDirectory {
 		long bytes = currfile.length();
 		double MB = bytes/1048576.0;
 		BigFile bf = new BigFile(currfile);
-		bf.AppendOneContentToTheBigFile(content);
+		bf.AppendOneContentToTheBigFile(content, words);
 		if (MB+tfMB > OneFileMaxMB)
 		{
 			nowmax++;

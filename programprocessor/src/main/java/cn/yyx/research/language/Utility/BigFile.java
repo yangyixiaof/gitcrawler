@@ -7,6 +7,8 @@ public class BigFile {
 
 	ABigSourceCodeFile mBigFile;
 	
+	public static final int maxWordsInOneLine = 50000;
+	
 	/*public BigFile(String prefix) {
 		mBigFile = new ABigSourceCodeFile(prefix);
 	}*/
@@ -16,14 +18,35 @@ public class BigFile {
 		mBigFile = new ABigSourceCodeFile(f);
 	}
 	
-	public void AppendOneContentToTheBigFile(String onecnt) {
+	public void AppendOneContentToTheBigFile(String onecnt, int words) {
 		try {
 			mBigFile.Begin();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		mBigFile.appendContent(onecnt + "\n");
+		
+		if (words > maxWordsInOneLine)
+		{
+			String[] ocs = onecnt.split(" ");
+			int idx = 0;
+			while (words > 0)
+			{
+				int rem = words % maxWordsInOneLine;
+				if (rem == 0)
+				{
+					rem = maxWordsInOneLine;
+				}
+				words -= rem;
+				String tmpcontent = ArrayHelper.JoinArrayInSection(ocs, idx, idx + rem);
+				mBigFile.appendContent(tmpcontent + "\n");
+				idx += rem;
+			}
+		}
+		else
+		{
+			mBigFile.appendContent(onecnt + "\n");
+		}
 		mBigFile.End();
 	}
 	

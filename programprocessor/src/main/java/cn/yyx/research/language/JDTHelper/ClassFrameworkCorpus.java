@@ -1,21 +1,8 @@
 package cn.yyx.research.language.JDTHelper;
 
-import java.util.List;
-
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-
-import cn.yyx.research.language.Utility.CamelCaseSplitter;
-import cn.yyx.research.language.Utility.CorpusContentPair;
-
 public class ClassFrameworkCorpus {
 
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	public static CorpusContentPair GenerateClassFrameworkCorpus(CompilationUnit compilationUnit) {
 		String Corpus = "BigClassFrameWork";
 		StringBuilder Content = new StringBuilder("");
@@ -59,6 +46,6 @@ public class ClassFrameworkCorpus {
 		}
 		String Contentstr = Content.toString();
 		return new CorpusContentPair(Corpus, Contentstr);
-	}
+	}*/
 	
 }

@@ -24,6 +24,7 @@ import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.Utility.MyLogger;
 import cn.yyx.research.language.simplified.JDTManager.AnonymousClassPoolInOneJavaFile;
 import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
+import cn.yyx.research.language.simplified.JDTManager.ContentsAndWords;
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 import cn.yyx.research.language.simplified.JDTManager.ScopeOffsetRefHandler;
 import cn.yyx.research.language.simplified.JDTManager.TypeASTHelper;
@@ -2550,18 +2551,21 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// }
 	}
 
-	public Map<String, String> GetGeneratedCode() {
-		Map<String, String> result = new TreeMap<String, String>();
+	public Map<String, ContentsAndWords> GetGeneratedCode() {
+		Map<String, ContentsAndWords> result = new TreeMap<String, ContentsAndWords>();
 		result.putAll(ocm.getOtherCodeMap());
+		int totalwords = 0;
 		StringBuilder sb = new StringBuilder("");
 		if (!ojfc.IsEmpty()) {
 			sb.append(ojfc.toString());
+			totalwords += ojfc.getAllWords();
 		}
 		if (!acp.IsEmpty()) {
 			sb.append(acp.toString());
+			totalwords += acp.getAllWords();
 		}
 		if (sb.length() > 0) {
-			result.put(GCodeMetaInfo.LogicCorpus, sb.toString());
+			result.put(GCodeMetaInfo.LogicCorpus, new ContentsAndWords(sb.toString(), totalwords));
 		}
 		return result;
 	}

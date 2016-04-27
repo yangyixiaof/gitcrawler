@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import cn.yyx.research.language.Utility.CorpusContentPair;
 import cn.yyx.research.language.simplified.JDTHelper.SimplifiedCodeGenerateASTVisitor;
+import cn.yyx.research.language.simplified.JDTManager.ContentsAndWords;
 import cn.yyx.research.language.simplified.JDTManager.TypeASTHelper;
 
 public class ClassLogicDetailCorpus {
@@ -20,7 +21,7 @@ public class ClassLogicDetailCorpus {
 	public static ArrayList<CorpusContentPair> GenerateClassDetailCorpus(CompilationUnit compilationUnit)
 	{
 		List<AbstractTypeDeclaration> typeDeclarations = compilationUnit.types();
-		Map<String, String> allcodemap = new TreeMap<String, String>();
+		Map<String, ContentsAndWords> allcodemap = new TreeMap<String, ContentsAndWords>();
 		for (AbstractTypeDeclaration object : typeDeclarations) {
 			AbstractTypeDeclaration clazzNode = (AbstractTypeDeclaration) object;
 			if (TypeASTHelper.IsEmptyTypeDeclaration(clazzNode))
@@ -29,7 +30,7 @@ public class ClassLogicDetailCorpus {
 			}
 			SimplifiedCodeGenerateASTVisitor fmastv = new SimplifiedCodeGenerateASTVisitor();
 			clazzNode.accept(fmastv);
-			Map<String, String> codemap = fmastv.GetGeneratedCode();
+			Map<String, ContentsAndWords> codemap = fmastv.GetGeneratedCode();
 			Set<String> keys = codemap.keySet();
 			Iterator<String> itr = keys.iterator();
 			while (itr.hasNext())
@@ -37,10 +38,11 @@ public class ClassLogicDetailCorpus {
 				String corpus = itr.next();
 				if (allcodemap.get(corpus) == null)
 				{
-					allcodemap.put(corpus, "");
+					allcodemap.put(corpus, new ContentsAndWords("", 0));
 				}
-				String value = codemap.get(corpus);
-				allcodemap.put(corpus, (allcodemap.get(corpus) + value));
+				ContentsAndWords value = codemap.get(corpus);
+				ContentsAndWords alc = allcodemap.get(corpus);
+				allcodemap.put(corpus, new ContentsAndWords(alc.getContent() + value.getContent(), alc.getWords() + value.getWords()));
 			}
 			codemap = null;
 		}
@@ -50,8 +52,8 @@ public class ClassLogicDetailCorpus {
 		while (itr.hasNext())
 		{
 			String corpus = itr.next();
-			String content = allcodemap.get(corpus);
-			result.add(new CorpusContentPair(corpus, content));
+			ContentsAndWords content = allcodemap.get(corpus);
+			result.add(new CorpusContentPair(corpus, content.getContent(), content.getWords()));
 		}
 		
 		// clear variables

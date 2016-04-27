@@ -75,5 +75,21 @@ public class AnonymousClassPoolInOneJavaFile {
 	public ArrayList<String> GetRecentAnalyseList() {
 		return recently.toList();
 	}
+
+	public int getAllWords() {
+		int totalwords = 0;
+		Iterator<ArrayList<OneJavaFileAnonymousClassesCode>> itr2 = ojfacclist.iterator();
+		while (itr2.hasNext())
+		{
+			ArrayList<OneJavaFileAnonymousClassesCode> jfs = itr2.next();
+			Iterator<OneJavaFileAnonymousClassesCode> itr = jfs.iterator();
+			while (itr.hasNext())
+			{
+				OneJavaFileAnonymousClassesCode ojf = itr.next();
+				totalwords += ojf.getAllWords();
+			}
+		}
+		return totalwords;
+	}
 	
 }
