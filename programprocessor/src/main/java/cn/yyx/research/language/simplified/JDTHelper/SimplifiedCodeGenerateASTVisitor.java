@@ -22,6 +22,7 @@ import cn.yyx.research.language.JDTManager.OtherCodeManager;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.Utility.MyLogger;
+import cn.yyx.research.language.Utility.StringUtil;
 import cn.yyx.research.language.simplified.JDTManager.AnonymousClassPoolInOneJavaFile;
 import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 import cn.yyx.research.language.simplified.JDTManager.ContentsAndWords;
@@ -1380,6 +1381,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			// System.err.print("MethodDeclaration:"+node);
 			// System.exit(1);
 			rtcode = TypeCode(rt2, true);
+			int ednum = node.getExtraDimensions();
+			if (ednum > 0)
+			{
+				rtcode += StringUtil.GenerateDuplicates("[]", ednum);
+			}
 		}
 		nodecode = nodecode + rtcode + "(";
 		List<SingleVariableDeclaration> types = node.parameters();
@@ -1388,8 +1394,20 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			SingleVariableDeclaration t = itr.next();
 			runforbid.AddNodeHelp(t.hashCode(), true);
 			String typecode = TypeCode(t.getType(), false);
-			nodecode = nodecode + typecode + ",";
-			NewVariableDeclared(t.getName(), t.getType());
+			String sp = "";
+			if (itr.hasNext())
+			{
+				sp = ",";
+			}
+			else
+			{
+				if (t.isVarargs())
+				{
+					typecode += "...";
+				}
+			}
+			nodecode = nodecode + typecode + sp;
+			NewVariableDeclared(t.getName(), typecode);
 		}
 		if (types.size() > 0) {
 			nodecode = nodecode.substring(0, nodecode.length() - 1);
@@ -1952,10 +1970,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (node instanceof ArrayType) {
 			ArrayType at = (ArrayType) node;
 			int dimens = at.dimensions().size();
-			String dimenstr = "";
-			for (int i = 0; i < dimens; i++) {
+			String dimenstr = StringUtil.GenerateDuplicates("[]", dimens);
+			/*for (int i = 0; i < dimens; i++) {
 				dimenstr += "[]";
-			}
+			}*/
 			return RawTypeCode(at.getElementType(), null) + dimenstr;
 		}
 		if (node instanceof ParameterizedType) {
