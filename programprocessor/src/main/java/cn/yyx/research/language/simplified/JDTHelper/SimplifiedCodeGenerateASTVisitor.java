@@ -1409,9 +1409,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			nodecode = nodecode + typecode + sp;
 			NewVariableDeclared(t.getName(), typecode);
 		}
-		if (types.size() > 0) {
+		/*if (types.size() > 0) {
 			nodecode = nodecode.substring(0, nodecode.length() - 1);
-		}
+		}*/
 		nodecode = nodecode + ")" + node.getName().toString();
 		GenerateOneLine(nodecode, false, false, false, true, null);
 		return super.visit(node);
