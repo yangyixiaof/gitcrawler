@@ -1395,6 +1395,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			runforbid.AddNodeHelp(t.hashCode(), true);
 			String typecode = TypeCode(t.getType(), false);
 			String sp = "";
+			String typepre = ""; // especially for type '...'
 			if (itr.hasNext())
 			{
 				sp = ",";
@@ -1404,9 +1405,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				if (t.isVarargs())
 				{
 					typecode += "...";
+					typepre = "#";
 				}
 			}
-			nodecode = nodecode + typecode + sp;
+			nodecode = nodecode + typepre + typecode + sp;
 			NewVariableDeclared(t.getName(), typecode);
 		}
 		/*if (types.size() > 0) {
