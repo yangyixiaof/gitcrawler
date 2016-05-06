@@ -31,7 +31,7 @@ public class Empty {
 		// {
 		// int a = ((5+6)+(8/2))/2;
 		// }
-		m(sd());
+		m(sd(pa()));
 		// m(1,h(p(),1+q(j())));
 		// int a=0, b=a+1, c=a+b;
 		// int[] a = new int[10];
