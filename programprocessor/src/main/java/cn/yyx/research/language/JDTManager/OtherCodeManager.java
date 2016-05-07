@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import cn.yyx.research.language.Utility.CorpusContentPair;
+import cn.yyx.research.language.Utility.NormalLibrary;
 import cn.yyx.research.language.simplified.JDTManager.ContentsAndWords;
 
 public class OtherCodeManager {
@@ -27,6 +28,7 @@ public class OtherCodeManager {
 		}
 		// ocode.equals("") || 
 		String trimvalue = value.trim();
+		trimvalue = NormalLibrary.normalize(trimvalue);
 		if (trimvalue.equals("."))
 		{
 			ocode.setContent(ocode.getContent() + trimvalue);

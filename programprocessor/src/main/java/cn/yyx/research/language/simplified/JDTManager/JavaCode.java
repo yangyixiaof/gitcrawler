@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
 import cn.yyx.research.language.JDTManager.NodeCode;
+import cn.yyx.research.language.Utility.NormalLibrary;
 
 public abstract class JavaCode {
 	
@@ -20,6 +21,7 @@ public abstract class JavaCode {
 		while (itr.hasNext())
 		{
 			String onesentence = itr.next();
+			onesentence = NormalLibrary.normalize(onesentence);
 			CheckAllHavePrefixHint(onesentence, prestr);
 			prestr = onesentence;
 			sb.append(" " + onesentence);
