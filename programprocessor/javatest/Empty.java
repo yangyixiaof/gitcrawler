@@ -32,7 +32,8 @@ public class Empty {
 		// int a = ((5+6)+(8/2))/2;
 		// }
 		// m(sd(pa()));
-		char a = '\'';
+		// char a = '\'';
+		// überServlet.SPARQLServer=true;
 		// m(1,h(p(),1+q(j())));
 		// int a=0, b=a+1, c=a+b;
 		// int[] a = new int[10];
