@@ -2240,6 +2240,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			// System.exit(1);
 			nodecode = GCodeMetaInfo.WhiteSpace;
 		}
+		if (nodecode.startsWith("'\\"))
+		{
+			nodecode = "'\\" + nodecode.substring(1, nodecode.length());
+		}
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
