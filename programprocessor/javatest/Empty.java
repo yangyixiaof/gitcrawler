@@ -8,6 +8,8 @@ public class Empty {
 	}
 	
 	public void HeiHei() {
+		char a = '\uFFEF';
+		char a = '\uuFFEF';
 		// Class<?>[] ar = {A.class, B.class};
 		// do
 		// {

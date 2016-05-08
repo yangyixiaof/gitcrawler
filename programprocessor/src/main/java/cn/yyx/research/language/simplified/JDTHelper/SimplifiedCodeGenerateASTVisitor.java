@@ -2240,10 +2240,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			// System.exit(1);
 			nodecode = GCodeMetaInfo.WhiteSpace;
 		}
-		/*if (nodecode.startsWith("'\\"))
+		// especially for some error situation.
+		if (nodecode.startsWith("'\\uu"))
 		{
-			nodecode = "'\\" + nodecode.substring(1, nodecode.length());
-		}*/
+			nodecode = "'\\u" + nodecode.substring("'\\uu".length(), nodecode.length());
+		}
 		int nodehashcode = node.hashCode();
 		if (NodeIsRefered(nodehashcode)) {
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
