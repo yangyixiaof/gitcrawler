@@ -16,6 +16,8 @@ public class ProgramHandle {
 
 	// command: start /home/yyx/HomeSpace/UnzipPool /home/yyx/HomeSpace/UnzipAllFiles/TransformedData
 	
+	// test command : start /home/yyx/CodeComletionTestSpace/CodeSource /home/yyx/CodeComletionTestSpace/IR_yyx
+	
 	String processdir = null;
 	Thread runThread = null;
 	File dir = null;
