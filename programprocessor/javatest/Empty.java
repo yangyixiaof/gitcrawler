@@ -8,8 +8,13 @@ public class Empty {
 	}
 	
 	public void HeiHei() {
-		char a = '\uFFEF';
-		char a = '\uuFFEF';
+		// char a = '\uFFEF';
+		// char a = '\uuFFEF';
+		for(Enumeration names = getServletContext().getAttributeNames(); names.hasMoreElements(); values.add(names.nextElement()));
+        for(Iterator keys = values.iterator(); keys.hasNext();)
+        {
+        	
+        }
 		// Class<?>[] ar = {A.class, B.class};
 		// do
 		// {

@@ -26,6 +26,7 @@ import cn.yyx.research.language.Utility.StringUtil;
 import cn.yyx.research.language.simplified.JDTManager.AnonymousClassPoolInOneJavaFile;
 import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 import cn.yyx.research.language.simplified.JDTManager.ContentsAndWords;
+import cn.yyx.research.language.simplified.JDTManager.ForBlockState;
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 import cn.yyx.research.language.simplified.JDTManager.ScopeOffsetRefHandler;
 import cn.yyx.research.language.simplified.JDTManager.TypeASTHelper;
@@ -1120,26 +1121,47 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		if (expr == null) {
 			twoempty = true;
-			GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
+			if (oneempty)
+			{
+				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
+			}
 		}
 		List<ASTNode> ups = node.updaters();
-		if (ups == null || ups.size() == 0) {
+		if ((ups == null || ups.size() == 0)) {
 			threeempty = true;
-			GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+			if (oneempty && twoempty)
+			{
+				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+			}
 		}
+		ForBlockState fbs = new ForBlockState(oneempty, twoempty, threeempty);
 		if (!oneempty) {
-			AddFirstOrderTask(new FirstOrderTask(inis.get(inis.size() - 1), null, node, true, false) {
+			AddFirstOrderTask(new FirstOrderTask(inis.get(inis.size() - 1), null, node, true, false, fbs) {
 				@Override
 				public void run() {
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forIniOver", false, false, false, true, null);
+					ForBlockState tfbs = (ForBlockState) getAdditionalinfo();
+					if (tfbs.isTwoempty())
+					{
+						GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
+						if (tfbs.isThreeempty())
+						{
+							GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+						}
+					}
 				}
 			});
 		}
 		if (!twoempty) {
-			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false) {
+			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false, fbs) {
 				@Override
 				public void run() {
 					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
+					ForBlockState tfbs = (ForBlockState) getAdditionalinfo();
+					if (tfbs.isThreeempty())
+					{
+						GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+					}
 				}
 			});
 		}
