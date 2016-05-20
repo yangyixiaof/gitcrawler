@@ -94,7 +94,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void postVisit(ASTNode node) {
 		fotp.PreIsOver(node);
-		PostHandleFunction(node);
+		PostVisitHandle(node);
 		super.postVisit(node);
 	}
 	
@@ -102,7 +102,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	 * invoked in postVisit.
 	 * @param node
 	 */
-	public void PostHandleFunction(ASTNode node)
+	public void PostVisitHandle(ASTNode node)
 	{
 		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration) || (node instanceof LambdaExpression))
 		{
