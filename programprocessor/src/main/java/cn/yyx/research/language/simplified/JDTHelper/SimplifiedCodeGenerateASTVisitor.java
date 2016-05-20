@@ -94,7 +94,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void postVisit(ASTNode node) {
 		fotp.PreIsOver(node);
+		PostHandleFunction(node);
 		super.postVisit(node);
+	}
+	
+	public void PostHandleFunction(ASTNode node)
+	{
+		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration) || (node instanceof LambdaExpression))
+		{
+			ExitBlock(node);
+		}
 	}
 
 	@Override
@@ -355,7 +364,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (FirstLevelClass == node.hashCode()) {
 			FirstLevelClass = null;
 		}
-		ExitBlock(node);
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
 	}
 
@@ -403,7 +411,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (jc == null) {
 			jc = ojfc;
 		}
-		ExitBlock(node);
 	}
 
 	@Override
@@ -516,7 +523,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referhint.DeleteNodeHelp(body.hashCode());
 		}
 		// SetVeryRecentNotGenerateCode(false);
-		ExitBlock(node);
 	}
 
 	@Override
