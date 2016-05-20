@@ -94,20 +94,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void postVisit(ASTNode node) {
 		fotp.PreIsOver(node);
-		PostVisitHandle(node);
-		super.postVisit(node);
-	}
-	
-	/**
-	 * invoked in postVisit.
-	 * @param node
-	 */
-	public void PostVisitHandle(ASTNode node)
-	{
 		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration) || (node instanceof LambdaExpression))
 		{
 			ExitBlock(node);
 		}
+		super.postVisit(node);
 	}
 
 	@Override
