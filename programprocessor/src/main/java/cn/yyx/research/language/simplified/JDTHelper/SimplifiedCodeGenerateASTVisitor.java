@@ -345,15 +345,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected boolean TypeDeclarationPreCode(AbstractTypeDeclaration node, String preHint) {
+		
+		FlushCode();
+		
 		if (TypeASTHelper.IsEmptyTypeDeclaration(node)) {
 			return false;
 		}
-
-		FlushCode();
+		
 		if (FirstLevelClass == null) {
 			FirstLevelClass = node.hashCode();
 		}
-		EnterBlock(node);
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		GenerateOneLine(preHint + node.getName().toString(), false, false, false, true, null);
 		return true;
@@ -394,7 +395,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("AnonymousClassDeclaration Begin");
 		// MyLogger.Info(node);
 		// MyLogger.Info("AnonymousClassDeclaration End");
-		EnterBlock(node);
 		jc = acp.EnterAnonymousClass(mw);
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
@@ -474,7 +474,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(LambdaExpression node) {
-		EnterBlock(node);
 		// SetVeryRecentNotGenerateCode(true);
 		List<ASTNode> params = node.parameters();
 		StringBuffer nodecode = new StringBuffer(GCodeMetaInfo.LambdaExpressionHint + "(");
