@@ -98,6 +98,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		super.postVisit(node);
 	}
 	
+	/**
+	 * invoked in postVisit.
+	 * @param node
+	 */
 	public void PostHandleFunction(ASTNode node)
 	{
 		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration) || (node instanceof LambdaExpression))
