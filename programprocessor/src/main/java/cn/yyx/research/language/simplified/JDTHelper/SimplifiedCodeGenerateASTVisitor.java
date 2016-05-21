@@ -316,7 +316,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			return;
 		}
-		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this, node);
+		SimplifiedFieldProcessASTVisitor sfpa = GenerateSimplifiedFieldProcessASTVisitor(node);
 		node.accept(sfpa);
 	}
 	
@@ -327,7 +327,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			return;
 		}
-		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this, node);
+		SimplifiedFieldProcessASTVisitor sfpa = GenerateSimplifiedFieldProcessASTVisitor(node);
 		List<BodyDeclaration> bnlist = node.bodyDeclarations();
 		Iterator<BodyDeclaration> itr = bnlist.iterator();
 		while (itr.hasNext()) {
@@ -336,6 +336,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				bd.accept(sfpa);
 			}
 		}
+	}
+	
+	protected SimplifiedFieldProcessASTVisitor GenerateSimplifiedFieldProcessASTVisitor(ASTNode node)
+	{
+		return new SimplifiedFieldProcessASTVisitor(this, node);
 	}
 
 	protected boolean TypeDeclarationPreCode(AbstractTypeDeclaration node, String preHint) {
@@ -393,7 +398,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
 		// AnonymousClassDeclarationCodeFileAddMethodWindow();
-		SimplifiedFieldProcessASTVisitor sfpa = new SimplifiedFieldProcessASTVisitor(this, node);
+		SimplifiedFieldProcessASTVisitor sfpa = GenerateSimplifiedFieldProcessASTVisitor(node);
 		node.accept(sfpa);
 		return super.visit(node);
 	}
