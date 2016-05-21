@@ -15,10 +15,14 @@ public class Empty {
         {
         	
         }*/
-		String[] quotes = new String[] {"CPU AMD $350", "HD IBM $680", "CD-ROM acr52X $220"};
+		/*String[] quotes = new String[] {"CPU AMD $350", "HD IBM $680", "CD-ROM acr52X $220"};
 		for (int i = 0; i < quotes.length; i++) {
 			
-		}
+		}*/
+		int iPLength = 10;
+        for(int i=0;i<iPLength;i++){
+        	
+        }
 		// Class<?>[] ar = {A.class, B.class};
 		// do
 		// {
