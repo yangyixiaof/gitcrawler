@@ -10,11 +10,15 @@ public class Empty {
 	public void HeiHei() {
 		// char a = '\uFFEF';
 		// char a = '\uuFFEF';
-		for(Enumeration names = getServletContext().getAttributeNames(); names.hasMoreElements(); values.add(names.nextElement()));
+		/*for(Enumeration names = getServletContext().getAttributeNames(); names.hasMoreElements(); values.add(names.nextElement()));
         for(Iterator keys = values.iterator(); keys.hasNext();)
         {
         	
-        }
+        }*/
+		String[] quotes = new String[] {"CPU AMD $350", "HD IBM $680", "CD-ROM acr52X $220"};
+		for (int i = 0; i < quotes.length; i++) {
+			
+		}
 		// Class<?>[] ar = {A.class, B.class};
 		// do
 		// {
