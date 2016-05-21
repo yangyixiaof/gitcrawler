@@ -73,15 +73,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	{
 		return new ScopeOffsetRefHandler(sdm.GetClassStack(), sdm.GetFVDataPool(), sdm.GetCVDataPool(), cjcs, ljcs);
 	}
-
-	@Override
-	public void preVisit(ASTNode node) {
-		fotp.PostIsBegin(node);
-		super.preVisit(node);
-	}
 	
 	@Override
 	public boolean preVisit2(ASTNode node) {
+		fotp.PostIsBegin(node);
 		boolean fres = true;
 		Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
 		if (forbid != null && forbid == true)
