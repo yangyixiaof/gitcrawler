@@ -48,6 +48,19 @@ public class NodeCode {
 		
 		if (codelist.size() > 0)
 		{
+			if (code.equals("DH@forIniOver"))
+			{
+				if (codelist.getLast().equals("DH@;"))
+				{
+					codelist.removeLast();
+				}
+				codelist.add(code);
+				return;
+			}
+		}
+		
+		if (codelist.size() > 0)
+		{
 			boolean shouldreturn = false;
 			if (code.equals("DH@" + GCodeMetaInfo.EnterMethodParam))
 			{
