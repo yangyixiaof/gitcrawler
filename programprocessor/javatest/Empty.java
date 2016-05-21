@@ -2,10 +2,10 @@ package cn.yyx.research.language.Utility;
 
 public class Empty {
 	
-	ParameterizedTypes2<Number>.Inner<String> concreteInner()
+	/*ParameterizedTypes2<Number>.Inner<String> concreteInner()
 	{
 		return null;
-	}
+	}*/
 	
 	public void HeiHei() {
 		// char a = '\uFFEF';
