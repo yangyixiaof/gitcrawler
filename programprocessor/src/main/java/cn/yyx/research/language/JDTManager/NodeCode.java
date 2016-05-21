@@ -48,7 +48,7 @@ public class NodeCode {
 		
 		if (codelist.size() > 0)
 		{
-			if (code.equals("DH@forIniOver"))
+			if (code.equals("DH@forIniOver") || code.equals("DH@forExpOver"))
 			{
 				if (codelist.getLast().equals("DH@;"))
 				{
