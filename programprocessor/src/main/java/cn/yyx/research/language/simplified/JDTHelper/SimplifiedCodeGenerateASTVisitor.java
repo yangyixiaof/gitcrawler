@@ -88,13 +88,17 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			fres = fres && false;
 		}
+		if (NeedSpecialTreat(node) && fres)
+		{
+			EnterBlock(node);
+		}
 		return fres;
 	}
 
 	@Override
 	public void postVisit(ASTNode node) {
 		fotp.PreIsOver(node);
-		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration) || (node instanceof LambdaExpression))
+		if (NeedSpecialTreat(node))
 		{
 			ExitBlock(node);
 		}
@@ -2871,6 +2875,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		SetVeryRecentDeclaredType(null);
 		runpermit.DeleteNodeHelp(namehashcode);
 		referhint.DeleteNodeHelp(namehashcode);
+	}
+	
+	protected boolean NeedSpecialTreat(ASTNode node)
+	{
+		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration) || (node instanceof LambdaExpression))
+		{
+			return true;
+		}
+		return false;
 	}
 	
 }

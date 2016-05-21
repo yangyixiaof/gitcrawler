@@ -4,12 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Initializer;
-import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -151,17 +149,11 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	
 	@Override
 	public boolean preVisit2(ASTNode node) {
-		boolean fres = true;
 		if (node == atp)
 		{
-			return fres;
+			return true;
 		}
-		Boolean forbid = runforbid.GetNodeHelp(node.hashCode());
-		if (forbid != null && forbid == true)
-		{
-			fres = fres && false;
-		}
-		return fres;
+		return super.preVisit2(node);
 	}
 
 	@Override
@@ -170,11 +162,7 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		{
 			return;
 		}
-		fotp.PreIsOver(node);
-		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration) || (node instanceof LambdaExpression))
-		{
-			ExitBlock(node);
-		}
+		super.postVisit(node);
 	}
 	
 }
