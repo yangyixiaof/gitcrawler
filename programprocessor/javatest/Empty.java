@@ -19,10 +19,15 @@ public class Empty {
 		for (int i = 0; i < quotes.length; i++) {
 			
 		}*/
-		int iPLength = 10;
+		/*int iPLength = 10;
         for(int i=0;i<iPLength;i++){
         	
-        }
+        }*/
+		String sPara = "xdfh";
+		int iPLength = sPara.length();
+		for(int i=0;i<iPLength;i++){
+			
+		}
 		// Class<?>[] ar = {A.class, B.class};
 		// do
 		// {
