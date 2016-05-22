@@ -28,34 +28,34 @@ public class ScopeOffsetRefHandler {
 		this.ljcs = ljcs;
 	}
 	
-	public String HandleTypeRef(int offset)
+	public String HandleTypeRef(String tempaddtype, int tempalloffset, int offset)
 	{
-		Map<String, String> res = cjcs.GetContentAccordingToOffset(offset);
+		Map<String, String> res = cjcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 		Set<String> keys = res.keySet();
 		String key = keys.iterator().next();
 		return res.get(key);
 	}
 	
-	public String HandleLabelRef(int offset)
+	public String HandleLabelRef(String tempaddtype, int tempalloffset, int offset)
 	{
-		Map<String, String> res = ljcs.GetContentAccordingToOffset(offset);
+		Map<String, String> res = ljcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 		Set<String> keys = res.keySet();
 		String key = keys.iterator().next();
 		return res.get(key);
 	}
 	
-	public Map<String, String> HandleFieldVariableRef(int scope, int offset)
+	public Map<String, String> HandleFieldVariableRef(String tempaddtype, int tempalloffset, int scope, int offset)
 	{
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(scope);
 		JCScope fcs = fvdp.GetJCScope(sp.getID());
-		return fcs.GetContentAccordingToOffset(offset);
+		return fcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 	}
 	
-	public Map<String, String> HandleCommonVariableRef(int scope, int offset)
+	public Map<String, String> HandleCommonVariableRef(String tempaddtype, int tempalloffset, int scope, int offset)
 	{
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(scope);
 		JCScope ccs = cvdp.GetJCScope(sp.getID());
-		return ccs.GetContentAccordingToOffset(offset);
+		return ccs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 	}
 	
 	public String GenerateNewDeclaredVariable(String name, String type, List<String> holderlist, boolean isfield)
