@@ -33,7 +33,7 @@ public class OneScope implements Comparable<OneScope>{
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+		return new OneScope(ID, level);
 	}
 	
 }
