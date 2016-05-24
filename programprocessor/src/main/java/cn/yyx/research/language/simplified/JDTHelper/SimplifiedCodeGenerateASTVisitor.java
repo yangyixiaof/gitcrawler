@@ -1354,6 +1354,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		{
 			referedcnt.AddNodeHelp(nodehashcode, nodecode);
 		} else {
+			if (CheckLastIsSpecific(GCodeMetaInfo.VDStart))
+			{
+				RemoveLast();
+			}
 			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHint + nodecode, false, false, false, true, null);
 		}
 	}
