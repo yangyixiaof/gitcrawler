@@ -280,4 +280,17 @@ public class NodeCode {
 		}
 	}
 
+	public boolean CheckLastIsSpecific(String checkcode) {
+		String code = codelist.getLast();
+		if (code.equals(checkcode))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public void RemoveLast() {
+		codelist.removeLast();
+	}
+
 }

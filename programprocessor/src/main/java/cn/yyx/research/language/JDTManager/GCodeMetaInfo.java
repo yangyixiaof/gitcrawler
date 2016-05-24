@@ -43,9 +43,13 @@ public class GCodeMetaInfo {
 	public static final String QualifiedHint = "Q@";
 	public static final String Initializer = "IB@";
 	public static final String DescriptionHint = "DH@";
-	public static final String VariableDeclarationHolder = "VH@";
+	// public static final String VariableDeclarationHolder = "VH@";
 	public static final String EnhancedFor = "EF@";
 	public static final String ArrayAccess = "[@";
+	
+	public static final String ForVariableInitializeSplitComma = "VI,";
+	public static final String ForVariableExpSplitComma = "VE,";
+	public static final String ForVariableUpdateSplitComma = "VU,";
 	
 	// another display of ']'
 	public static final String EndOfArrayDeclarationIndexExpression = "]";
@@ -108,6 +112,14 @@ public class GCodeMetaInfo {
 	//for field only which means data only.
 	//public static int IsField = -9;
 	//public static String IsFieldDesc = "$FREF#";
+	
+	public static final String ForStart = GCodeMetaInfo.DescriptionHint + "ForEm";
+	public static final String ForIniSp = GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.ForVariableInitializeSplitComma;
+	public static final String ForIniOver = GCodeMetaInfo.DescriptionHint + "forIniOver";
+	public static final String ForExpSp = GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.ForVariableExpSplitComma;
+	public static final String ForExpOver = GCodeMetaInfo.DescriptionHint + "forExpOver";
+	public static final String ForUpdSp = GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.ForVariableUpdateSplitComma;
+	public static final String ForUpdOver = GCodeMetaInfo.DescriptionHint + "forUpdOver";
 	
 	// corpus name
 	public static final String EnumCorpus = "BigEnumDetail";

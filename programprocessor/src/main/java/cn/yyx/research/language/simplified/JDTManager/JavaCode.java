@@ -98,7 +98,7 @@ public abstract class JavaCode {
 			case GCodeMetaInfo.QualifiedHint:
 			case GCodeMetaInfo.Initializer:
 			case GCodeMetaInfo.DescriptionHint:
-			case GCodeMetaInfo.VariableDeclarationHolder:
+			// case GCodeMetaInfo.VariableDeclarationHolder:
 			case GCodeMetaInfo.EnhancedFor:
 			case GCodeMetaInfo.ArrayAccess:
 				break;
