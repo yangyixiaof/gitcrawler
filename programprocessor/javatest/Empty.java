@@ -25,9 +25,9 @@ public class Empty {
         }*/
 		String sPara = "xdfh";
 		int iPLength = sPara.length();
-		/*for(int i=0;i<iPLength;i++){
+		for(int i=0;i<iPLength;i++){
 			
-		}*/
+		}
 		// Class<?>[] ar = {A.class, B.class};
 		// do
 		// {

@@ -121,6 +121,9 @@ public class GCodeMetaInfo {
 	public static final String ForUpdSp = GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.ForVariableUpdateSplitComma;
 	public static final String ForUpdOver = GCodeMetaInfo.DescriptionHint + "forUpdOver";
 	
+	public static final String VDStart = GCodeMetaInfo.DescriptionHint + "VDEm";
+	public static final String VDSp = GCodeMetaInfo.DescriptionHint + "VD,";
+	
 	// corpus name
 	public static final String EnumCorpus = "BigEnumDetail";
 	public static final String NumberCorpus = "BigNumberDetail";
