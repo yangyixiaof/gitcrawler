@@ -34,7 +34,6 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 		VeryRecentDeclaredType = scga.VeryRecentDeclaredType;
 		fielddeclared = scga.fielddeclared;
 		berefered = scga.berefered;
-		beforcerefered = scga.beforcerefered;
 		// bereferedAlready = scga.bereferedAlready;
 		referedcnt = scga.referedcnt;
 		referhint = scga.referhint;
