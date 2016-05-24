@@ -1323,7 +1323,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddFirstOrderTask(new FirstOrderTask(vdf, null, node, true, false, fitr.hasNext()) {
 				@Override
 				public void run() {
-					if (!CheckLastIsSpecific(GCodeMetaInfo.VDStart) || !CheckLastIsSpecific(GCodeMetaInfo.VDSp))
+					if (!CheckLastIsSpecific(GCodeMetaInfo.VDStart) && !CheckLastIsSpecific(GCodeMetaInfo.VDSp))
 					{
 						GenerateOneLine(GCodeMetaInfo.VDSp, false, false, false, true, null);
 					}
@@ -2902,7 +2902,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		runpermit.DeleteNodeHelp(namehashcode);
 		DeleteNodeRefered(namehashcode);
 		
-		String nodecode = GCodeMetaInfo.VariableDeclarationHint + GetVeryRecentDeclaredType();
+		String nodecode = "";
 		if (iniexpr != null) {
 			int iehashcode = iniexpr.hashCode();
 			String inicode = referedcnt.GetNodeHelp(iehashcode);
