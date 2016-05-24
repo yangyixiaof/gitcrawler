@@ -2704,7 +2704,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			// }
 		// }
 	}
-
+	
 	protected void VariableDeclarationFragmentPostHandle(ASTNode node, Expression iniexpr, SimpleName name) {
 		// if (!VeryRecentNotGenerateCode) {
 		// GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
@@ -2725,10 +2725,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		referhint.DeleteNodeHelp(namehashcode);
 		runpermit.DeleteNodeHelp(namehashcode);
 		
-		String nodecode = GetVeryRecentDeclaredType() + " " + GCodeMetaInfo.VariableDeclarationHolder;
+		String nodecode = GCodeMetaInfo.VariableDeclarationHint + GetVeryRecentDeclaredType();
 		if (iniexpr != null) {
 			int iehashcode = iniexpr.hashCode();
 			String inicode = referedcnt.GetNodeHelp(iehashcode);
+			if (inicode == null)
+			{
+				inicode = GCodeMetaInfo.PreExist;
+			}
 			nodecode += "=" + inicode;
 			
 			DeleteNodeRefered(iehashcode);
