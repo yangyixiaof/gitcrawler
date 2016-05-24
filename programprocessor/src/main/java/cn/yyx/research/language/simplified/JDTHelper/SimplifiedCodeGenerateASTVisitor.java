@@ -430,13 +430,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(Block node) {
-		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "{", false, false, false, true, null);
+		// GenerateOneLine(GCodeMetaInfo.DescriptionHint + "{", false, false, false, true, null);
 		return super.visit(node);
 	}
 
 	@Override
 	public void endVisit(Block node) {
-		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "}", false, false, false, true, null);
+		// GenerateOneLine(GCodeMetaInfo.DescriptionHint + "}", false, false, false, true, null);
 	}
 
 	@Override
@@ -1099,7 +1099,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		boolean threeempty = false;
 		if (inis == null || inis.size() == 0) {
 			oneempty = true;
-			GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forIniOver", false, false, false, true, null);
+			GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FI", false, false, false, true, null);
 		}
 		Expression expr = node.getExpression();
 		if (expr != null) {
@@ -1109,7 +1109,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			twoempty = true;
 			if (oneempty)
 			{
-				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
+				GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FE", false, false, false, true, null);
 			}
 		}
 		List<ASTNode> ups = node.updaters();
@@ -1117,7 +1117,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			threeempty = true;
 			if (oneempty && twoempty)
 			{
-				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+				GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FU", false, false, false, true, null);
 			}
 		}
 		ForBlockState fbs = new ForBlockState(oneempty, twoempty, threeempty);
@@ -1125,14 +1125,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddFirstOrderTask(new FirstOrderTask(inis.get(inis.size() - 1), null, node, true, false, fbs) {
 				@Override
 				public void run() {
-					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forIniOver", false, false, false, true, null);
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FI", false, false, false, true, null);
 					ForBlockState tfbs = (ForBlockState) getAdditionalinfo();
 					if (tfbs.isTwoempty())
 					{
-						GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
+						GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FE", false, false, false, true, null);
 						if (tfbs.isThreeempty())
 						{
-							GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+							GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FU", false, false, false, true, null);
 						}
 					}
 				}
@@ -1142,11 +1142,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddFirstOrderTask(new FirstOrderTask(expr, null, node, true, false, fbs) {
 				@Override
 				public void run() {
-					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forExpOver", false, false, false, true, null);
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FE", false, false, false, true, null);
 					ForBlockState tfbs = (ForBlockState) getAdditionalinfo();
 					if (tfbs.isThreeempty())
 					{
-						GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+						GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FU", false, false, false, true, null);
 					}
 				}
 			});
@@ -1155,7 +1155,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			AddFirstOrderTask(new FirstOrderTask(ups.get(ups.size() - 1), null, node, true, false) {
 				@Override
 				public void run() {
-					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "forUpdOver", false, false, false, true, null);
+					GenerateOneLine(GCodeMetaInfo.DescriptionHint + ";FU", false, false, false, true, null);
 				}
 			});
 		}
@@ -2696,7 +2696,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		SetVeryRecentDeclaredType(GenerateVariableDeclarationType(typecode, extradimens));
 		String nodecode = GenerateVariableDeclarationTypeCode(typecode, extradimens);
 		// if (!VeryRecentNotGenerateCode) {
-		GenerateOneLine(nodecode, false, false, false, true, null);
+		// GenerateOneLine(nodecode, false, false, false, true, null);
 		// }
 		int namehashcode = name.hashCode();
 		runforbid.AddNodeHelp(namehashcode, true);
@@ -2704,19 +2704,17 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referhint.AddNodeHelp(iniexpr.hashCode(), ReferenceHintLibrary.DataUse);
 			// AddNodeRefered(iniexpr.hashCode());
 			// if (!VeryRecentNotGenerateCode) {
-			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder + "=", true, true, false, true, null);
+			GenerateOneLine(nodecode + "=", true, true, false, true, null);
 			// }
 		} else {
 			// if (!VeryRecentNotGenerateCode) {
-			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder, false, false, false, true, null);
+			GenerateOneLine(nodecode, false, false, false, true, null);
 			// }
 		}
 	}
 
 	protected void VariableDeclarationFragmentPostHandle(Expression iniexpr, SimpleName name) {
-		// if (!VeryRecentNotGenerateCode) {
 		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
-		// }
 		// handle scope offset when end.
 		int namehashcode = name.hashCode();
 		int hint = ReferenceHintLibrary.DataDeclare;
@@ -2741,8 +2739,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected void MethodPushReferRequest(Expression expr, List<ASTNode> args) {
 		if (expr != null) {
 			int exprhashcode = expr.hashCode();
-			// referhint.AddNodeHelp(exprhashcode,
-			// ReferenceHintLibrary.DataUpdate);
 			AddNodeRefered(exprhashcode, ReferenceHintLibrary.DataUpdate);
 		}
 		GenerateOneLine(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnterMethodParam, false, false, false, true,

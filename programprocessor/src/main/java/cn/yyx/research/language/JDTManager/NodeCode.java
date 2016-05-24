@@ -48,13 +48,23 @@ public class NodeCode {
 		
 		if (codelist.size() > 0)
 		{
-			if (code.equals("DH@forIniOver") || code.equals("DH@forExpOver"))
+			if (code.equals("DH@;FI") || code.equals("DH@;FE") || code.equals("DH@;FU"))
 			{
-				if (codelist.getLast().equals("DH@;"))
+				String lastcode = codelist.getLast();
+				if (lastcode.equals("DH@for") || lastcode.equals("DH@;FI") || lastcode.equals("DH@;FE") || lastcode.equals("DH@;FU"))
 				{
-					codelist.removeLast();
+					codelist.add(code);
 				}
-				codelist.add(code);
+				else
+				{
+					if (lastcode.charAt(lastcode.length()-1) == ';')
+					{
+						lastcode = lastcode.substring(0, lastcode.length()-1);
+					}
+					lastcode = lastcode + code.substring("DH@".length());
+					codelist.removeLast();
+					codelist.addLast(lastcode);
+				}
 				return;
 			}
 		}
@@ -186,13 +196,8 @@ public class NodeCode {
 	{
 		if (lcode.charAt(lcode.length()-1) == ';')
 		{
-			int idx = codelist.size() - 1;
-			String lastcode = codelist.get(idx);
-			char lc = lastcode.charAt(lastcode.length()-1);
-			if (lc == ',' || lc == ';')
-			{
-				codelist.remove(idx);
-			}
+			AppendEndInfoToLast(";");
+			return;
 		}
 		codelist.add(lcode);
 	}
