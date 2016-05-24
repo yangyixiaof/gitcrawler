@@ -43,7 +43,7 @@ public class GCodeMetaInfo {
 	public static final String QualifiedHint = "Q@";
 	public static final String Initializer = "IB@";
 	public static final String DescriptionHint = "DH@";
-	// public static final String VariableDeclarationHolder = "VH@";
+	public static final String VariableDeclarationHolder = "VH@";
 	public static final String EnhancedFor = "EF@";
 	public static final String ArrayAccess = "[@";
 	
