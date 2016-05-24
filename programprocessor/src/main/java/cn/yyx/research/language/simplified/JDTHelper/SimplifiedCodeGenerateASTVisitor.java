@@ -1236,7 +1236,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			referhint.DeleteNodeHelp(namehashcode);
 			return;
 		}*/
-		VariableDeclarationFragmentPostHandle(node.getInitializer(), node.getName());
+		VariableDeclarationFragmentPostHandle(node, node.getInitializer(), node.getName());
 		// SetVeryRecentDeclaredType(null);
 	}
 
@@ -1277,7 +1277,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(VariableDeclarationFragment node) {
-		VariableDeclarationFragmentPostHandle(node.getInitializer(), node.getName());
+		VariableDeclarationFragmentPostHandle(node, node.getInitializer(), node.getName());
 	}
 
 	@Override
@@ -2679,33 +2679,35 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name, String typecode, List<Dimension> extradimens) {
+		// set typecode.
 		if (typecode == null || typecode.equals(""))
 		{
 			typecode = GetVeryRecentDeclaredType();
 		}
 		SetVeryRecentDeclaredType(GenerateVariableDeclarationType(typecode, extradimens));
-		String nodecode = GenerateVariableDeclarationTypeCode(typecode, extradimens);
+		// String nodecode = GenerateVariableDeclarationTypeCode(typecode, extradimens);
 		// if (!VeryRecentNotGenerateCode) {
-		GenerateOneLine(nodecode, false, false, false, true, null);
+		// GenerateOneLine(nodecode, false, false, false, true, null);
 		// }
+		// add expr refered if expr exists.
 		int namehashcode = name.hashCode();
 		runforbid.AddNodeHelp(namehashcode, true);
 		if (iniexpr != null) {
-			referhint.AddNodeHelp(iniexpr.hashCode(), ReferenceHintLibrary.DataUse);
-			// AddNodeRefered(iniexpr.hashCode());
+			// referhint.AddNodeHelp(iniexpr.hashCode(), ReferenceHintLibrary.DataUse);
+			AddNodeRefered(iniexpr.hashCode(), ReferenceHintLibrary.DataUse);
 			// if (!VeryRecentNotGenerateCode) {
-			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder + "=", true, true, false, true, null);
+			// GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder + "=", true, true, false, true, null);
 			// }
-		} else {
+		} // else {
 			// if (!VeryRecentNotGenerateCode) {
-			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder, false, false, false, true, null);
+			// GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder, false, false, false, true, null);
 			// }
-		}
+		// }
 	}
 
-	protected void VariableDeclarationFragmentPostHandle(Expression iniexpr, SimpleName name) {
+	protected void VariableDeclarationFragmentPostHandle(ASTNode node, Expression iniexpr, SimpleName name) {
 		// if (!VeryRecentNotGenerateCode) {
-		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		// GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
 		// }
 		// handle scope offset when end.
 		int namehashcode = name.hashCode();
@@ -2715,16 +2717,34 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			hint = ReferenceHintLibrary.FieldDeclare;
 		}
 		runforbid.DeleteNodeHelp(namehashcode);
+		
+		// add and delete hint, only for visit(name).
 		referhint.AddNodeHelp(namehashcode, hint);
 		runpermit.AddNodeHelp(namehashcode, true);
 		visit(name);
-		// delete hint
 		referhint.DeleteNodeHelp(namehashcode);
 		runpermit.DeleteNodeHelp(namehashcode);
+		
+		String nodecode = GetVeryRecentDeclaredType() + " " + GCodeMetaInfo.VariableDeclarationHolder;
 		if (iniexpr != null) {
-			// DeleteNodeRefered(iniexpr.hashCode());
-			referhint.DeleteNodeHelp(iniexpr.hashCode());
+			int iehashcode = iniexpr.hashCode();
+			String inicode = referedcnt.GetNodeHelp(iehashcode);
+			nodecode += "=" + inicode;
+			
+			DeleteNodeRefered(iehashcode);
+			// referhint.DeleteNodeHelp(iniexpr.hashCode());
 		}
+		
+		int nodehashcode = node.hashCode();
+		if (NodeIsRefered(nodehashcode))
+		{
+			referedcnt.AddNodeHelp(nodehashcode, nodecode);
+		}
+		else
+		{
+			GenerateOneLine(nodecode, false, false, false, true, null);
+		}
+		
 		SetVeryRecentDeclaredType(null);
 	}
 
