@@ -1323,9 +1323,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 			operated = true;
 		}
+		if (np instanceof FieldDeclaration)
+		{
+			List<VariableDeclarationFragment> fras = ((FieldDeclaration) np).fragments();
+			if (fras.get(0) == node)
+			{
+				fistnode = true;
+			}
+			operated = true;
+		}
 		if (!operated)
 		{
-			System.err.println("What the fuck, a kind of fragment parent not considered.");
+			System.err.println("What the fuck, a kind of fragment parent not considered. THe type is:" + np.getClass() + ".");
 			System.exit(1);
 		}
 		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), null, node.extraDimensions(), fistnode);
