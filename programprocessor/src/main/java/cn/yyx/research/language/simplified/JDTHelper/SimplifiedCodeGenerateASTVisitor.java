@@ -1245,7 +1245,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		 * != null && forbid == true) { return false; }
 		 */
 		String typecode = TypeCode(node.getType(), true);
-		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), typecode, node.extraDimensions());
+		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), typecode, node.extraDimensions(), true);
 		return super.visit(node);
 	}
 
@@ -1302,7 +1302,33 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(VariableDeclarationFragment node) {
-		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), null, node.extraDimensions());
+		boolean fistnode = false;
+		boolean operated = false;
+		ASTNode np = node.getParent();
+		if (np instanceof VariableDeclarationExpression)
+		{
+			List<VariableDeclarationFragment> fras = ((VariableDeclarationExpression) np).fragments();
+			if (fras.get(0) == node)
+			{
+				fistnode = true;
+			}
+			operated = true;
+		}
+		if (np instanceof VariableDeclarationStatement)
+		{
+			List<VariableDeclarationFragment> fras = ((VariableDeclarationStatement) np).fragments();
+			if (fras.get(0) == node)
+			{
+				fistnode = true;
+			}
+			operated = true;
+		}
+		if (!operated)
+		{
+			System.err.println("What the fuck, a kind of fragment parent not considered.");
+			System.exit(1);
+		}
+		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), null, node.extraDimensions(), fistnode);
 		return super.visit(node);
 	}
 
@@ -2535,11 +2561,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			VeryRecentDeclaredType.push(veryRecentDeclaredType);
 		}
 	}
-
-	protected String GenerateVariableDeclarationTypeCode(String typecode, List<Dimension> dimens) {
-		return GCodeMetaInfo.VariableDeclarationHint + GenerateVariableDeclarationType(typecode, dimens);
-	}
-
+	
 	protected String GenerateVariableDeclarationType(String typecode, List<Dimension> dimens) {
 		String dimenstr = "";
 		if (dimens != null && dimens.size() > 0) {
@@ -2688,33 +2710,36 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(nodecode, false, false, false, true, null);
 	}
 
-	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name, String typecode, List<Dimension> extradimens) {
+	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name, String typecode, List<Dimension> extradimens, boolean firstfragment) {
 		if (typecode == null || typecode.equals(""))
 		{
 			typecode = GetVeryRecentDeclaredType();
 		}
-		SetVeryRecentDeclaredType(GenerateVariableDeclarationType(typecode, extradimens));
-		String nodecode = GenerateVariableDeclarationTypeCode(typecode, extradimens);
-		// if (!VeryRecentNotGenerateCode) {
-		// GenerateOneLine(nodecode, false, false, false, true, null);
-		// }
+		String finaltypecode = GenerateVariableDeclarationType(typecode, extradimens);
+		SetVeryRecentDeclaredType(finaltypecode);
+		if (firstfragment)
+		{
+			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHint + finaltypecode, false, false, false, true, null);
+		}
 		int namehashcode = name.hashCode();
 		runforbid.AddNodeHelp(namehashcode, true);
 		if (iniexpr != null) {
 			referhint.AddNodeHelp(iniexpr.hashCode(), ReferenceHintLibrary.DataUse);
 			// AddNodeRefered(iniexpr.hashCode());
 			// if (!VeryRecentNotGenerateCode) {
-			GenerateOneLine(nodecode + "=", true, true, false, true, null);
+			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder + "=", true, true, false, true, null);
 			// }
 		} else {
 			// if (!VeryRecentNotGenerateCode) {
-			GenerateOneLine(nodecode, false, false, false, true, null);
+			GenerateOneLine(GCodeMetaInfo.VariableDeclarationHolder, false, false, false, true, null);
 			// }
 		}
 	}
 
 	protected void VariableDeclarationFragmentPostHandle(Expression iniexpr, SimpleName name) {
+		// if (!VeryRecentNotGenerateCode) {
 		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		// }
 		// handle scope offset when end.
 		int namehashcode = name.hashCode();
 		int hint = ReferenceHintLibrary.DataDeclare;
