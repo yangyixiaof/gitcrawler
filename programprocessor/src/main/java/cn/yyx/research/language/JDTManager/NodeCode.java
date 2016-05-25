@@ -199,6 +199,24 @@ public class NodeCode {
 			AppendEndInfoToLast(";");
 			return;
 		}
+		final String em = GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EnterMethodParam;
+		final String pr = GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfMethodPreRerferedExpression;
+		final String ps = GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfMethodArgument;
+		String lastcode = GetLastCode();
+		if (lcode.equals(pr))
+		{
+			if (!(lastcode.startsWith(em)))
+			{
+				AppendEndInfoToLast(GCodeMetaInfo.EndOfMethodPreRerferedExpression);
+			}
+		}
+		if (lcode.equals(ps))
+		{
+			if (!(lastcode.startsWith(em)) && !(lastcode.endsWith(GCodeMetaInfo.EndOfMethodPreRerferedExpression)) && !(lastcode.endsWith(GCodeMetaInfo.EndOfMethodArgument)))
+			{
+				AppendEndInfoToLast(GCodeMetaInfo.EndOfMethodArgument);
+			}
+		}
 		codelist.add(lcode);
 	}
 

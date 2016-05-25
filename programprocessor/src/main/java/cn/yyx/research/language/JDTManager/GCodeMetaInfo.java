@@ -47,9 +47,9 @@ public class GCodeMetaInfo {
 	public static final String EnhancedFor = "EF@";
 	public static final String ArrayAccess = "[@";
 	
-	public static final String ForVariableInitializeSplitComma = "VI,";
-	public static final String ForVariableExpSplitComma = "VE,";
-	public static final String ForVariableUpdateSplitComma = "VU,";
+	// public static final String ForVariableInitializeSplitComma = "VI,";
+	// public static final String ForVariableExpSplitComma = "VE,";
+	// public static final String ForVariableUpdateSplitComma = "VU,";
 	
 	// another display of ']'
 	public static final String EndOfArrayDeclarationIndexExpression = "]";
@@ -73,8 +73,8 @@ public class GCodeMetaInfo {
 	public static final String EndOfAPartialStatement = ",";
 	
 	// another display of ',' in method arguments.
-	public static final String EndOfMethodPreRerferedExpression = "Pr";
-	public static final String EndOfMethodArgument = "Ps";
+	public static final String EndOfMethodPreRerferedExpression = ";Pr";
+	public static final String EndOfMethodArgument = ";Ps";
 	public static final String EnterMethodParam = "@Em";
 	
 	// public static final String ArrayInitial = "@ARI";
@@ -110,11 +110,11 @@ public class GCodeMetaInfo {
 	// public static String OutofScopeDesc = "$INF";
 	
 	//for field only which means data only.
-	//public static int IsField = -9;
-	//public static String IsFieldDesc = "$FREF#";
+	// public static int IsField = -9;
+	// public static String IsFieldDesc = "$FREF#";
 	
-	public static final String VDStart = GCodeMetaInfo.DescriptionHint + "VDEm";
-	public static final String VDSp = GCodeMetaInfo.DescriptionHint + "VD,";
+	// public static final String VDStart = GCodeMetaInfo.DescriptionHint + "VDEm";
+	// public static final String VDSp = GCodeMetaInfo.DescriptionHint + "VD,";
 	
 	// corpus name
 	public static final String EnumCorpus = "BigEnumDetail";
