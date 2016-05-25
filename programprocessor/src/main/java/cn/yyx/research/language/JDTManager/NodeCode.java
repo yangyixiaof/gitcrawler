@@ -209,6 +209,7 @@ public class NodeCode {
 			{
 				AppendEndInfoToLast(GCodeMetaInfo.EndOfMethodPreRerferedExpression);
 			}
+			return;
 		}
 		if (lcode.equals(ps))
 		{
@@ -216,6 +217,7 @@ public class NodeCode {
 			{
 				AppendEndInfoToLast(GCodeMetaInfo.EndOfMethodArgument);
 			}
+			return;
 		}
 		codelist.add(lcode);
 	}
