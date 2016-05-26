@@ -12,4 +12,10 @@ public class fo {
         
 	}
 	
+	protected String getClassName(Object o) {
+        String classString = o.getClass().getName();
+        int dotIndex = classString.lastIndexOf(".");
+        return classString.substring(dotIndex+1);
+    }
+	
 }
