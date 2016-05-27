@@ -2,7 +2,7 @@ package HTM;
 
 public class fo {
 	
-	public void haha()
+	/*public void haha()
 	{
 		o().m(a(),p());
 	}
@@ -16,6 +16,12 @@ public class fo {
         String classString = o.getClass().getName();
         int dotIndex = classString.lastIndexOf(".");
         return classString.substring(dotIndex+1);
-    }
+    }*/
+	
+	public void at()
+	{
+		// int a[] = {1,2};
+		return a[m()];
+	}
 	
 }
