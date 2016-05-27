@@ -32,6 +32,10 @@ public class ScopeOffsetRefHandler {
 	{
 		Map<String, String> res = cjcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 		Set<String> keys = res.keySet();
+		if (keys.size() == 0)
+		{
+			return null;
+		}
 		String key = keys.iterator().next();
 		return res.get(key);
 	}
@@ -40,6 +44,10 @@ public class ScopeOffsetRefHandler {
 	{
 		Map<String, String> res = ljcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 		Set<String> keys = res.keySet();
+		if (keys.size() == 0)
+		{
+			return null;
+		}
 		String key = keys.iterator().next();
 		return res.get(key);
 	}
