@@ -23,6 +23,10 @@ public class fo {
 		// int a[] = {1,2};
 		// return a[m()];
 		A<B> str = null;
+		if (str == null)
+		{
+			System.err.println("haha ererei.");
+		}
 	}
 	
 }
