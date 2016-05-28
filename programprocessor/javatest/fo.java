@@ -21,7 +21,8 @@ public class fo {
 	public void at()
 	{
 		// int a[] = {1,2};
-		return a[m()];
+		// return a[m()];
+		A<B> str = null;
 	}
 	
 }
