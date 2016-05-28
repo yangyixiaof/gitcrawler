@@ -1068,7 +1068,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			public void run() {
 				ExpressionReferPostHandle(node, node.getExpression(), "if", GCodeMetaInfo.IfStatementHint, "", false,
 						true, false, false, false);
-				GenerateOneLine(GCodeMetaInfo.DescriptionHint + "then", false, false, false, true, null);
+				// GenerateOneLine(GCodeMetaInfo.DescriptionHint + "then", false, false, false, true, null);
 				// ExpressionReferPostHandle(node, (Expression)getPre(), "", "",
 				// "", false, true, false, false, false);
 			}
