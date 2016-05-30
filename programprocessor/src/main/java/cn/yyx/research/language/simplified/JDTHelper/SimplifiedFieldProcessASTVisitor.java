@@ -21,8 +21,7 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	
 	protected ASTNode atp = null;
 	
-	public SimplifiedFieldProcessASTVisitor(boolean typecomplex, SimplifiedCodeGenerateASTVisitor scga, ASTNode atp) {
-		super(typecomplex);
+	public SimplifiedFieldProcessASTVisitor(SimplifiedCodeGenerateASTVisitor scga, ASTNode atp) {
 		ocm = scga.ocm;
 		ojfc = scga.ojfc;
 		jc = scga.jc;

@@ -65,19 +65,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	protected NodeCode omc = new NodeCode(argmutiple);
 	
-	protected boolean typecomplex = false;
-	
 	// type just use the last element.
 	// public static final int StrictedTypeLength = 2;
 
 	{
 		cjcs.SetDescription("Class Declaration.");
 		ljcs.SetDescription("Label Declaration.");
-	}
-	
-	public SimplifiedCodeGenerateASTVisitor(boolean typecomplex) {
-		// only in code completion is true.
-		this.typecomplex = typecomplex;
 	}
 
 	public ScopeOffsetRefHandler GenerateScopeOffsetRefHandler() {
@@ -319,7 +312,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected SimplifiedFieldProcessASTVisitor GenerateSimplifiedFieldProcessASTVisitor(ASTNode node) {
-		return new SimplifiedFieldProcessASTVisitor(typecomplex, this, node);
+		return new SimplifiedFieldProcessASTVisitor(this, node);
 	}
 
 	protected boolean TypeDeclarationPreCode(AbstractTypeDeclaration node, String preHint) {
