@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import cn.yyx.research.language.JDTManager.GCodeMetaInfo;
+import cn.yyx.research.language.Utility.CDType;
 
 public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTVisitor {
 	
@@ -20,7 +21,8 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	
 	protected ASTNode atp = null;
 	
-	public SimplifiedFieldProcessASTVisitor(SimplifiedCodeGenerateASTVisitor scga, ASTNode atp) {
+	public SimplifiedFieldProcessASTVisitor(boolean typecomplex, SimplifiedCodeGenerateASTVisitor scga, ASTNode atp) {
+		super(typecomplex);
 		ocm = scga.ocm;
 		ojfc = scga.ojfc;
 		jc = scga.jc;
@@ -104,8 +106,8 @@ public class SimplifiedFieldProcessASTVisitor extends SimplifiedCodeGenerateASTV
 	@SuppressWarnings("unchecked")
 	public boolean visit(FieldDeclaration node) {
 		// System.out.println("FieldDeclaration:" + node + ";typeclass:" + node.getType().getClass());
-		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(typecode);
+		CDType cdt = GenCDType(node.getType());
+		SetVeryRecentDeclaredType(cdt);
 		// String nodecode = GenerateVariableDeclarationTypeCode(typecode, null);
 		// GenerateOneLine(nodecode, false, false, false, true, null);
 		List<VariableDeclarationFragment> fs = node.fragments();

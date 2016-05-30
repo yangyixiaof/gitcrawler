@@ -21,6 +21,7 @@ import cn.yyx.research.language.JDTManager.OneJavaFileCode;
 import cn.yyx.research.language.JDTManager.OtherCodeManager;
 import cn.yyx.research.language.JDTManager.ReferenceHintLibrary;
 import cn.yyx.research.language.JDTManager.ScopeDataManager;
+import cn.yyx.research.language.Utility.CDType;
 import cn.yyx.research.language.Utility.MyLogger;
 import cn.yyx.research.language.Utility.StringUtil;
 import cn.yyx.research.language.simplified.JDTManager.AnonymousClassPoolInOneJavaFile;
@@ -43,7 +44,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected JCScope cjcs = new JCScope();
 	protected JCScope ljcs = new JCScope();
 	protected Integer FirstLevelClass = null;
-	protected Stack<String> VeryRecentDeclaredType = new Stack<String>();
+	protected Stack<CDType> VeryRecentDeclaredType = new Stack<CDType>();
 	// protected boolean VeryRecentIsFieldDeclared = false;
 	protected NodeHelpManager<Boolean> fielddeclared = new NodeHelpManager<Boolean>();
 	// protected boolean VeryRecentNotGenerateCode = false;
@@ -62,13 +63,20 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected Stack<NodeCode> omcanonystack = new Stack<NodeCode>();
 	protected Stack<Boolean> argmutiple = new Stack<Boolean>();
 	protected NodeCode omc = new NodeCode(argmutiple);
-
+	
+	protected boolean typecomplex = false;
+	
 	// type just use the last element.
 	// public static final int StrictedTypeLength = 2;
 
 	{
 		cjcs.SetDescription("Class Declaration.");
 		ljcs.SetDescription("Label Declaration.");
+	}
+	
+	public SimplifiedCodeGenerateASTVisitor(boolean typecomplex) {
+		// only in code completion is true.
+		this.typecomplex = typecomplex;
 	}
 
 	public ScopeOffsetRefHandler GenerateScopeOffsetRefHandler() {
@@ -310,7 +318,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected SimplifiedFieldProcessASTVisitor GenerateSimplifiedFieldProcessASTVisitor(ASTNode node) {
-		return new SimplifiedFieldProcessASTVisitor(this, node);
+		return new SimplifiedFieldProcessASTVisitor(typecomplex, this, node);
 	}
 
 	protected boolean TypeDeclarationPreCode(AbstractTypeDeclaration node, String preHint) {
@@ -451,11 +459,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			runforbid.AddNodeHelp(para.hashCode(), true);
 			if (para instanceof VariableDeclarationFragment) {
 				nodecode.append(GCodeMetaInfo.InferedType);
-				NewVariableDeclared(((VariableDeclarationFragment) para).getName(), GCodeMetaInfo.InferedType);
+				NewVariableDeclared(((VariableDeclarationFragment) para).getName(), new CDType(GCodeMetaInfo.InferedType, GCodeMetaInfo.InferedType));
 			} else {
-				String tpcode = TypeCode(((SingleVariableDeclaration) para).getType(), true);
-				nodecode.append(tpcode);
-				NewVariableDeclared(((SingleVariableDeclaration) para).getName(), tpcode);
+				CDType cdt = GenCDType(((SingleVariableDeclaration) para).getType());
+				nodecode.append(cdt);
+				NewVariableDeclared(((SingleVariableDeclaration) para).getName(), cdt);
 			}
 			nodecode.append(',');
 		}
@@ -1175,8 +1183,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(VariableDeclarationExpression node) {
 		// System.out.println("VariableDeclarationExpression:"+node);
-		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(typecode);
+		CDType cdt = GenCDType(node.getType());
+		
+		SetVeryRecentDeclaredType(cdt);
 		// VariableDeclarationExpressionPreHandle(node.fragments(), node);
 		return super.visit(node);
 	}
@@ -1244,8 +1253,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		 * Boolean forbid = runforbid.GetNodeHelp(node.hashCode()); if (forbid
 		 * != null && forbid == true) { return false; }
 		 */
-		String typecode = TypeCode(node.getType(), true);
-		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), typecode, node.extraDimensions(), true);
+		CDType cdt = GenCDType(node.getType());
+		// String typecode = TypeCode(node.getType(), true);
+		VariableDeclarationFragmentPreHandle(node.getInitializer(), node.getName(), cdt, node.extraDimensions(), true);
 		return super.visit(node);
 	}
 
@@ -1282,8 +1292,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// System.out.println("VariableDeclarationStatement:"+node);
 		// MyLogger.Error("VariableDeclarationStatement:"+node);
 		// MyLogger.Error("VariableDeclarationStatementType:"+node.getType());
-		String typecode = TypeCode(node.getType(), true);
-		SetVeryRecentDeclaredType(typecode);
+		CDType cdt = GenCDType(node.getType());
+		
+		SetVeryRecentDeclaredType(cdt);
 		// VariableDeclarationExpressionPreHandle(node.fragments(), node);
 		// String nodecode = GenerateVariableDeclarationTypeCode(typecode,
 		// null);
@@ -1483,18 +1494,18 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		while (itr.hasNext()) {
 			SingleVariableDeclaration t = itr.next();
 			runforbid.AddNodeHelp(t.hashCode(), true);
-			String typecode = TypeCode(t.getType(), false);
-			String modifiedtypecode = typecode; // especially for type '...'
+			CDType typecode = GenCDType(t.getType());
+			// String modifiedtypecode = typecode.getSimplifiedversion(); // especially for type '...'
 			String sp = "";
 			if (itr.hasNext()) {
 				sp = ",";
 			} else {
 				if (t.isVarargs()) {
-					modifiedtypecode = typecode + "#" + "...";
-					typecode += "...";
+					// modifiedtypecode = typecode + "[]"; // "#" + 
+					typecode.appendSomething("[]");
 				}
 			}
-			nodecode = nodecode + modifiedtypecode + sp;
+			nodecode = nodecode + typecode.getSimplifiedversion() + sp;
 			NewVariableDeclared(t.getName(), typecode);
 		}
 		/*
@@ -1537,7 +1548,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(ClassInstanceCreation node) {
 		// MyLogger.Info("Node Type:"+node.getType());
 		// MyLogger.Info("Body:"+node.getAnonymousClassDeclaration());
-		OneMethodInvocationOccurs(RawTypeCode(node.getType(), null));
+		CDType cdt = GenCDType(node.getType());
+		OneMethodInvocationOccurs(cdt.getSimplifiedversion());
 		MethodPushReferRequest(node.getExpression(), node.arguments());
 		if (node.getAnonymousClassDeclaration() != null) {
 			AddFirstOrderTask(new FirstOrderTask(null, node.getAnonymousClassDeclaration(), node, false, true) {
@@ -1905,14 +1917,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				/*
 				 * if (data.equals("a")) { MyLogger.Info("DataDeclare"); }
 				 */
-				String declaredtype = GetVeryRecentDeclaredType();
+				CDType declaredtype = GetVeryRecentDeclaredType();
 				// MyLogger.Info("common declaredtype:" + declaredtype
 				// + "; and data is:" + data + "; and is final:" +
 				// GetVeryRecentDeclaredFinal());
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype);
 				// MyLogger.Error("data is:" + data + "
 				// declaredtype:"+declaredtype);
-				DataNewlyUsed(data, declaredtype, false, false, true, false, false);
+				DataNewlyUsed(data, declaredtype.getComplexversion(), false, false, true, false, false);
 				hasCorrespond = true;
 				break;
 			case ReferenceHintLibrary.FieldDeclare:
@@ -1920,9 +1932,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				 * if (data.equals("a")) { MyLogger.Info("FieldDeclare"); }
 				 */
 				isfield = true;
-				String declaredtype2 = GetVeryRecentDeclaredType();
+				CDType declaredtype2 = GetVeryRecentDeclaredType();
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
-				DataNewlyUsed(data, declaredtype2, false, true, false, false, false);
+				DataNewlyUsed(data, declaredtype2.getComplexversion(), false, true, false, false, false);
 				hasCorrespond = true;
 				break;
 			default:
@@ -1970,6 +1982,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	// the handle of the following types should use the helper function
+	
+	protected CDType GenCDType(Type node)
+	{
+		return new CDType(TypeCode(node, true), TypeCode(node, false));
+	}
 
 	protected String TypeCode(Type node, boolean simplified) {
 		if (node == null) {
@@ -1981,28 +1998,29 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			return node.toString();
 		}
 		// System.out.println("RawTypeCode:"+node);
-		String type = RawTypeCode(node, null);
+		String type = RawTypeCode(node, null, simplified);
 		// System.out.println("TypeCode:"+type);
-		String typecode = GetClassOffset(type);
+		/*String typecode = GetClassOffset(type);
 		if (typecode == null) {
 			typecode = type;
-		}
-		return typecode;
+		}*/
+		return type; // typecode
 	}
 
 	@SuppressWarnings("unchecked")
-	protected String RawTypeCode(Type node, String parameterized) {
-
+	protected String RawTypeCode(Type node, String parameterized, boolean simplified) {
+		
 		// System.out.println("Type:" + node);
 		// System.out.println("TypeClass:" + node.getClass());
-
+		
+		String result = "";
 		if (node instanceof PrimitiveType) {
 			String code = ((PrimitiveType) node).toString().trim();
 			int widx = code.lastIndexOf(' ');
-			return code.substring(widx + 1);
+			result = code.substring(widx + 1);
 		}
 		if (node instanceof SimpleType) {
-			return GetFirstElementName(((SimpleType) node).getName());
+			result = GetFirstElementName(((SimpleType) node).getName());
 			// GetStrictedName(((SimpleType) node).getName(),
 			// StrictedTypeLength)
 		}
@@ -2012,11 +2030,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			if (parameterized != null) {
 				qnname += parameterized;
 			}
-			return qnname + "." + RawTypeCode(qn.getQualifier(), null);
+			result = qnname + "." + RawTypeCode(qn.getQualifier(), null, simplified);
 		}
 		if (node instanceof NameQualifiedType) {
 			NameQualifiedType nt = (NameQualifiedType) node;
-			return nt.getName().toString() + "." + GetFirstElementName(((NameQualifiedType) node).getQualifier());
+			result = nt.getName().toString() + "." + GetFirstElementName(((NameQualifiedType) node).getQualifier());
 			// + GetStrictedName(((NameQualifiedType) node).getQualifier(),
 			// StrictedTypeLength - 1);
 		}
@@ -2025,8 +2043,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			if (wt.getBound() == null) {
 				return "?";
 			}
-			return "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wt.isUpperBound() ? "extends" : "super")
-					+ GCodeMetaInfo.WhiteSpaceReplacer + RawTypeCode(wt.getBound(), null);
+			result = "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wt.isUpperBound() ? "extends" : "super")
+					+ GCodeMetaInfo.WhiteSpaceReplacer + RawTypeCode(wt.getBound(), null, simplified);
 		}
 		if (node instanceof ArrayType) {
 			ArrayType at = (ArrayType) node;
@@ -2035,7 +2053,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			/*
 			 * for (int i = 0; i < dimens; i++) { dimenstr += "[]"; }
 			 */
-			return RawTypeCode(at.getElementType(), null) + dimenstr;
+			result = RawTypeCode(at.getElementType(), null, simplified) + dimenstr;
 		}
 		if (node instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) node;
@@ -2044,24 +2062,22 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			Iterator<Type> itr = tas.iterator();
 			while (itr.hasNext()) {
 				Type tt = itr.next();
-				param += RawTypeCode(tt, null);
+				param += RawTypeCode(tt, null, simplified);
 				if (itr.hasNext()) {
 					param += ",";
 				}
 			}
 			param += ">";
-			String result = RawTypeCode(pt.getType(), param);
-			return result;
+			result = RawTypeCode(pt.getType(), param, simplified);
 		}
 		if (node instanceof UnionType) {
 			UnionType ut = (UnionType) node;
 			List<Type> types = ut.types();
 			Iterator<Type> itr = types.iterator();
-			String result = "";
 			boolean first = true;
 			while (itr.hasNext()) {
 				Type t = itr.next();
-				String tstr = RawTypeCode(t, null);
+				String tstr = RawTypeCode(t, null, simplified);
 				if (first) {
 					result = tstr;
 					first = false;
@@ -2069,17 +2085,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					result = result + "|" + tstr;
 				}
 			}
-			return result;
 		}
 		if (node instanceof IntersectionType) {
 			IntersectionType ut = (IntersectionType) node;
 			List<Type> types = ut.types();
 			Iterator<Type> itr = types.iterator();
-			String result = "";
 			boolean first = true;
 			while (itr.hasNext()) {
 				Type t = itr.next();
-				String tstr = RawTypeCode(t, null);
+				String tstr = RawTypeCode(t, null, simplified);
 				if (first) {
 					result = tstr;
 					first = false;
@@ -2087,12 +2101,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 					result = result + "&" + tstr;
 				}
 			}
-			return result;
 		}
-
-		System.err.println("Uncognized Type node.");
-		System.exit(1);
-		return null;
+		if (!simplified && parameterized != null)
+		{
+			result += parameterized;
+		}
+		return result;
+		
+		// System.err.println("Uncognized Type node.");
+		// System.exit(1);
+		// return null;
 	}
 
 	protected String GetFirstElementName(Name name) {
@@ -2424,15 +2442,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				isCommonUseOrDeclare);
 	}
 
-	protected String GetVeryRecentDeclaredType() {
+	protected CDType GetVeryRecentDeclaredType() {
 		if (VeryRecentDeclaredType.size() > 0) {
 			return VeryRecentDeclaredType.peek();
 		}
 		return null;
 	}
 
-	protected void CheckVeryRecentDeclaredTypeMustNotNull(String declaredtype) {
-		if (declaredtype == null) {
+	protected void CheckVeryRecentDeclaredTypeMustNotNull(CDType declaredtype) {
+		if (declaredtype == null || declaredtype.getSimplifiedversion() == null) {
 			MyLogger.Error("No Declared Type? The system will exit.");
 			new Exception("No Recent Declared Type").printStackTrace();
 			System.exit(1);
@@ -2563,7 +2581,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	 * veryRecentNotGenerateCode; }
 	 */
 
-	protected void SetVeryRecentDeclaredType(String veryRecentDeclaredType) {
+	protected void SetVeryRecentDeclaredType(CDType veryRecentDeclaredType) {
 		if (veryRecentDeclaredType == null) {
 			VeryRecentDeclaredType.pop();
 		} else {
@@ -2571,7 +2589,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 	}
 	
-	protected String GenerateVariableDeclarationType(String typecode, List<Dimension> dimens) {
+	protected CDType GenerateVariableDeclarationType(CDType typecode, List<Dimension> dimens) {
 		String dimenstr = "";
 		if (dimens != null && dimens.size() > 0) {
 			Iterator<Dimension> itr = dimens.iterator();
@@ -2580,7 +2598,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				dimenstr += "[]";
 			}
 		}
-		return typecode + dimenstr;
+		return new CDType(typecode.getSimplifiedversion()+dimenstr, typecode.getComplexversion()+dimenstr);
 	}
 
 	protected boolean CheckAppend() {
@@ -2719,12 +2737,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(nodecode, false, false, false, true, null);
 	}
 
-	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name, String typecode, List<Dimension> extradimens, boolean firstfragment) {
+	protected void VariableDeclarationFragmentPreHandle(Expression iniexpr, SimpleName name, CDType typecode, List<Dimension> extradimens, boolean firstfragment) {
 		if (typecode == null || typecode.equals(""))
 		{
 			typecode = GetVeryRecentDeclaredType();
 		}
-		String finaltypecode = GenerateVariableDeclarationType(typecode, extradimens);
+		CDType finaltypecode = GenerateVariableDeclarationType(typecode, extradimens);
 		SetVeryRecentDeclaredType(finaltypecode);
 		if (firstfragment)
 		{
@@ -2898,10 +2916,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	}
 
 	protected void NewVariableDeclared(SimpleName name, Type tp) {
-		NewVariableDeclared(name, TypeCode(tp, true));
+		NewVariableDeclared(name, GenCDType(tp));
 	}
 
-	protected void NewVariableDeclared(SimpleName name, String tp) {
+	protected void NewVariableDeclared(SimpleName name, CDType tp) {
 		int namehashcode = name.hashCode();
 		int hint = ReferenceHintLibrary.DataDeclare;
 		Boolean isfield = fielddeclared.GetNodeHelp(namehashcode);

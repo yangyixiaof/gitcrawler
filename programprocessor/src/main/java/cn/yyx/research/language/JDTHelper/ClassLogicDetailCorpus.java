@@ -28,7 +28,7 @@ public class ClassLogicDetailCorpus {
 			{
 				continue;
 			}
-			SimplifiedCodeGenerateASTVisitor fmastv = new SimplifiedCodeGenerateASTVisitor();
+			SimplifiedCodeGenerateASTVisitor fmastv = new SimplifiedCodeGenerateASTVisitor(false);
 			clazzNode.accept(fmastv);
 			Map<String, ContentsAndWords> codemap = fmastv.GetGeneratedCode();
 			Set<String> keys = codemap.keySet();
