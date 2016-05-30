@@ -52,14 +52,14 @@ public class ScopeOffsetRefHandler {
 		return res.get(key);
 	}
 	
-	public Map<String, String> HandleFieldVariableRef(String tempaddtype, int tempalloffset, int scope, int offset)
+	public Map<String, String> HandleFieldVariableRef(String tempaddtype, int tempalloffset, int scope, int offset) throws OffsetOutOfScopeException
 	{
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(scope);
 		JCScope fcs = fvdp.GetJCScope(sp.getID());
 		return fcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 	}
 	
-	public Map<String, String> HandleCommonVariableRef(String tempaddtype, int tempalloffset, int scope, int offset)
+	public Map<String, String> HandleCommonVariableRef(String tempaddtype, int tempalloffset, int scope, int offset) throws OffsetOutOfScopeException
 	{
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(scope);
 		JCScope ccs = cvdp.GetJCScope(sp.getID());

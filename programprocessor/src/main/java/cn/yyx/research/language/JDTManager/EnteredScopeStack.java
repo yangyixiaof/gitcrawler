@@ -3,6 +3,8 @@ package cn.yyx.research.language.JDTManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import cn.yyx.research.language.simplified.JDTManager.OffsetOutOfScopeException;
+
 public class EnteredScopeStack {
 	
 	private ArrayList<OneScope> stack = null;
@@ -26,10 +28,14 @@ public class EnteredScopeStack {
 		return getStack().remove(getStack().size()-1);
 	}
 	
-	public OneScope GetScopeAccordingToScopeOffset(int scope)
+	public OneScope GetScopeAccordingToScopeOffset(int scope) throws OffsetOutOfScopeException
 	{
 		int lastidx = stack.size()-1;
 		int idx = lastidx - scope;
+		if (idx < 0)
+		{
+			throw new OffsetOutOfScopeException("scope offset out of scope.");
+		}
 		return stack.get(idx);
 	}
 	
