@@ -1,5 +1,8 @@
 package HTM;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class fo {
 	
 	/*public void haha()
@@ -27,6 +30,8 @@ public class fo {
 		{
 			System.err.println("haha ererei.");
 		}*/
+		List<String> list = new LinkedList<String>();
+		list.iterator();
 		boolean b = false;
 		boolean a = b || m() && f();
 	}

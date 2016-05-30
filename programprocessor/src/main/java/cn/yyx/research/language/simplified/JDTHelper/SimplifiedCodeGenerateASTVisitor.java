@@ -24,6 +24,7 @@ import cn.yyx.research.language.JDTManager.ScopeDataManager;
 import cn.yyx.research.language.Utility.CDType;
 import cn.yyx.research.language.Utility.MyLogger;
 import cn.yyx.research.language.Utility.StringUtil;
+import cn.yyx.research.language.programprocessor.RunMetaInfo;
 import cn.yyx.research.language.simplified.JDTManager.AnonymousClassPoolInOneJavaFile;
 import cn.yyx.research.language.simplified.JDTManager.ConflictASTNodeHashCodeError;
 import cn.yyx.research.language.simplified.JDTManager.ContentsAndWords;
@@ -1585,7 +1586,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				invoker += ("." + refercnt);
 			}
 		}
-		MethodInvocationCode(TypeCode(node.getType(), false), invoker, node.arguments());
+		MethodInvocationCode(TypeCode(node.getType(), true), invoker, node.arguments());
 		MethodDeleteReferRequest(expr, node.arguments());
 	}
 
@@ -1924,6 +1925,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype);
 				// MyLogger.Error("data is:" + data + "
 				// declaredtype:"+declaredtype);
+				if (RunMetaInfo.DebugMode)
+				{
+					System.out.println("complex type:" + declaredtype.getComplexversion());
+				}
 				DataNewlyUsed(data, declaredtype.getComplexversion(), false, false, true, false, false);
 				hasCorrespond = true;
 				break;
@@ -1934,6 +1939,10 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				isfield = true;
 				CDType declaredtype2 = GetVeryRecentDeclaredType();
 				CheckVeryRecentDeclaredTypeMustNotNull(declaredtype2);
+				if (RunMetaInfo.DebugMode)
+				{
+					System.out.println("complex type:" + declaredtype2.getComplexversion());
+				}
 				DataNewlyUsed(data, declaredtype2.getComplexversion(), false, true, false, false, false);
 				hasCorrespond = true;
 				break;
