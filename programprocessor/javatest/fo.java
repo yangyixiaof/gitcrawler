@@ -1,5 +1,6 @@
 package HTM;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,9 +32,18 @@ public class fo {
 			System.err.println("haha ererei.");
 		}*/
 		List<String> list = new LinkedList<String>();
-		list.iterator();
-		boolean b = false;
-		boolean a = b || m() && f();
+		Iterator<String> itr = list.iterator();
+		// boolean b = false;
+		// boolean a = b || m() && f();
+	}
+	
+	public void show()
+	{
+		List<String> list = new LinkedList<String>();
+		Iterator<String> itr = list.iterator();
+		
+		VD@List VH@=@HO MI@LinkedList(new);
+		VD@Iterator VH@=@HO MI@iterator(@C0?0);
 	}
 	
 }
