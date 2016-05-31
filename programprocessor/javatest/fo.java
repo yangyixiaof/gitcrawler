@@ -40,7 +40,7 @@ public class fo {
 	public void show()
 	{
 		List<String> list = new LinkedList<String>();
-		Iterator<String> itr = list.iterator();	
+		Iterator<String> itr = list.iterator();
 	}
 	
 }
