@@ -40,10 +40,7 @@ public class fo {
 	public void show()
 	{
 		List<String> list = new LinkedList<String>();
-		Iterator<String> itr = list.iterator();
-		
-		VD@List VH@=@HO MI@LinkedList(new);
-		VD@Iterator VH@=@HO MI@iterator(@C0?0);
+		Iterator<String> itr = list.iterator();	
 	}
 	
 }
