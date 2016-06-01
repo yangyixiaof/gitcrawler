@@ -2767,7 +2767,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	protected void VariableDeclarationFragmentPostHandle(Expression iniexpr, SimpleName name) {
 		// if (!VeryRecentNotGenerateCode) {
-		GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
+		// GenerateEndInfo(GCodeMetaInfo.DescriptionHint + GCodeMetaInfo.EndOfAStatement);
 		// }
 		// handle scope offset when end.
 		int namehashcode = name.hashCode();
