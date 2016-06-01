@@ -38,7 +38,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected OtherCodeManager ocm = new OtherCodeManager();
 	protected OneJavaFileCode ojfc = new OneJavaFileCode();
 	protected JavaCode jc = ojfc;
-	protected MethodWindow mw = new MethodWindow();
+	protected Stack<MethodWindow> mw = new Stack<MethodWindow>();
 	protected AnonymousClassPoolInOneJavaFile acp = new AnonymousClassPoolInOneJavaFile();
 	protected FirstOrderTaskPool fotp = new FirstOrderTaskPool();
 	protected ScopeDataManager sdm = new ScopeDataManager();
@@ -87,6 +87,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		if (NeedSpecialTreat(node) && fres) {
 			EnterBlock(node);
+			mw.push(new MethodWindow());
 		}
 		return fres;
 	}
@@ -95,6 +96,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void postVisit(ASTNode node) {
 		fotp.PreIsOver(node);
 		if (NeedSpecialTreat(node)) {
+			mw.pop();
 			ExitBlock(node);
 		}
 	}
@@ -365,7 +367,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("AnonymousClassDeclaration Begin");
 		// MyLogger.Info(node);
 		// MyLogger.Info("AnonymousClassDeclaration End");
-		jc = acp.EnterAnonymousClass(mw);
+		jc = acp.EnterAnonymousClass(mw.peek());
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
 		// AnonymousClassDeclarationCodeFileAddMethodWindow();
@@ -1460,6 +1462,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodDeclaration node) {
 		// MyLogger.Info("MethodDeclarationParent:"+node.getParent().hashCode());
+		mw.peek().Clear();
 		if (isFirstLevelASTNode(node) || ParentIsTypeDeclaration(node)) {
 			if (omc != null) {
 				FlushCode();
@@ -2332,7 +2335,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	 */
 
 	protected void OneMethodInvocationOccurs(String rawmethodname) {
-		mw.PushMethodName(rawmethodname);
+		mw.peek().PushMethodName(rawmethodname);
 	}
 
 	protected boolean isFirstLevelASTNode(ASTNode node) {

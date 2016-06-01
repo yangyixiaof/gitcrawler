@@ -41,12 +41,12 @@ public class fo {
 	{
 		// List<String> list = new LinkedList<String>();
 		// Iterator<String> itr = list.iterator();
-		/*int a = 0, b = a + 1;
+		int a = 0, b = a + 1;
 		boolean c = false;
 		while (c == true)
 		{
 			a = 100;
-		}*/
+		}
 		int i=0;
 		new Runnable() {
 			@Override

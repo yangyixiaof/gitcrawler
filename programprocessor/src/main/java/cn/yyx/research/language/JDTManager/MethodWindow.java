@@ -50,6 +50,10 @@ public class MethodWindow {
 		}
 		return codes;
 	}
+
+	public void Clear() {
+		rawmethodnames.clear();
+	}
 	
 	/*public static void main(String[] args) {
 		MethodWindow mw = new MethodWindow();
