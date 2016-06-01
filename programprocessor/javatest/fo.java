@@ -39,8 +39,21 @@ public class fo {
 	
 	public void show()
 	{
-		List<String> list = new LinkedList<String>();
-		Iterator<String> itr = list.iterator();
-	}
+		// List<String> list = new LinkedList<String>();
+		// Iterator<String> itr = list.iterator();
+		/*int a = 0, b = a + 1;
+		boolean c = false;
+		while (c == true)
+		{
+			a = 100;
+		}*/
+		int i=0;
+		new Runnable() {
+			@Override
+			public void run() {
+				System.out.println(i);
+			}
+		};
+	} 
 	
 }
