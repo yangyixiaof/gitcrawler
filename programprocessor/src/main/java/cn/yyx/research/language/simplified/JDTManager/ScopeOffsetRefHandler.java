@@ -28,9 +28,9 @@ public class ScopeOffsetRefHandler {
 		this.ljcs = ljcs;
 	}
 	
-	public String HandleTypeRef(String tempaddtype, int tempalloffset, int offset)
+	public String HandleTypeRef(int offset)
 	{
-		Map<String, String> res = cjcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
+		Map<String, String> res = cjcs.GetContentAccordingToOffset(null, null, offset);
 		Set<String> keys = res.keySet();
 		if (keys.size() == 0)
 		{
@@ -40,7 +40,7 @@ public class ScopeOffsetRefHandler {
 		return res.get(key);
 	}
 	
-	public String HandleLabelRef(String tempaddtype, int tempalloffset, int offset)
+	/*public String HandleLabelRef(String tempaddtype, int tempalloffset, int offset)
 	{
 		Map<String, String> res = ljcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
 		Set<String> keys = res.keySet();
@@ -50,20 +50,31 @@ public class ScopeOffsetRefHandler {
 		}
 		String key = keys.iterator().next();
 		return res.get(key);
-	}
+	}*/
 	
-	public Map<String, String> HandleFieldVariableRef(String tempaddtype, int tempalloffset, int scope, int offset) throws OffsetOutOfScopeException
+	public Map<String, String> HandleFieldVariableRef(Map<String, String> tpns, Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
 	{
-		OneScope sp = classstack.GetScopeAccordingToScopeOffset(scope);
+		// tpns and tpnrs could be both null or non null.
+		int usescope = scope;
+		if (trimedscope >= 0)
+		{
+			usescope = trimedscope;
+		}
+		OneScope sp = classstack.GetScopeAccordingToScopeOffset(usescope);
 		JCScope fcs = fvdp.GetJCScope(sp.getID());
-		return fcs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
+		return fcs.GetContentAccordingToOffset(tpns, tpnrs, offset);
 	}
 	
-	public Map<String, String> HandleCommonVariableRef(String tempaddtype, int tempalloffset, int scope, int offset) throws OffsetOutOfScopeException
+	public Map<String, String> HandleCommonVariableRef(Map<String, String> tpns, Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
 	{
-		OneScope sp = classstack.GetScopeAccordingToScopeOffset(scope);
+		int usescope = scope;
+		if (trimedscope >= 0)
+		{
+			usescope = trimedscope;
+		}
+		OneScope sp = classstack.GetScopeAccordingToScopeOffset(usescope);
 		JCScope ccs = cvdp.GetJCScope(sp.getID());
-		return ccs.GetContentAccordingToOffset(tempaddtype, tempalloffset, offset);
+		return ccs.GetContentAccordingToOffset(tpns, tpnrs, offset);
 	}
 	
 	public String GenerateNewDeclaredVariable(String name, String type, List<String> holderlist, boolean isfield)

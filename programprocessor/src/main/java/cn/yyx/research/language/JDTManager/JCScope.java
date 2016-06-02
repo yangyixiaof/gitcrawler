@@ -42,8 +42,9 @@ public class JCScope {
 		dataInOrder = new TreeMap<String, LinkedList<String>>();
 	}
 	
-	public Map<String, String> GetContentAccordingToOffset(String tempaddtype, int tempalloffset, int offset)
+	public Map<String, String> GetContentAccordingToOffset(Map<String, String> tpns, Map<String, Integer> tpnrs, int offset)
 	{
+		// String tempaddtype, int tempalloffset, 
 		Map<String, String> result = new TreeMap<String, String>();
 		Set<String> types = dataInOrder.keySet();
 		Iterator<String> itr = types.iterator();
@@ -54,25 +55,18 @@ public class JCScope {
 			LinkedList<String> list = dataInOrder.get(type);
 			int idx = offset;
 			
-			if (type.equals(tempaddtype))
+			Integer rms = tpnrs.get(type);
+			if (rms != null && rms >= 0)
 			{
-				idx -= tempalloffset;
+				idx = rms;
 			}
-			
 			int lsize = list.size();
 			if (idx >= 0 && lsize > idx)
 			{
 				result.put(type, list.get(idx));
 			}
-			/*if (lsize >= idx)
-			{
-				if (lsize == idx)
-				{
-					idx--;
-				}
-				result.put(type, list.get(idx));
-			}*/
 		}
+		result.putAll(tpns);
 		return result;
 	}
 	
