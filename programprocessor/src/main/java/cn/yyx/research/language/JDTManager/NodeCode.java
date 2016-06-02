@@ -223,7 +223,7 @@ public class NodeCode {
 	}
 
 	public void AppendEndInfoToLast(String apdcode) {
-		if (apdcode.equals(";"))
+		if (apdcode.startsWith(";"))
 		{
 			CheckAndDeletePartialEndAndFullEnd();
 		}

@@ -467,7 +467,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			nodecode.deleteCharAt(nodecode.length() - 1);
 		}
 		ASTNode body = node.getBody();
-		String bodycode = "{}";
+		String bodycode = GCodeMetaInfo.CodeHole;
 		if (body instanceof SimpleName || body instanceof QualifiedName) {
 			bodycode = body.toString();
 			runforbid.AddNodeHelp(body.hashCode(), true);
@@ -497,6 +497,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			runforbid.DeleteNodeHelp(body.hashCode());
 		} else {
 			referhint.DeleteNodeHelp(body.hashCode());
+			AppendEndInfoToLast(GCodeMetaInfo.EndOfLambdaExpression);
 		}
 		// SetVeryRecentNotGenerateCode(false);
 	}

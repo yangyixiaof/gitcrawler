@@ -50,6 +50,7 @@ public class GCodeMetaInfo {
 	// public static final String ForVariableInitializeSplitComma = "VI,";
 	// public static final String ForVariableExpSplitComma = "VE,";
 	// public static final String ForVariableUpdateSplitComma = "VU,";
+	public static final String EndOfLambdaExpression = ";Lb";
 	
 	// another display of ']'
 	public static final String EndOfArrayDeclarationIndexExpression = "]";

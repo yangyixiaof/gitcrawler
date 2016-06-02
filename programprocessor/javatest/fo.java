@@ -1,5 +1,6 @@
 package HTM;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,22 +23,22 @@ public class fo {
         return classString.substring(dotIndex+1);
     }*/
 	
-	public void at()
+	/*public void at()
 	{
 		// int a[] = {1,2};
 		// return a[m()];
-		/*A<B> str = null;
+		A<B> str = null;
 		if (str == null)
 		{
 			System.err.println("haha ererei.");
-		}*/
+		}
 		List<String> list = new LinkedList<String>();
 		Iterator<String> itr = list.iterator();
 		// boolean b = false;
 		// boolean a = b || m() && f();
-	}
+	}*/
 	
-	public void show()
+	/*public void show()
 	{
 		// List<String> list = new LinkedList<String>();
 		// Iterator<String> itr = list.iterator();
@@ -54,6 +55,12 @@ public class fo {
 				System.out.println(i);
 			}
 		};
-	} 
+	}*/
+	
+	public void LambdaTest()
+	{
+		List<Integer> costBeforeTax = Arrays.asList(100, 200, 300, 400, 500);
+		costBeforeTax.stream().map((cost) -> cost + .12 * cost).forEach(System.out::println);
+	}
 	
 }
