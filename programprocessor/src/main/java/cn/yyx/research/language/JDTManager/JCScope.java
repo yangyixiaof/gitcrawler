@@ -55,18 +55,25 @@ public class JCScope {
 			LinkedList<String> list = dataInOrder.get(type);
 			int idx = offset;
 			
-			Integer rms = tpnrs.get(type);
-			if (rms != null && rms >= 0)
+			if (tpnrs != null)
 			{
-				idx = rms;
+				Integer rms = tpnrs.get(type);
+				if (rms != null && rms >= 0)
+				{
+					idx = rms;
+				}
 			}
+			
 			int lsize = list.size();
 			if (idx >= 0 && lsize > idx)
 			{
 				result.put(type, list.get(idx));
 			}
 		}
-		result.putAll(tpns);
+		if (tpns != null)
+		{
+			result.putAll(tpns);
+		}
 		return result;
 	}
 	
