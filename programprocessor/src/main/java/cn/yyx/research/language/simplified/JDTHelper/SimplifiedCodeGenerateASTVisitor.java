@@ -433,7 +433,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			}
 		}
 		String nc = nodecode.toString();
-		mw.peek().PushMethodName(nc.equals("") ? "0LbdParaEmpty" : nc.replace('@', '0').replace(',', '1'));
+		mw.peek().PushMethodName(nc.equals("") ? "L0LbdParaEmpty" : "L0" + nc.replace('@', '0').replace(',', '1'));
 		GenerateOneLine(GCodeMetaInfo.LambdaExpressionHint + "(" + nc + ")->" + bodycode, false, false, false, true, null);
 		if (body instanceof Block || body instanceof IfStatement || body instanceof WhileStatement || body instanceof ForStatement || body instanceof EnhancedForStatement)
 		{
