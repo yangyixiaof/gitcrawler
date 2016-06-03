@@ -40,7 +40,12 @@ public class MethodWindow {
 		while (itr.hasNext())
 		{
 			String mname = itr.next();
-			sb.append(" " + GCodeMetaInfo.AnonymousClassPreHint + mname);
+			String ph = GCodeMetaInfo.AnonymousClassPreHint;
+			if (!itr.hasNext())
+			{
+				ph = GCodeMetaInfo.AnonymousClassPreOverHint;
+			}
+			sb.append(" " + ph + mname);
 		}
 		return sb.toString();
 	}
@@ -52,7 +57,12 @@ public class MethodWindow {
 		while (itr.hasNext())
 		{
 			String mname = itr.next();
-			codes.add(GCodeMetaInfo.AnonymousClassPreHint + mname);
+			String ph = GCodeMetaInfo.AnonymousClassPreHint;
+			if (!itr.hasNext())
+			{
+				ph = GCodeMetaInfo.AnonymousClassPreOverHint;
+			}
+			codes.add(ph + mname);
 		}
 		return codes;
 	}
