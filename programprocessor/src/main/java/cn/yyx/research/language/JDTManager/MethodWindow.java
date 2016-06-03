@@ -7,7 +7,7 @@ import java.util.Queue;
 
 public class MethodWindow {
 	
-	public static final int WindowSize = 4;
+	public static final int WindowSize = 6;
 	Queue<String> rawmethodnames = new LinkedList<String>();
 	
 	public void OneTypeDeclared(String type){
@@ -15,6 +15,12 @@ public class MethodWindow {
 	
 	public void PushMethodName(String methodname)
 	{
+		// System.out.println("methodname:" + methodname);
+		//if (methodname.equals(""))
+		//{
+		//	new Exception().printStackTrace();
+		//}
+		
 		if (rawmethodnames.size() < WindowSize)
 		{
 			rawmethodnames.add(methodname);

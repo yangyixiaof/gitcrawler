@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JButton;
+
 public class fo {
 	
 	/*public void haha()
@@ -60,13 +62,20 @@ public class fo {
 	
 	public void LambdaTest()
 	{
-		List<Integer> costBeforeTax = Arrays.asList(100, 200, 300, 400, 500);
+		/*List<Integer> costBeforeTax = Arrays.asList(100, 200, 300, 400, 500);
 		costBeforeTax.stream().map((cost) -> cost + .12 * cost).forEach(System.out::println);
 		
 		final int ip = 2;
 		List<String> strList = Arrays.asList("Java", "Scala", "C++", "Haskell", "Lisp");
 		List<String> filtered = strList.stream().filter(x -> x.length() > ip).collect(Collectors.toList());
-		System.out.printf("Original List : %s, filtered list : %s %n", strList, filtered);
+		System.out.printf("Original List : %s, filtered list : %s %n", strList, filtered);*/
+		
+		new Thread(() -> System.out.println("In Java8, Lambda expression rocks !!")).start();
+		// case 2.
+		JButton show = new JButton("Show");
+		show.addActionListener((e) -> {
+			System.out.println("Light, Camera, Action !! Lambda expressions Rocks");
+		});
 	}
 	
 }

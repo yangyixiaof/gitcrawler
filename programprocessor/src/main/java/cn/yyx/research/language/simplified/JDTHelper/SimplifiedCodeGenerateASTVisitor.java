@@ -359,23 +359,16 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void endVisit(TypeDeclaration node) {
 		TypeDeclarationPostCode(node);
 	}
-
-	@Override
-	public boolean visit(AnonymousClassDeclaration node) {
-		// MyLogger.Info("AnonymousClassDeclaration Begin");
-		// MyLogger.Info(node);
-		// MyLogger.Info("AnonymousClassDeclaration End");
+	
+	private void EnterCodeSwitchScope()
+	{
 		jc = acp.EnterAnonymousClass(mw.peek());
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
-		// AnonymousClassDeclarationCodeFileAddMethodWindow();
-		SimplifiedFieldProcessASTVisitor sfpa = GenerateSimplifiedFieldProcessASTVisitor(node);
-		node.accept(sfpa);
-		return super.visit(node);
 	}
-
-	@Override
-	public void endVisit(AnonymousClassDeclaration node) {
+	
+	private void ExitCodeSwitchScope()
+	{
 		FlushCode();
 		omc = omcanonystack.pop();
 		if (omc == null) {
@@ -385,6 +378,95 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		if (jc == null) {
 			jc = ojfc;
 		}
+	}
+
+	@Override
+	public boolean visit(AnonymousClassDeclaration node) {
+		// MyLogger.Info("AnonymousClassDeclaration Begin");
+		// MyLogger.Info(node);
+		// MyLogger.Info("AnonymousClassDeclaration End");
+		EnterCodeSwitchScope();
+		// AnonymousClassDeclarationCodeFileAddMethodWindow();
+		SimplifiedFieldProcessASTVisitor sfpa = GenerateSimplifiedFieldProcessASTVisitor(node);
+		node.accept(sfpa);
+		return super.visit(node);
+	}
+
+	@Override
+	public void endVisit(AnonymousClassDeclaration node) {
+		ExitCodeSwitchScope();
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean visit(LambdaExpression node) {
+		// SetVeryRecentNotGenerateCode(true);
+		List<ASTNode> params = node.parameters();
+		StringBuffer nodecode = new StringBuffer("");
+		Iterator<ASTNode> itr = params.iterator();
+		while (itr.hasNext()) {
+			ASTNode para = itr.next();
+			runforbid.AddNodeHelp(para.hashCode(), true);
+			if (para instanceof VariableDeclarationFragment) {
+				nodecode.append(GCodeMetaInfo.InferedType);
+				NewVariableDeclared(((VariableDeclarationFragment) para).getName(), new CDType(GCodeMetaInfo.InferedType, GCodeMetaInfo.InferedType));
+			} else {
+				CDType cdt = GenCDType(((SingleVariableDeclaration) para).getType());
+				nodecode.append(cdt);
+				NewVariableDeclared(((SingleVariableDeclaration) para).getName(), cdt);
+			}
+			nodecode.append(',');
+		}
+		if (params.size() > 0) {
+			nodecode.deleteCharAt(nodecode.length() - 1);
+		}
+		ASTNode body = node.getBody();
+		String bodycode = GCodeMetaInfo.CodeHole;
+		if (body instanceof SimpleName || body instanceof QualifiedName) {
+			bodycode = body.toString();
+			runforbid.AddNodeHelp(body.hashCode(), true);
+		} else {
+			referhint.AddNodeHelp(body.hashCode(), ReferenceHintLibrary.DataUse);
+			if (body instanceof Block || body instanceof IfStatement || body instanceof WhileStatement || body instanceof ForStatement || body instanceof EnhancedForStatement)
+			{
+				bodycode = "{}";
+			}
+		}
+		String nc = nodecode.toString();
+		mw.peek().PushMethodName(nc.equals("") ? "@LambdaParaEmpty" : nc);
+		GenerateOneLine(GCodeMetaInfo.LambdaExpressionHint + "(" + nc + ")->" + bodycode, false, false, false, true, null);
+		if (body instanceof Block || body instanceof IfStatement || body instanceof WhileStatement || body instanceof ForStatement || body instanceof EnhancedForStatement)
+		{
+			EnterCodeSwitchScope();
+		}
+		return super.visit(node);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void endVisit(LambdaExpression node) {
+		List<ASTNode> params = node.parameters();
+		Iterator<ASTNode> itr = params.iterator();
+		while (itr.hasNext()) {
+			ASTNode para = itr.next();
+			runforbid.DeleteNodeHelp(para.hashCode());
+			/*
+			 * if (para instanceof VariableDeclarationFragment) {
+			 * SetVeryRecentDeclaredType(null); }
+			 */
+		}
+		ASTNode body = node.getBody();
+		if (body instanceof SimpleName || body instanceof QualifiedName) {
+			runforbid.DeleteNodeHelp(body.hashCode());
+		} else {
+			referhint.DeleteNodeHelp(body.hashCode());
+			if (body instanceof Block || body instanceof IfStatement || body instanceof WhileStatement || body instanceof ForStatement || body instanceof EnhancedForStatement) {
+				ExitCodeSwitchScope();
+			} else {
+				AppendEndInfoToLast(GCodeMetaInfo.EndOfLambdaExpression);
+			}
+		}
+		// SetVeryRecentNotGenerateCode(false);
 	}
 
 	@Override
@@ -439,65 +521,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(Block node) {
 		// GenerateOneLine(GCodeMetaInfo.DescriptionHint + "}", false, false, false, true, null);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(LambdaExpression node) {
-		// SetVeryRecentNotGenerateCode(true);
-		List<ASTNode> params = node.parameters();
-		StringBuffer nodecode = new StringBuffer(GCodeMetaInfo.LambdaExpressionHint + "(");
-		Iterator<ASTNode> itr = params.iterator();
-		while (itr.hasNext()) {
-			ASTNode para = itr.next();
-			runforbid.AddNodeHelp(para.hashCode(), true);
-			if (para instanceof VariableDeclarationFragment) {
-				nodecode.append(GCodeMetaInfo.InferedType);
-				NewVariableDeclared(((VariableDeclarationFragment) para).getName(), new CDType(GCodeMetaInfo.InferedType, GCodeMetaInfo.InferedType));
-			} else {
-				CDType cdt = GenCDType(((SingleVariableDeclaration) para).getType());
-				nodecode.append(cdt);
-				NewVariableDeclared(((SingleVariableDeclaration) para).getName(), cdt);
-			}
-			nodecode.append(',');
-		}
-		if (params.size() > 0) {
-			nodecode.deleteCharAt(nodecode.length() - 1);
-		}
-		ASTNode body = node.getBody();
-		String bodycode = GCodeMetaInfo.CodeHole;
-		if (body instanceof SimpleName || body instanceof QualifiedName) {
-			bodycode = body.toString();
-			runforbid.AddNodeHelp(body.hashCode(), true);
-		} else {
-			referhint.AddNodeHelp(body.hashCode(), ReferenceHintLibrary.DataUse);
-		}
-		nodecode.append(")->" + bodycode);
-		GenerateOneLine(nodecode.toString(), false, false, false, true, null);
-		return super.visit(node);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void endVisit(LambdaExpression node) {
-		List<ASTNode> params = node.parameters();
-		Iterator<ASTNode> itr = params.iterator();
-		while (itr.hasNext()) {
-			ASTNode para = itr.next();
-			runforbid.DeleteNodeHelp(para.hashCode());
-			/*
-			 * if (para instanceof VariableDeclarationFragment) {
-			 * SetVeryRecentDeclaredType(null); }
-			 */
-		}
-		ASTNode body = node.getBody();
-		if (body instanceof SimpleName || body instanceof QualifiedName) {
-			runforbid.DeleteNodeHelp(body.hashCode());
-		} else {
-			referhint.DeleteNodeHelp(body.hashCode());
-			AppendEndInfoToLast(GCodeMetaInfo.EndOfLambdaExpression);
-		}
-		// SetVeryRecentNotGenerateCode(false);
 	}
 
 	@Override
@@ -1665,6 +1688,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodInvocation node) {
+		
+		// System.err.println("mi:" + node);
+		
 		OneMethodInvocationOccurs(node.getName().toString());
 		MethodPushReferRequest(node.getExpression(), node.arguments());
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
@@ -2334,6 +2360,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	 */
 
 	protected void OneMethodInvocationOccurs(String rawmethodname) {
+		// System.out.println("OneMethodInvocationOccurs:" + rawmethodname);
 		mw.peek().PushMethodName(rawmethodname);
 	}
 
@@ -2710,11 +2737,17 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		scopeck.put(nhash, true);
 		sdm.EnterBlock(nhash);
-		mw.push(new MethodWindow());
+		if (!(node instanceof LambdaExpression))
+		{
+			mw.push(new MethodWindow());
+		}
 	}
 
 	protected void ExitBlock(ASTNode node) {
-		mw.pop();
+		if (!(node instanceof LambdaExpression))
+		{
+			mw.pop();
+		}
 		sdm.ExitBlock();
 		scopeck.remove(node.hashCode());
 	}
