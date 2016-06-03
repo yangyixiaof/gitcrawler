@@ -87,7 +87,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		if (NeedSpecialTreat(node) && fres) {
 			EnterBlock(node);
-			mw.push(new MethodWindow());
 		}
 		return fres;
 	}
@@ -96,7 +95,6 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public void postVisit(ASTNode node) {
 		fotp.PreIsOver(node);
 		if (NeedSpecialTreat(node)) {
-			mw.pop();
 			ExitBlock(node);
 		}
 	}
@@ -2712,9 +2710,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		scopeck.put(nhash, true);
 		sdm.EnterBlock(nhash);
+		mw.push(new MethodWindow());
 	}
 
 	protected void ExitBlock(ASTNode node) {
+		mw.pop();
 		sdm.ExitBlock();
 		scopeck.remove(node.hashCode());
 	}
