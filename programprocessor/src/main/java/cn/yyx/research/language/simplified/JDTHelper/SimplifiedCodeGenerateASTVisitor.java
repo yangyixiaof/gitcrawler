@@ -1500,7 +1500,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			} else {
 				if (t.isVarargs()) {
 					// modifiedtypecode = typecode + "[]"; // "#" + 
-					typecode.appendSomething("[]");
+					typecode.appendSomething("#...");
 				}
 			}
 			nodecode = nodecode + typecode.getSimplifiedversion() + sp;

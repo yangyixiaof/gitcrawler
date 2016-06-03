@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class fo {
 	
@@ -61,6 +62,11 @@ public class fo {
 	{
 		List<Integer> costBeforeTax = Arrays.asList(100, 200, 300, 400, 500);
 		costBeforeTax.stream().map((cost) -> cost + .12 * cost).forEach(System.out::println);
+		
+		final int ip = 2;
+		List<String> strList = Arrays.asList("Java", "Scala", "C++", "Haskell", "Lisp");
+		List<String> filtered = strList.stream().filter(x -> x.length() > ip).collect(Collectors.toList());
+		System.out.printf("Original List : %s, filtered list : %s %n", strList, filtered);
 	}
 	
 }
