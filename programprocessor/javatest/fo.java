@@ -1,6 +1,7 @@
 package HTM;
 
 import java.util.Arrays;
+import java.util.IntSummaryStatistics;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,12 +71,14 @@ public class fo {
 		List<String> filtered = strList.stream().filter(x -> x.length() > ip).collect(Collectors.toList());
 		System.out.printf("Original List : %s, filtered list : %s %n", strList, filtered);*/
 		
-		new Thread(() -> System.out.println("In Java8, Lambda expression rocks !!")).start();
+		/*new Thread(() -> System.out.println("In Java8, Lambda expression rocks !!")).start();
 		// case 2.
 		JButton show = new JButton("Show");
 		show.addActionListener((e) -> {
 			System.out.println("Light, Camera, Action !! Lambda expressions Rocks");
-		});
+		});*/
+		List<Integer> primes = Arrays.asList(2, 3, 5, 7, 11, 13, 17, 19, 23, 29);
+		IntSummaryStatistics stats = primes.stream().mapToInt((x) -> x).summaryStatistics();
 	}
 	
 }

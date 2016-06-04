@@ -423,7 +423,15 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		ASTNode body = node.getBody();
 		String bodycode = GCodeMetaInfo.CodeHole;
 		if (body instanceof SimpleName || body instanceof QualifiedName) {
-			bodycode = body.toString();
+			if (body instanceof SimpleName) {
+				AddNodeRefered(body.hashCode(), ReferenceHintLibrary.DataUse);
+				visit((SimpleName)body);
+				bodycode = referedcnt.GetNodeHelp(body.hashCode());
+				DeleteNodeRefered(body.hashCode());
+				// referhint.DeleteNodeHelp();
+			} else {
+				bodycode = body.toString();
+			}
 			runforbid.AddNodeHelp(body.hashCode(), true);
 		} else {
 			referhint.AddNodeHelp(body.hashCode(), ReferenceHintLibrary.DataUse);
