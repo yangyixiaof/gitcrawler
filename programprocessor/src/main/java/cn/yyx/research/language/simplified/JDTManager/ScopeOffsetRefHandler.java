@@ -30,7 +30,7 @@ public class ScopeOffsetRefHandler {
 	
 	public String HandleTypeRef(int offset)
 	{
-		Map<String, String> res = cjcs.GetContentAccordingToOffset(null, null, offset);
+		Map<String, String> res = cjcs.GetContentAccordingToOffset(null, offset);
 		Set<String> keys = res.keySet();
 		if (keys.size() == 0)
 		{
@@ -52,7 +52,7 @@ public class ScopeOffsetRefHandler {
 		return res.get(key);
 	}*/
 	
-	public Map<String, String> HandleFieldVariableRef(Map<String, String> tpns, Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
+	public Map<String, String> HandleFieldVariableRef(Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
 	{
 		// tpns and tpnrs could be both null or non null.
 		int usescope = scope;
@@ -66,10 +66,10 @@ public class ScopeOffsetRefHandler {
 		}
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(usescope);
 		JCScope fcs = fvdp.GetJCScope(sp.getID());
-		return fcs.GetContentAccordingToOffset(tpns, tpnrs, offset);
+		return fcs.GetContentAccordingToOffset(tpnrs, offset);
 	}
 	
-	public Map<String, String> HandleCommonVariableRef(Map<String, String> tpns, Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
+	public Map<String, String> HandleCommonVariableRef(Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
 	{
 		int usescope = scope;
 		if (trimedscope >= 0)
@@ -82,7 +82,7 @@ public class ScopeOffsetRefHandler {
 		}
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(usescope);
 		JCScope ccs = cvdp.GetJCScope(sp.getID());
-		return ccs.GetContentAccordingToOffset(tpns, tpnrs, offset);
+		return ccs.GetContentAccordingToOffset(tpnrs, offset);
 	}
 	
 	public String GenerateNewDeclaredVariable(String name, String type, List<String> holderlist, boolean isfield)

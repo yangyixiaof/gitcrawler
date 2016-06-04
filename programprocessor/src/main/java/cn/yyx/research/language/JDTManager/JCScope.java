@@ -42,7 +42,7 @@ public class JCScope {
 		dataInOrder = new TreeMap<String, LinkedList<String>>();
 	}
 	
-	public Map<String, String> GetContentAccordingToOffset(Map<String, String> tpns, Map<String, Integer> tpnrs, int offset)
+	public Map<String, String> GetContentAccordingToOffset(Map<String, Integer> tpnrs, int offset)
 	{
 		// String tempaddtype, int tempalloffset, 
 		Map<String, String> result = new TreeMap<String, String>();
@@ -69,10 +69,6 @@ public class JCScope {
 			{
 				result.put(type, list.get(idx));
 			}
-		}
-		if (tpns != null)
-		{
-			result.putAll(tpns);
 		}
 		return result;
 	}
