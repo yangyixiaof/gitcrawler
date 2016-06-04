@@ -8,7 +8,9 @@ import cn.yyx.research.language.JDTManager.MethodWindow;
 import cn.yyx.research.language.JDTManager.OneJavaFileAnonymousClassesCode;
 
 public class AnonymousClassPoolInOneJavaFile {
-		
+	
+	OneJavaFileAnonymousClassesCode justleaved = null;
+	
 	OneJavaFileAnonymousClassesCode recently = null;
 	
 	int anonymmousLevel = -1;
@@ -39,7 +41,7 @@ public class AnonymousClassPoolInOneJavaFile {
 	
 	public OneJavaFileAnonymousClassesCode ExitAnonymousClass()
 	{
-		ojfaccstack.pop();
+		justleaved = ojfaccstack.pop();
 		if (!ojfaccstack.isEmpty())
 		{
 			recently = ojfaccstack.peek();
@@ -73,7 +75,7 @@ public class AnonymousClassPoolInOneJavaFile {
 	}
 
 	public ArrayList<String> GetRecentAnalyseList() {
-		return recently.toList();
+		return justleaved.toList();
 	}
 
 	public int getAllWords() {
