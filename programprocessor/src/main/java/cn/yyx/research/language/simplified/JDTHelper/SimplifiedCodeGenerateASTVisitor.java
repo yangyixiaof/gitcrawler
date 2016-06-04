@@ -360,14 +360,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		TypeDeclarationPostCode(node);
 	}
 	
-	private void EnterCodeSwitchScope()
+	protected void EnterCodeSwitchScope()
 	{
 		jc = acp.EnterAnonymousClass(mw.peek());
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
 	}
 	
-	private void ExitCodeSwitchScope()
+	protected void ExitCodeSwitchScope()
 	{
 		FlushCode();
 		omc = omcanonystack.pop();
