@@ -367,7 +367,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		omc = new NodeCode(argmutiple);
 	}
 	
-	protected void ExitCodeSwitchScope()
+	protected void ExitCodeSwitchScope(ASTNode node)
 	{
 		FlushCode();
 		omc = omcanonystack.pop();
@@ -394,7 +394,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(AnonymousClassDeclaration node) {
-		ExitCodeSwitchScope();
+		ExitCodeSwitchScope(node);
 	}
 	
 	@Override
@@ -461,7 +461,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		} else {
 			referhint.DeleteNodeHelp(body.hashCode());
 			if (body instanceof Block || body instanceof IfStatement || body instanceof WhileStatement || body instanceof ForStatement || body instanceof EnhancedForStatement) {
-				ExitCodeSwitchScope();
+				ExitCodeSwitchScope(node);
 			} else {
 				AppendEndInfoToLast(GCodeMetaInfo.EndOfLambdaExpression);
 			}
