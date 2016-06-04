@@ -30,6 +30,18 @@ public class OneJavaFileAnonymousClassesCode extends JavaCode {
 		AddOneNodeCode(nc);
 	}
 	
+	public ArrayList<String> toList()
+	{
+		ArrayList<String> result = new ArrayList<String>();
+		if (codes.size() == 0 || (codelist.size() > 0 && !codes.get(0).equals(codelist.get(0))))
+		{
+			result.addAll(codelist);
+			result.addAll(codes);
+			return result;
+		}
+		return super.toList();
+	}
+	
 	public void OneSentenceEnd()
 	{
 		/*System.err.println(sb);
