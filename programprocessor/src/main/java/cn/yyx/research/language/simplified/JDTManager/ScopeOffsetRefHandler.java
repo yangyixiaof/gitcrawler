@@ -60,6 +60,10 @@ public class ScopeOffsetRefHandler {
 		{
 			usescope = trimedscope;
 		}
+		if (usescope < 0)
+		{
+			return null;
+		}
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(usescope);
 		JCScope fcs = fvdp.GetJCScope(sp.getID());
 		return fcs.GetContentAccordingToOffset(tpns, tpnrs, offset);
@@ -71,6 +75,10 @@ public class ScopeOffsetRefHandler {
 		if (trimedscope >= 0)
 		{
 			usescope = trimedscope;
+		}
+		if (usescope < 0)
+		{
+			return null;
 		}
 		OneScope sp = classstack.GetScopeAccordingToScopeOffset(usescope);
 		JCScope ccs = cvdp.GetJCScope(sp.getID());
