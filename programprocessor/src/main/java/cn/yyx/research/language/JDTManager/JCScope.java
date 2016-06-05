@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
+import cn.yyx.research.language.Utility.ScopeOffsetResult;
 import cn.yyx.research.language.Utility.WarningUtil;
 
 public class JCScope {
@@ -17,6 +18,9 @@ public class JCScope {
 	
 	// real data in reverse order.
 	TreeMap<String, LinkedList<String>> dataInOrder = null;
+	
+	long recentstamp = 0;
+	TreeMap<String, Long> dataTypeInTimeOrder = new TreeMap<String, Long>();
 	
 	// records the order of the data. To speed up the search.
 	// TreeMap<String, TreeMap<String, Integer>> dataOrder = new TreeMap<String, TreeMap<String, Integer>>();
@@ -42,10 +46,11 @@ public class JCScope {
 		dataInOrder = new TreeMap<String, LinkedList<String>>();
 	}
 	
-	public Map<String, String> GetContentAccordingToOffset(Map<String, Integer> tpnrs, int offset)
+	public ScopeOffsetResult GetContentAccordingToOffset(Map<String, Integer> tpnrs, int offset)
 	{
-		// String tempaddtype, int tempalloffset, 
-		Map<String, String> result = new TreeMap<String, String>();
+		// String tempaddtype, int tempalloffset, // Map<String, String> 
+		Map<String, String> result1 = new TreeMap<String, String>();
+		Map<String, Long> result2 = new TreeMap<String, Long>();
 		Set<String> types = dataInOrder.keySet();
 		Iterator<String> itr = types.iterator();
 		while (itr.hasNext())
@@ -67,14 +72,23 @@ public class JCScope {
 			int lsize = list.size();
 			if (idx >= 0 && lsize > idx)
 			{
-				result.put(type, list.get(idx));
+				result1.put(type, list.get(idx));
+				result2.put(type, dataTypeInTimeOrder.get(type));
 			}
 		}
-		return result;
+		return new ScopeOffsetResult(result1, result2);
 	}
 	
 	public void PushNewlyAssignedData(String data, String type)
 	{
+		long nowpushtime = System.currentTimeMillis();
+		if (recentstamp < nowpushtime) {
+		} else {
+			nowpushtime = recentstamp+1;
+		}
+		recentstamp = nowpushtime;
+		dataTypeInTimeOrder.put(type, recentstamp);
+		
 		LinkedList<String> datainorder = dataInOrder.get(type);
 		if (datainorder == null)
 		{
@@ -110,6 +124,7 @@ public class JCScope {
 	public void ClearAll()
 	{
 		dataInOrder.clear();
+		dataTypeInTimeOrder.clear();
 	}
 	
 	public void ResetScope(LinkedList<String> orderedData, LinkedList<String> orderedType) {

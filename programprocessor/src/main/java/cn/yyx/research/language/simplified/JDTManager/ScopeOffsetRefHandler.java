@@ -8,6 +8,7 @@ import cn.yyx.research.language.JDTManager.EnteredScopeStack;
 import cn.yyx.research.language.JDTManager.JCScope;
 import cn.yyx.research.language.JDTManager.OneScope;
 import cn.yyx.research.language.JDTManager.VDataPool;
+import cn.yyx.research.language.Utility.ScopeOffsetResult;
 
 public class ScopeOffsetRefHandler {
 	
@@ -30,14 +31,15 @@ public class ScopeOffsetRefHandler {
 	
 	public String HandleTypeRef(int offset)
 	{
-		Map<String, String> res = cjcs.GetContentAccordingToOffset(null, offset);
-		Set<String> keys = res.keySet();
+		// Map<String, String>
+		ScopeOffsetResult res = cjcs.GetContentAccordingToOffset(null, offset);
+		Set<String> keys = res.getSor().keySet();
 		if (keys.size() == 0)
 		{
 			return null;
 		}
 		String key = keys.iterator().next();
-		return res.get(key);
+		return res.getSor().get(key);
 	}
 	
 	/*public String HandleLabelRef(String tempaddtype, int tempalloffset, int offset)
@@ -52,9 +54,9 @@ public class ScopeOffsetRefHandler {
 		return res.get(key);
 	}*/
 	
-	public Map<String, String> HandleFieldVariableRef(Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
+	public ScopeOffsetResult HandleFieldVariableRef(Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
 	{
-		// tpns and tpnrs could be both null or non null.
+		// tpns and tpnrs could be both null or non null. // Map<String, String>
 		int usescope = scope;
 		if (trimedscope >= 0)
 		{
@@ -69,8 +71,9 @@ public class ScopeOffsetRefHandler {
 		return fcs.GetContentAccordingToOffset(tpnrs, offset);
 	}
 	
-	public Map<String, String> HandleCommonVariableRef(Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
+	public ScopeOffsetResult HandleCommonVariableRef(Map<String, Integer> tpnrs, int trimedscope, int scope, int offset) throws OffsetOutOfScopeException
 	{
+		// Map<String, String>
 		int usescope = scope;
 		if (trimedscope >= 0)
 		{
