@@ -17,7 +17,7 @@ public class ScopeOffsetResult {
 		pqueue.clear();
 		Set<String> keys = sor.keySet();
 		Iterator<String> kitr = keys.iterator();
-		int i = 0;
+		int i = 1000000;
 		while (kitr.hasNext())
 		{
 			String key = kitr.next();
