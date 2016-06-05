@@ -43,6 +43,11 @@ public class ScopeOffsetResult {
 		return tt.getCnt();
 	}
 	
+	public void SetModifiedVarName(String type, String varname)
+	{
+		sor.put(type, varname);
+	}
+	
 	public ScopeOffsetResult(Map<String, String> sor, Map<String, Long> sol) {
 		this.setSor(sor);
 		this.setSol(sol);
