@@ -7,8 +7,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
-import cn.yyx.research.language.Utility.ScopeOffsetResult;
 import cn.yyx.research.language.Utility.WarningUtil;
+import cn.yyx.research.language.simplified.JDTManager.ScopeOffsetResult;
 
 public class JCScope {
 	

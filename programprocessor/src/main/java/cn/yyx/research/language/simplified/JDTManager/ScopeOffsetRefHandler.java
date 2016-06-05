@@ -8,7 +8,6 @@ import cn.yyx.research.language.JDTManager.EnteredScopeStack;
 import cn.yyx.research.language.JDTManager.JCScope;
 import cn.yyx.research.language.JDTManager.OneScope;
 import cn.yyx.research.language.JDTManager.VDataPool;
-import cn.yyx.research.language.Utility.ScopeOffsetResult;
 
 public class ScopeOffsetRefHandler {
 	
