@@ -32,6 +32,7 @@ import cn.yyx.research.language.simplified.JDTManager.ForBlockState;
 import cn.yyx.research.language.simplified.JDTManager.JavaCode;
 import cn.yyx.research.language.simplified.JDTManager.ScopeOffsetRefHandler;
 import cn.yyx.research.language.simplified.JDTManager.TypeASTHelper;
+import cn.yyx.research.language.simplified.JDTManager.TypeUtil;
 
 public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
@@ -274,7 +275,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(AnnotationTypeMemberDeclaration node) {
-		String onecode = TypeCode(node.getType(), true) + GCodeMetaInfo.WhiteSpaceReplacer + node.getName().toString()
+		String onecode = TypeUtil.TypeCode(node.getType(), true) + GCodeMetaInfo.WhiteSpaceReplacer + node.getName().toString()
 				+ "()";
 		Expression expr = node.getDefault();
 		if (expr != null) {
@@ -551,7 +552,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(CreationReference node) {
 		Type type = node.getType();
-		String nodecode = "new::" + TypeCode(type, true);
+		String nodecode = "new::" + TypeUtil.TypeCode(type, true);
 		GenerateOneLine(nodecode, false, false, false, false, GCodeMetaInfo.MethodReferenceHint);
 		return false;
 	}
@@ -577,7 +578,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("TypeMethodReference:"+node);
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		Type type = node.getType();
-		String nodecode = node.getName().toString() + "::" + TypeCode(type, true);
+		String nodecode = node.getName().toString() + "::" + TypeUtil.TypeCode(type, true);
 		GenerateOneLine(nodecode, false, false, false, false, GCodeMetaInfo.MethodReferenceHint);
 		return false;
 	}
@@ -599,7 +600,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(CastExpression node) {
 		ExpressionReferPostHandle(node, node.getExpression(), "", GCodeMetaInfo.CastExpressionHint,
-				"(" + TypeCode(node.getType(), true) + ")", false, false, false, false, false);
+				"(" + TypeUtil.TypeCode(node.getType(), true) + ")", false, false, false, false, false);
 	}
 
 	@Override
@@ -696,7 +697,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				if (code == null) {
 					code = GCodeMetaInfo.PreExist;
 				}
-				String nodecode = GCodeMetaInfo.EnhancedFor + "for(" + TypeCode(node.getParameter().getType(), true)
+				String nodecode = GCodeMetaInfo.EnhancedFor + "for(" + TypeUtil.TypeCode(node.getParameter().getType(), true)
 						+ ":" + code + ")";
 				GenerateOneLine(nodecode, false, false, false, true, null);
 				NewVariableDeclared(node.getParameter().getName(), node.getParameter().getType());
@@ -741,7 +742,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Error("ArrayType:"+type);
 		// MyLogger.Error("ArrayElementType:"+type.getElementType());
 
-		String typecode = TypeCode(type.getElementType(), true);
+		String typecode = TypeUtil.TypeCode(type.getElementType(), true);
 		GenerateOneLine(GCodeMetaInfo.ArrayCreationHint + typecode + "(new)", false, false, false, true, null);
 		List<Expression> list = node.dimensions();
 		Iterator<Expression> itr = list.iterator();
@@ -909,7 +910,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(InstanceofExpression node) {
-		String typecode = TypeCode(node.getRightOperand(), true);
+		String typecode = TypeUtil.TypeCode(node.getRightOperand(), true);
 		ClassNewlyAssigned(typecode);
 		ExpressionReferPostHandle(node, node.getLeftOperand(), "instanceof", GCodeMetaInfo.InstanceofExpressionHint,
 				typecode, true, true, false, false, false);
@@ -1044,7 +1045,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(CatchClause node) {
 		runforbid.AddNodeHelp(node.getException().hashCode(), true);
 		String nodecode = GCodeMetaInfo.CatchHint + "catch" + GCodeMetaInfo.WhiteSpaceReplacer
-				+ TypeCode(node.getException().getType(), true);
+				+ TypeUtil.TypeCode(node.getException().getType(), true);
 		GenerateOneLine(nodecode, false, false, false, true, null);
 		NewVariableDeclared(node.getException().getName(), node.getException().getType());
 		return super.visit(node);
@@ -1509,7 +1510,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			// is construction function.
 			// System.err.print("MethodDeclaration:"+node);
 			// System.exit(1);
-			rtcode = TypeCode(rt2, true);
+			rtcode = TypeUtil.TypeCode(rt2, true);
 			int ednum = node.getExtraDimensions();
 			if (ednum > 0) {
 				rtcode += StringUtil.GenerateDuplicates("[]", ednum);
@@ -1612,7 +1613,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				invoker += ("." + refercnt);
 			}
 		}
-		MethodInvocationCode(TypeCode(node.getType(), true), invoker, node.arguments());
+		MethodInvocationCode(TypeUtil.TypeCode(node.getType(), true), invoker, node.arguments());
 		MethodDeleteReferRequest(expr, node.arguments());
 	}
 
@@ -2023,146 +2024,9 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	
 	protected CDType GenCDType(Type node)
 	{
-		return new CDType(TypeCode(node, true), TypeCode(node, false));
+		return new CDType(TypeUtil.TypeCode(node, true), TypeUtil.TypeCode(node, false));
 	}
-
-	protected String TypeCode(Type node, boolean simplified) {
-		if (node == null) {
-			System.err.println("Null Type? What the fuck!");
-			new Exception("Null Type").printStackTrace();
-			System.exit(1);
-		}
-		if (node instanceof PrimitiveType) {
-			return node.toString();
-		}
-		// System.out.println("RawTypeCode:"+node);
-		String type = RawTypeCode(node, null, simplified);
-		// System.out.println("TypeCode:"+type);
-		/*String typecode = GetClassOffset(type);
-		if (typecode == null) {
-			typecode = type;
-		}*/
-		return type; // typecode
-	}
-
-	@SuppressWarnings("unchecked")
-	protected String RawTypeCode(Type node, String parameterized, boolean simplified) {
-		
-		// System.out.println("Type:" + node);
-		// System.out.println("TypeClass:" + node.getClass());
-		
-		String result = "";
-		if (node instanceof PrimitiveType) {
-			String code = ((PrimitiveType) node).toString().trim();
-			int widx = code.lastIndexOf(' ');
-			result = code.substring(widx + 1);
-		}
-		if (node instanceof SimpleType) {
-			result = GetFirstElementName(((SimpleType) node).getName());
-			// GetStrictedName(((SimpleType) node).getName(),
-			// StrictedTypeLength)
-		}
-		if (node instanceof QualifiedType) {
-			QualifiedType qn = (QualifiedType) node;
-			String qnname = qn.getName().toString();
-			if (parameterized != null) {
-				qnname += parameterized;
-			}
-			result = qnname + "." + RawTypeCode(qn.getQualifier(), null, simplified);
-		}
-		if (node instanceof NameQualifiedType) {
-			NameQualifiedType nt = (NameQualifiedType) node;
-			result = nt.getName().toString() + "." + GetFirstElementName(((NameQualifiedType) node).getQualifier());
-			// + GetStrictedName(((NameQualifiedType) node).getQualifier(),
-			// StrictedTypeLength - 1);
-		}
-		if (node instanceof WildcardType) {
-			WildcardType wt = (WildcardType) node;
-			if (wt.getBound() == null) {
-				return "?";
-			}
-			result = "?" + GCodeMetaInfo.WhiteSpaceReplacer + (wt.isUpperBound() ? "extends" : "super")
-					+ GCodeMetaInfo.WhiteSpaceReplacer + RawTypeCode(wt.getBound(), null, simplified);
-		}
-		if (node instanceof ArrayType) {
-			ArrayType at = (ArrayType) node;
-			int dimens = at.dimensions().size();
-			String dimenstr = StringUtil.GenerateDuplicates("[]", dimens);
-			/*
-			 * for (int i = 0; i < dimens; i++) { dimenstr += "[]"; }
-			 */
-			result = RawTypeCode(at.getElementType(), null, simplified) + dimenstr;
-		}
-		if (node instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) node;
-			String param = "<";
-			List<Type> tas = pt.typeArguments();
-			Iterator<Type> itr = tas.iterator();
-			while (itr.hasNext()) {
-				Type tt = itr.next();
-				param += RawTypeCode(tt, null, simplified);
-				if (itr.hasNext()) {
-					param += ",";
-				}
-			}
-			param += ">";
-			result = RawTypeCode(pt.getType(), param, simplified);
-		}
-		if (node instanceof UnionType) {
-			UnionType ut = (UnionType) node;
-			List<Type> types = ut.types();
-			Iterator<Type> itr = types.iterator();
-			boolean first = true;
-			while (itr.hasNext()) {
-				Type t = itr.next();
-				String tstr = RawTypeCode(t, null, simplified);
-				if (first) {
-					result = tstr;
-					first = false;
-				} else {
-					result = result + "|" + tstr;
-				}
-			}
-		}
-		if (node instanceof IntersectionType) {
-			IntersectionType ut = (IntersectionType) node;
-			List<Type> types = ut.types();
-			Iterator<Type> itr = types.iterator();
-			boolean first = true;
-			while (itr.hasNext()) {
-				Type t = itr.next();
-				String tstr = RawTypeCode(t, null, simplified);
-				if (first) {
-					result = tstr;
-					first = false;
-				} else {
-					result = result + "&" + tstr;
-				}
-			}
-		}
-		if (!simplified && parameterized != null)
-		{
-			result += parameterized;
-		}
-		return result;
-		
-		// System.err.println("Uncognized Type node.");
-		// System.exit(1);
-		// return null;
-	}
-
-	protected String GetFirstElementName(Name name) {
-		if (name instanceof QualifiedName) {
-			return ((QualifiedName) name).getName().toString();
-		}
-		if (name instanceof SimpleName) {
-			return name.toString();
-		}
-		System.err.println("Name is not QualifiedName or SimpleName, what is that?");
-		System.exit(1);
-		return null;
-	}
-
+	
 	/*
 	 * protected String GetStrictedName(Name name, int alreadylen) { String
 	 * result = null; if (name != null && alreadylen > 0) { if (name instanceof
@@ -2285,7 +2149,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		Type type = node.getType();
 		String typecode = "void";
 		if (type != null) {
-			typecode = TypeCode(type, true);
+			typecode = TypeUtil.TypeCode(type, true);
 		}
 		String nodecode = "class." + typecode;
 		RawLiteralHandle(node, nodecode);
