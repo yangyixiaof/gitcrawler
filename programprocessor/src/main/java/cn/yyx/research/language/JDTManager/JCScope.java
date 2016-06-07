@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import cn.yyx.research.language.Utility.WarningUtil;
 import cn.yyx.research.language.simplified.JDTManager.ScopeOffsetResult;
+import cn.yyx.research.language.simplified.JDTManager.UniqueOrder;
 
 public class JCScope {
 	
@@ -79,20 +80,21 @@ public class JCScope {
 		return new ScopeOffsetResult(result1, result2);
 	}
 	
-	private long ComputeRecentTime()
+	private long ComputeRecentOrder()
 	{
-		long nowpushtime = System.nanoTime();
-		/*if (recentstamp < nowpushtime) {
+		/*long nowpushtime = System.nanoTime();
+		if (recentstamp < nowpushtime) {
 		} else {
 			nowpushtime = recentstamp+1;
-		}*/
+		}
 		recentstamp = nowpushtime;
-		return recentstamp;
+		return recentstamp;*/
+		return UniqueOrder.AllocateOrder();
 	}
 	
 	public void PushNewlyAssignedData(String data, String type)
 	{
-		dataTypeInTimeOrder.put(type, ComputeRecentTime());
+		dataTypeInTimeOrder.put(type, ComputeRecentOrder());
 		
 		LinkedList<String> datainorder = dataInOrder.get(type);
 		if (datainorder == null)
@@ -105,7 +107,7 @@ public class JCScope {
 	
 	public Integer GetExactOffset(String data, String type)
 	{
-		dataTypeInTimeOrder.put(type, ComputeRecentTime());
+		dataTypeInTimeOrder.put(type, ComputeRecentOrder());
 		
 		LinkedList<String> dataorder = dataInOrder.get(type);
 		if (dataorder == null)
