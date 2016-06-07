@@ -47,13 +47,8 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	protected JCScope ljcs = new JCScope();
 	protected Integer FirstLevelClass = null;
 	protected Stack<CDType> VeryRecentDeclaredType = new Stack<CDType>();
-	// protected boolean VeryRecentIsFieldDeclared = false;
 	protected NodeHelpManager<Boolean> fielddeclared = new NodeHelpManager<Boolean>();
-	// protected boolean VeryRecentNotGenerateCode = false;
 	protected NodeHelpManager<Boolean> berefered = new NodeHelpManager<Boolean>();
-	// protected NodeHelpManager<Boolean> beforcerefered = new NodeHelpManager<Boolean>();
-	// protected NodeHelpManager<Boolean> bereferedAlready = new
-	// NodeHelpManager<Boolean>();
 	protected NodeHelpManager<String> referedcnt = new NodeHelpManager<String>();
 	protected NodeHelpManager<Integer> referhint = new NodeHelpManager<Integer>();
 	protected NodeHelpManager<Boolean> refernoline = new NodeHelpManager<Boolean>();
@@ -1872,33 +1867,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SimpleName node) {
-
-		// Integer ht = referhint.GetNodeHelp(node.hashCode());
-		// ReferenceHint rh = ReferenceHintLibrary.ParseReferenceHint(ht);
-		// System.out.println("SimpleName:"+node + ";hint-high:" +
-		// (rh.getDataType() >> (ReferenceHintLibrary.MaskLength+1)) +
-		// ";hint-low:" + rh.getWayUse());
-
-		// testing
-		/*
-		 * if (node.toString().equals("Operation")) {
-		 * System.err.println("runpermit:" + canrun + ";runforbid:" +
-		 * runforbid.GetNodeHelp(nodehashcode)); }
-		 */
-
-		/*
-		 * Boolean canrun = runpermit.GetNodeHelp(nodehashcode); if (canrun ==
-		 * null || canrun == false) { Boolean forbid =
-		 * runforbid.GetNodeHelp(nodehashcode); if (forbid != null && forbid ==
-		 * true) { return false; } else { if (!NodeIsRefered(nodehashcode)) {
-		 * return false; } } }
-		 */
-		// MyLogger.Info("name:" + node.toString() +";hint:" +
-		// (referhint.GetNodeHelp(node.hashCode()) ==
-		// ReferenceHintLibrary.DataDeclare)+";hint2:"+(referhint.GetNodeHelp(node.hashCode())
-		// ==
-		// ReferenceHintLibrary.DataUse));
-
+		
 		int nodehashcode = node.hashCode();
 		Integer hint = referhint.GetNodeHelp(node.hashCode());
 

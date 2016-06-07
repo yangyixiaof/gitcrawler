@@ -79,7 +79,7 @@ public class JCScope {
 		return new ScopeOffsetResult(result1, result2);
 	}
 	
-	public void PushNewlyAssignedData(String data, String type)
+	private long ComputeRecentTime()
 	{
 		long nowpushtime = System.currentTimeMillis();
 		if (recentstamp < nowpushtime) {
@@ -87,7 +87,12 @@ public class JCScope {
 			nowpushtime = recentstamp+1;
 		}
 		recentstamp = nowpushtime;
-		dataTypeInTimeOrder.put(type, recentstamp);
+		return recentstamp;
+	}
+	
+	public void PushNewlyAssignedData(String data, String type)
+	{
+		dataTypeInTimeOrder.put(type, ComputeRecentTime());
 		
 		LinkedList<String> datainorder = dataInOrder.get(type);
 		if (datainorder == null)
@@ -100,6 +105,8 @@ public class JCScope {
 	
 	public Integer GetExactOffset(String data, String type)
 	{
+		dataTypeInTimeOrder.put(type, ComputeRecentTime());
+		
 		LinkedList<String> dataorder = dataInOrder.get(type);
 		if (dataorder == null)
 		{
