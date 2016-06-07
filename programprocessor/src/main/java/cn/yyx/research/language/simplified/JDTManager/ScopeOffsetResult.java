@@ -12,6 +12,17 @@ public class ScopeOffsetResult {
 	
 	private PriorityQueue<TimeCmp> pqueue = new PriorityQueue<TimeCmp>();
 	
+	public void IncreaseOrder(int inc)
+	{
+		Set<String> keys = sol.keySet();
+		Iterator<String> kitr = keys.iterator();
+		while (kitr.hasNext())
+		{
+			String key = kitr.next();
+			sol.put(key, sol.get(key) + inc);
+		}
+	}
+	
 	public void BeginIterate()
 	{
 		pqueue.clear();
