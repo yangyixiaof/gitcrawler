@@ -81,11 +81,11 @@ public class JCScope {
 	
 	private long ComputeRecentTime()
 	{
-		long nowpushtime = System.currentTimeMillis();
-		if (recentstamp < nowpushtime) {
+		long nowpushtime = System.nanoTime();
+		/*if (recentstamp < nowpushtime) {
 		} else {
 			nowpushtime = recentstamp+1;
-		}
+		}*/
 		recentstamp = nowpushtime;
 		return recentstamp;
 	}
