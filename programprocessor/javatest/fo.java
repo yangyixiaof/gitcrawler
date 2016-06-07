@@ -77,8 +77,14 @@ public class fo {
 		show.addActionListener((e) -> {
 			System.out.println("Light, Camera, Action !! Lambda expressions Rocks");
 		});*/
-		List<Integer> primes = Arrays.asList(2, 3, 5, 7, 11, 13, 17, 19, 23, 29);
-		IntSummaryStatistics stats = primes.stream().mapToInt((x) -> x).summaryStatistics();
+		// List<Integer> primes = Arrays.asList(2, 3, 5, 7, 11, 13, 17, 19, 23, 29);
+		// IntSummaryStatistics stats = primes.stream().mapToInt((x) -> x).summaryStatistics();
+		JButton browseButton = new JButton("\u6D4F\u89C8");
+		browseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// do_browseButton_actionPerformed(e);
+			}
+		});
 	}
 	
 }
