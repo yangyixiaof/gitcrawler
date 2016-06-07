@@ -15,4 +15,9 @@ public class UniqueOrder {
 		return order;
 	}
 	
+	public static int CurrentOrder()
+	{
+		return order;
+	}
+	
 }
