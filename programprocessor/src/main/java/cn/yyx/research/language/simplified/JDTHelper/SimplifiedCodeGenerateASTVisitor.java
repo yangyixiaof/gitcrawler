@@ -1510,7 +1510,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			ClearClassAndLabelInfo();
 			ResetDLM();
 		}
-		String nodecode = GCodeMetaInfo.MethodDeclarationHint;
+		String nodecode = "";
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
 		String rtcode = GCodeMetaInfo.ConstructionDeclarationHint;
 		Type rt2 = node.getReturnType2();
@@ -1549,7 +1549,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		 * nodecode.length() - 1); }
 		 */
 		nodecode = nodecode + ")" + node.getName().toString();
-		GenerateOneLine(nodecode, false, false, false, true, null);
+		/*if (acp.IsInAnonymous())
+		{
+			mw.peek().PushMethodName(node.getName().toString());
+		} else {*/
+		GenerateOneLine(GCodeMetaInfo.MethodDeclarationHint + nodecode, false, false, false, true, null);
+		//}
 		return super.visit(node);
 	}
 

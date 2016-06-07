@@ -19,6 +19,11 @@ public class AnonymousClassPoolInOneJavaFile {
 	
 	Stack<OneJavaFileAnonymousClassesCode> ojfaccstack = new Stack<OneJavaFileAnonymousClassesCode>();
 	
+	public boolean IsInAnonymous()
+	{
+		return ojfacclist.size() > 0;
+	}
+	
 	public OneJavaFileAnonymousClassesCode EnterAnonymousClass(MethodWindow mw)
 	{
 		anonymmousLevel++;
