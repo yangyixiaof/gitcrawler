@@ -105,7 +105,8 @@ public class JCScope {
 	
 	public Integer GetExactOffset(String data, String type)
 	{
-		dataTypeInTimeOrder.put(type, ComputeRecentTime());
+		// TODO
+		// dataTypeInTimeOrder.put(type, ComputeRecentTime());
 		
 		LinkedList<String> dataorder = dataInOrder.get(type);
 		if (dataorder == null)
