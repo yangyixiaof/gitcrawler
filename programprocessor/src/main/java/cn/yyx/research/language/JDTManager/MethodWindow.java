@@ -10,6 +10,9 @@ public class MethodWindow {
 	public static final int WindowSize = 6;
 	Queue<String> rawmethodnames = new LinkedList<String>();
 	
+	public MethodWindow() {
+	}
+	
 	public void OneTypeDeclared(String type){
 	}
 	

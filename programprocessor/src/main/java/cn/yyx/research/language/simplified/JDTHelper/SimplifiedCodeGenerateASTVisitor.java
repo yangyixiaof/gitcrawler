@@ -356,9 +356,21 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		TypeDeclarationPostCode(node);
 	}
 	
-	protected void EnterCodeSwitchScope()
+	protected void EnterCodeSwitchScope(boolean useparentmw)
 	{
-		jc = acp.EnterAnonymousClass(mw.peek());
+		MethodWindow usemw = mw.peek();
+		if (useparentmw)
+		{
+			if (mw.size() < 2)
+			{
+				System.err.println("What the fuck! mw size < 2 and use parent mw?");
+				System.exit(1);
+			}
+			MethodWindow tm = mw.pop();
+			usemw = mw.peek();
+			mw.push(tm);
+		}
+		jc = acp.EnterAnonymousClass(usemw);
 		omcanonystack.push(omc);
 		omc = new NodeCode(argmutiple);
 	}
@@ -381,7 +393,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		// MyLogger.Info("AnonymousClassDeclaration Begin");
 		// MyLogger.Info(node);
 		// MyLogger.Info("AnonymousClassDeclaration End");
-		EnterCodeSwitchScope();
+		EnterCodeSwitchScope(true);
 		// AnonymousClassDeclarationCodeFileAddMethodWindow();
 		SimplifiedFieldProcessASTVisitor sfpa = GenerateSimplifiedFieldProcessASTVisitor(node);
 		node.accept(sfpa);
@@ -441,7 +453,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		GenerateOneLine(GCodeMetaInfo.LambdaExpressionHint + "(" + nc + ")->" + bodycode, false, false, false, true, null);
 		if (body instanceof Block || body instanceof IfStatement || body instanceof WhileStatement || body instanceof ForStatement || body instanceof EnhancedForStatement)
 		{
-			EnterCodeSwitchScope();
+			EnterCodeSwitchScope(false);
 		}
 		return super.visit(node);
 	}
@@ -491,13 +503,13 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(Initializer node) {
 		// Do nothing now.
 		// MyLogger.Info("Initializer:"+node);
-		if (isFirstLevelASTNode(node) || ParentIsTypeDeclaration(node)) {
-			if (omc != null && !omc.IsEmpty()) {
-				PushMethodNodeCodeToJavaFileCode();
-				ResetDLM();
-			}
-			omc = new NodeCode(argmutiple);
+		// if (isFirstLevelASTNode(node) || ParentIsTypeDeclaration(node)) {
+		if (omc != null && !omc.IsEmpty()) {
+			PushMethodNodeCodeToJavaFileCode();
+			ResetDLM();
 		}
+		omc = new NodeCode(argmutiple);
+		// }
 		/*
 		 * if (isFirstLevelASTNode(node)) { if (omc != null && !omc.IsEmpty()) {
 		 * PushMethodNodeCodeToJavaFileCode(); } omc = new NodeCode(argmutiple);
@@ -509,11 +521,11 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(Initializer node) {
-		if (isFirstLevelASTNode(node)) {
-			FlushCode();
-		} else {
-			OneSentenceEnd();
-		}
+		//if (isFirstLevelASTNode(node)) {
+		FlushCode();
+		//} else {
+		//	OneSentenceEnd();
+		//}
 	}
 
 	@Override
@@ -1489,13 +1501,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 	public boolean visit(MethodDeclaration node) {
 		// MyLogger.Info("MethodDeclarationParent:"+node.getParent().hashCode());
 		mw.peek().Clear();
+		if (omc != null) {
+			FlushCode();
+		}
+		omc = new NodeCode(argmutiple);
+		
 		if (isFirstLevelASTNode(node) || ParentIsTypeDeclaration(node)) {
-			if (omc != null) {
-				FlushCode();
-				ClearClassAndLabelInfo();
-				ResetDLM();
-			}
-			omc = new NodeCode(argmutiple);
+			ClearClassAndLabelInfo();
+			ResetDLM();
 		}
 		String nodecode = GCodeMetaInfo.MethodDeclarationHint;
 		runforbid.AddNodeHelp(node.getName().hashCode(), true);
@@ -1556,12 +1569,12 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 			SingleVariableDeclaration t = itr.next();
 			runforbid.DeleteNodeHelp(t.hashCode());
 		}
-		if (isFirstLevelASTNode(node)) {
-			FlushCode();
-		} else {
-			OneSentenceEnd();
-		}
+		//if (isFirstLevelASTNode(node)) {
+		//} else {
+		//	OneSentenceEnd();
+		//}
 		runforbid.DeleteNodeHelp(node.getName().hashCode());
+		FlushCode();
 	}
 
 	// below are all method invocations.
@@ -2205,7 +2218,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		mw.peek().PushMethodName(rawmethodname);
 	}
 
-	protected boolean isFirstLevelASTNode(ASTNode node) {
+	private boolean isFirstLevelASTNode(ASTNode node) {
 		int parenthashcode = node.getParent().hashCode();
 		if (parenthashcode == FirstLevelClass) {
 			return true;
