@@ -1,0 +1,14 @@
+The script must be run in linux. Then, cd to the path where you put the IR. 
+This path is the last parameter when using program-processor program.
+
+Create an empty directory with exact name 'ClassWorkSpace'.
+
+Copy the ngramCountSpanLineBreaks.sh to the newly created directory 'ClassWorkSpace'.
+
+Cd to the 'ClassWorkSpace' directory.
+
+Then run command './ngramCountSpanLineBreaks.sh'.
+
+Record the path of the newly generated directory 'results'.
+
+The path of directory 'results' will be needed in the program which is used to put the model into AeroSpike database.

@@ -1,5 +1,5 @@
 #!/bin/bash
-ORDER=3
+ORDER=9
 Cur_Dir=$(pwd)
 echo $Cur_Dir
 cd ../
@@ -37,7 +37,8 @@ do
     countname="counts/"$filename".count"
     echo $countname
     echo $countname >> count.txt
-    continuous-ngram-count $line order=$ORDER | ngram-count -read - -write $countname
+    execmd="continuous-ngram-count order=$ORDER $line | ngram-count -order $ORDER -read - -write $countname"
+    eval $execmd
 done
 # make-batch-counts path.txt 5 cat counts -order $ORDER -sort -no-sos -no-eos
 merge-batch-counts counts count.txt
@@ -58,13 +59,13 @@ if [ "$finalrawcountfile"x = "unknown.count"x ]; then
     do
     if [ "${file##*.}" = "count" ]
     then
-        cts=${cts}+1
+	let cts++
+        # cts=${cts}+1
         finalrawcountfile=$Cur_Dir"/counts/"$file
     fi
-    if [ $max -gt 1 ]
+    if [ $cts -gt 1 ]
     then 
         echo "Some error happens! Halt the script."
-        exit
     else
         echo "Only one count file, we choose that as the final result."
     fi
