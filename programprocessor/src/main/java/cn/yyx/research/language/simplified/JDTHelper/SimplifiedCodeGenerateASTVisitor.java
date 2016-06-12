@@ -2596,14 +2596,14 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		}
 		scopeck.put(nhash, true);
 		sdm.EnterBlock(nhash);
-		if (!(node instanceof LambdaExpression))
+		if (!(node instanceof LambdaExpression || node instanceof ForStatement))
 		{
 			mw.push(new MethodWindow());
 		}
 	}
 
 	protected void ExitBlock(ASTNode node) {
-		if (!(node instanceof LambdaExpression))
+		if (!(node instanceof LambdaExpression || node instanceof ForStatement))
 		{
 			mw.pop();
 		}
@@ -2835,7 +2835,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	protected boolean NeedSpecialTreat(ASTNode node) {
 		if ((node instanceof AbstractTypeDeclaration) || (node instanceof AnonymousClassDeclaration)
-				|| (node instanceof LambdaExpression)) {
+				|| (node instanceof LambdaExpression) || (node instanceof ForStatement)) {
 			return true;
 		}
 		return false;
