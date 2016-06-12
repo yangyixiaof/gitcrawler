@@ -85,7 +85,7 @@ public class fo {
 				do_browseButton_actionPerformed(e);
 			}
 		});*/
-		String a = null;
+		// String a = null;
 	}
 	
 }
