@@ -86,6 +86,11 @@ public class fo {
 			}
 		});*/
 		// String a = null;
+		int n = 0;
+		for (int i = 0;i < n;i++)
+		{
+			System.err.println("Ha Ha.");
+		}
 	}
 	
 }
