@@ -86,11 +86,13 @@ public class fo {
 			}
 		});*/
 		// String a = null;
-		int n = 0;
+		/*int n = 0;
 		for (int i = 0;i < n;i++)
 		{
 			System.err.println("Ha Ha.");
-		}
+		}*/
+		long a = 0;
+		if (a > 0) a = System.currentTimeMillis();
 	}
 	
 }
