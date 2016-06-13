@@ -1,5 +1,7 @@
 package cn.yyx.research.language.simplified.JDTHelper;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -661,23 +663,50 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement node) {
-		GenerateOneLine(GCodeMetaInfo.DescriptionHint + "do", false, false, false, true, null);
-		dostmtln.AddNodeHelp(node.hashCode(), RecordCurrentLastIndex());
-		Statement body = node.getBody();
 		Expression expr = node.getExpression();
+		ExpressionReferPreHandle(expr, ReferenceHintLibrary.DataUse);
+		
+		runforbid.AddNodeHelp(expr.hashCode(), true);
+		// visit(expr);
+		// reflect to invoke method.
+		Class<SimplifiedCodeGenerateASTVisitor> clazz = SimplifiedCodeGenerateASTVisitor.class;
+		Method m2 = null;
+		try {
+			m2 = clazz.getDeclaredMethod("visit", expr.getClass());
+			m2.invoke(this);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		ExpressionReferPostHandle(node, node.getExpression(), "while", GCodeMetaInfo.DoWhileHint, "", false, true,
+				false, false, false);
+		
+		/*GenerateOneLine(GCodeMetaInfo.DescriptionHint + "do", false, false, false, true, null);
+		Statement body = node.getBody();
+		dostmtln.AddNodeHelp(node.hashCode(), RecordCurrentLastIndex());
 		AddFirstOrderTask(new FirstOrderTask(body, expr, node, false, false) {
 			@Override
 			public void run() {
 				dostmtln.AddNodeHelp(body.hashCode(), RecordCurrentLastIndex());
 				ExpressionReferPreHandle(expr, ReferenceHintLibrary.DataUse);
 			}
-		});
+		});*/
 		return super.visit(node);
 	}
 
 	@Override
 	public void endVisit(DoStatement node) {
-		ExpressionReferPostHandle(node, node.getExpression(), "while", GCodeMetaInfo.DoWhileHint, "", false, true,
+		Expression expr = node.getExpression();
+		runforbid.DeleteNodeHelp(expr.hashCode());
+		/*ExpressionReferPostHandle(node, node.getExpression(), "while", GCodeMetaInfo.DoWhileHint, "", false, true,
 				false, false, false);
 		int nodehashcode = node.hashCode();
 		int bodyhashcode = node.getBody().hashCode();
@@ -686,7 +715,7 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 		MoveLastToSpecificLine(nodeline);
 		MoveSpecificLineUntilLastToBeforeSpecificLine(bodyline + 1, nodeline);
 		dostmtln.DeleteNodeHelp(nodehashcode);
-		dostmtln.DeleteNodeHelp(bodyhashcode);
+		dostmtln.DeleteNodeHelp(bodyhashcode);*/
 		// GenerateEndInfo(GCodeMetaInfo.DescriptionHint +
 		// GCodeMetaInfo.EndOfAStatement);
 		// AppendEndInfoToLast(GCodeMetaInfo.EndOfAStatement);
