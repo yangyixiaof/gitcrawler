@@ -5,6 +5,7 @@ import java.util.IntSummaryStatistics;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
@@ -91,8 +92,19 @@ public class fo {
 		{
 			System.err.println("Ha Ha.");
 		}*/
-		long a = 0;
-		if (a > 0) a = System.currentTimeMillis();
+		// long a = 0;
+		// if (a > 0) a = System.currentTimeMillis();
+		Process process = getRuntime().exec("rar v -c- \"" + rarFile + "\"");
+		process.getOutputStream().close();
+		Scanner sc = new Scanner(process.getInputStream());
+		Vector<String> row = new Vector<String>();
+		do {
+			String line = sc.nextLine();
+			if (line.contains("----------------------")) {
+			//	count = (count == 0 ? count + 1 : -1);
+				continue;
+			}
+		} while (sc.hasNext());
 	}
 	
 }
