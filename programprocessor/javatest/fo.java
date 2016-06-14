@@ -12,6 +12,19 @@ import javax.swing.JButton;
 
 public class fo {
 	
+	String[] a = 0;
+	
+	public void hei(String[] args) {
+		for (int i=0;i<10;i++)
+		{
+			System.err.println(a);
+			for (int j=0;j<a.length;j++)
+			{
+				System.out.println("sd");
+			}
+		}
+	}
+	
 	/*public void haha()
 	{
 		o().m(a(),p());
@@ -105,11 +118,11 @@ public class fo {
 				continue;
 			}
 		} while (sc.hasNext());*/
-		if (true){
+		/*if (true){
 			System.out.println("erw.");
 		} else {
 			System.err.println("otu.");
-		}
+		}*/
 	}
 	
 }
