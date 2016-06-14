@@ -94,7 +94,7 @@ public class fo {
 		}*/
 		// long a = 0;
 		// if (a > 0) a = System.currentTimeMillis();
-		Process process = getRuntime().exec("rar v -c- \"" + rarFile + "\"");
+		/*Process process = getRuntime().exec("rar v -c- \"" + rarFile + "\"");
 		process.getOutputStream().close();
 		Scanner sc = new Scanner(process.getInputStream());
 		Vector<String> row = new Vector<String>();
@@ -104,7 +104,12 @@ public class fo {
 			//	count = (count == 0 ? count + 1 : -1);
 				continue;
 			}
-		} while (sc.hasNext());
+		} while (sc.hasNext());*/
+		if (true){
+			System.out.println("erw.");
+		} else {
+			System.err.println("otu.");
+		}
 	}
 	
 }
