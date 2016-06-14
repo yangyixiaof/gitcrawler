@@ -1112,14 +1112,17 @@ public class SimplifiedCodeGenerateASTVisitor extends ASTVisitor {
 				// "", false, true, false, false, false);
 			}
 		});
-		AddFirstOrderTask(new FirstOrderTask(node.getThenStatement(), node.getElseStatement(), node, true, false) {
-			@Override
-			public void run() {
-				if (getPost() != null) {
-					GenerateOneLine(GCodeMetaInfo.DescriptionHint + "else", false, false, false, true, null);
+		if (node.getElseStatement() != null)
+		{
+			AddFirstOrderTask(new FirstOrderTask(node.getThenStatement(), node.getElseStatement(), node, false, true) {
+				@Override
+				public void run() {
+					if (getPost() != null) {
+						GenerateOneLine(GCodeMetaInfo.DescriptionHint + "else", false, false, false, true, null);
+					}
 				}
-			}
-		});
+			});
+		}
 		return super.visit(node);
 	}
 
