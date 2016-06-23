@@ -12,7 +12,7 @@ import javax.swing.JButton;
 
 public class fo {
 	
-	String[] a = 0;
+	/*String[] a = 0;
 	
 	public void hei(String[] args) {
 		for (int i=0;i<10;i++)
@@ -23,7 +23,7 @@ public class fo {
 				System.out.println("sd");
 			}
 		}
-	}
+	}*/
 	
 	/*public void haha()
 	{
@@ -123,6 +123,13 @@ public class fo {
 		} else {
 			System.err.println("otu.");
 		}*/
+		int a = 0;
+		int b = a + 1;
+		int c = b + 1;
+		while (c < 5)
+		{
+			System.out.println(a);
+		}
 	}
 	
 }
