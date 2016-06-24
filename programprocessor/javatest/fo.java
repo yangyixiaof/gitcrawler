@@ -123,13 +123,13 @@ public class fo {
 		} else {
 			System.err.println("otu.");
 		}*/
-		int a = 0;
+		/*int a = 0;
 		int b = a + 1;
 		int c = b + 1;
 		while (c < 5)
 		{
 			System.out.println(a);
-		}
+		}*/
 	}
 	
 }
