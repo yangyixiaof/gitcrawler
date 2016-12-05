@@ -11,10 +11,15 @@ In the console or the command line, you can type 'start' directly, the gitcrawle
 Before you type 'start', you could type 'initial para1:para2:para3:para4:para5' to initial the crawler.
 
 Here is meanings of the five parameters:para1 to para5:
+
 para1 : numberOfThreads
+
 para2 : starbegin, the minimum stars of a project, all projects with smaller number of stars than this number will be ignored.
+
 para3 : starrange, the range of stars. Only projects with stars between 'starbegin' and 'starbegin + starrange' will be crawled.
+
 para4 : language, the language of projects, such as Java, C, C#, etc.
+
 para5 : dest directory, where to put the crawled projects.
 
 Here is an overall example:
