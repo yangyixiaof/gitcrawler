@@ -16,7 +16,7 @@ para1 : number of threads used to crawl the projects.
 
 para2 : lower limit of stars of a project, the minimum stars of a project, all projects with smaller number of stars than this number will be ignored.
 
-para3 : the range of stars, the range of stars. Only projects with stars between 'starbegin' and 'starbegin + starrange' will be crawled.
+para3 : the range of stars. Only projects with stars between 'starbegin' and 'starbegin + starrange' will be crawled.
 
 para4 : language, the language of projects, such as Java, C, C#, etc.
 
