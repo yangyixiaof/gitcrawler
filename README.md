@@ -24,7 +24,9 @@ para5 : dest directory, where to put the crawled projects.
 
 Here is an overall example:
 
+you firstly type:
 initial 10:50:5:java:~/HomeSpace/AllZipFile
+then you type:
 start
 
 The two commands will use 10 threads to crawl Java projects with stars between 50-55, the crawled projects will be put into the directory '~/HomeSpace/AllZipFile' in Linux. The way is similar on Windows. I guess it also works on Mac because I did not use any external library in this project.
