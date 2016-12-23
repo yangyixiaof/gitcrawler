@@ -26,7 +26,6 @@ public class ASTTraversal {
 		setCompilationUnit(parseSourceCode(identifier, getDocument()));
 	}
 
-	@SuppressWarnings("unchecked")
 	private CompilationUnit parseSourceCode(String identifier, IDocument pdocument) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setSource(pdocument.get().toCharArray());
