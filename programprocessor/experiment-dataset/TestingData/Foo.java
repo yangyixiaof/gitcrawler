@@ -30,7 +30,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-public class Fo extends JFrame {
+public class Foo extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField rarFileField;
