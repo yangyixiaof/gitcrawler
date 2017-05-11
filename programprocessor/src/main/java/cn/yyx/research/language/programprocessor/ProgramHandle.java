@@ -69,7 +69,7 @@ public class ProgramHandle {
 	}
 
 	public static void main(String[] args) {
-		String processdir = "";
+		String processdir = "experiment-dataset/TrainingData";
 		ProgramHandle app = null;
 		String cmd = null;
 		boolean stop = false;
