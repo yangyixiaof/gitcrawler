@@ -18,19 +18,21 @@ public class ArrayMinValue extends JFrame {
      * 
      */
     private static final long serialVersionUID = -8388043412533827271L;
-    private JPanel contentPane;
+    private JPanel cPane;
     private JTextField textField;
-    private JLabel label;
-    private JLabel label_1;
+    private JLabel lbl;
+    private JLabel lbl_1;
     
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
         try {
+			// right 1
             UIManager
                     .setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (Throwable e) {
+			// right 2
             e.printStackTrace();
         }
         EventQueue.invokeLater(new Runnable() {
@@ -51,63 +53,73 @@ public class ArrayMinValue extends JFrame {
      */
     public ArrayMinValue() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// right 1
         setBounds(100, 100, 450, 149);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
+        cPane = new JPanel();
+        cPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(cPane);
         setTitle("��ȡһά�������Сֵ");
-        contentPane.setLayout(null);
-        
+        cPane.setLayout(null);
+        // wrong because of too long tokens training and no context search.
         textField = new JTextField();
+        // wrong because of too long tokens training and no context search.
         textField.setBounds(6, 36, 414, 30);
-        contentPane.add(textField);
+        cPane.add(textField);
+        // right 1
         textField.setColumns(10);
-        
+        // right 1
         JButton button = new JButton("\u8BA1\u7B97");
+        // wrong because of no context search.
         button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                do_button_actionPerformed(e);
+            public void actionPerformed(ActionEvent e1) {
+                do_button_actionPerformed(e1);
             }
         });
+        // right 3
         button.setBounds(16, 76, 90, 30);
-        contentPane.add(button);
+        cPane.add(button);
         
-        label = new JLabel("��Сֵ��");
-        label.setBounds(116, 82, 304, 18);
-        contentPane.add(label);
+        lbl = new JLabel("��Сֵ��");
+        lbl.setBounds(116, 82, 304, 18);
+        cPane.add(lbl);
         
-        label_1 = new JLabel(
+        lbl_1 = new JLabel(
                 "�����ı������������������Կո�Ϊ�ָ��������磺3 5 2 562 125");
-        label_1.setBounds(6, 6, 422, 18);
-        contentPane.add(label_1);
+        lbl_1.setBounds(6, 6, 422, 18);
+        cPane.add(lbl_1);
     }
     
     protected void do_button_actionPerformed(ActionEvent e) {
         String arrayStr = textField.getText().trim();			//ȥ�����ҿո�
         if(arrayStr.equals("")){
+        	// rithg 1
         	JOptionPane.showMessageDialog(null, "��������������");
+        	// right 5
         	return;
         }
         for (int i = 0; i < arrayStr.length(); i++) {				// ���˷Ƿ�����
-            char charAt = arrayStr.charAt(i);
-            if (!Character.isDigit(charAt) && charAt != ' ') {
+            char charVal = arrayStr.charAt(i);
+            if (!Character.isDigit(charVal) && charVal != ' ') {
+            	// right 1
                 JOptionPane.showMessageDialog(null, "�����������������");
                 textField.setText("");
+                // right 5
                 return;
             }
         }
-        String[] numStrs = arrayStr.split(" {1,}");			// �ָ��ַ���
-        int[] numArray = new int[numStrs.length];			// ������������
-        // ת������Ϊ��������
+        String[] numStrings = arrayStr.split(" {1,}");
+        int[] numArray = new int[numStrings.length];
         for (int i = 0; i < numArray.length; i++) {
-            numArray[i] = Integer.valueOf(numStrs[i]);
+            numArray[i] = Integer.valueOf(numStrings[i]);
         }
-        int min = numArray[0];							// ������С������
+        // right 1
+        int minVal = numArray[0];
+        // right 1
         for (int j = 0; j < numArray.length; j++) {
-            if (min > numArray[j]) {					// ��ȡ��С����
-                min = numArray[j];
+            if (minVal > numArray[j]) {
+                minVal = numArray[j];
             }
         }
-        label.setText("��������С�����ǣ�" + min);		//��ʾ��Сֵ��ָ���ı�ǩ��
+        lbl.setText("��������С�����ǣ�" + minVal);
     }
 }

@@ -1,4 +1,4 @@
-package com.mingrisoft;
+package test;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,19 +27,22 @@ public class ArrayMinValue extends JFrame {
      * Launch the application.
      */
     public static void main(String[] args) {
-        try {
+    	try {
             UIManager
                     .setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (Throwable e) {
+        	// right 1
             e.printStackTrace();
         }
+    	// right 2
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
                     ArrayMinValue frame = new ArrayMinValue();
+                    // right 1
                     frame.setVisible(true);
                 } catch (Exception e) {
-					// right 2
+                	// right 1
                     e.printStackTrace();
                 }
             }
@@ -51,63 +54,86 @@ public class ArrayMinValue extends JFrame {
      */
     public ArrayMinValue() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // right 2
         setBounds(100, 100, 450, 149);
+        // right 1
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
-        setTitle("ï¿½ï¿½È¡Ò»Î¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Öµ");
+        // right 1.5
+        setTitle("»ñÈ¡Ò»Î¬Êý×éµÄ×îÐ¡Öµ");
         contentPane.setLayout(null);
-        
+        // right 1.5
         textField = new JTextField();
         textField.setBounds(6, 36, 414, 30);
+        // right 3.5
         contentPane.add(textField);
+        // right 1
         textField.setColumns(10);
-        
+        // right 4
         JButton button = new JButton("\u8BA1\u7B97");
+        // right 2
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	// right 2
                 do_button_actionPerformed(e);
             }
         });
         button.setBounds(16, 76, 90, 30);
+        // right 1
         contentPane.add(button);
         
-        label = new JLabel("ï¿½ï¿½Ð¡Öµï¿½ï¿½");
+        label = new JLabel("×îÐ¡Öµ£º");
+        // right 2
         label.setBounds(116, 82, 304, 18);
+        // right 2
         contentPane.add(label);
         
         label_1 = new JLabel(
-                "ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿Õ¸ï¿½Îªï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç£º3 5 2 562 125");
+                "ÇëÔÚÎÄ±¾¿òÖÐÊäÈë¶à¸öÕûÊý£¬ÒÔ¿Õ¸ñÎª·Ö¸ô·û¡£ÀýÈç£º3 5 2 562 125");
+        // right 1
         label_1.setBounds(6, 6, 422, 18);
+        // right 2
         contentPane.add(label_1);
     }
     
     protected void do_button_actionPerformed(ActionEvent e) {
-        String arrayStr = textField.getText().trim();			//È¥ï¿½ï¿½ï¿½ï¿½ï¿½Ò¿Õ¸ï¿½
+        String arrayStr = textField.getText().trim();			//È¥³ý×óÓÒ¿Õ¸ñ
         if(arrayStr.equals("")){
-        	JOptionPane.showMessageDialog(null, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        	JOptionPane.showMessageDialog(null, "ÇëÊäÈëÊý×ÖÄÚÈÝ");
+        	/// right 1
         	return;
         }
-        for (int i = 0; i < arrayStr.length(); i++) {				// ï¿½ï¿½ï¿½Ë·Ç·ï¿½ï¿½ï¿½ï¿½ï¿½
+        for (int i = 0; i < arrayStr.length(); i++) {				// ¹ýÂË·Ç·¨ÊäÈë
             char charAt = arrayStr.charAt(i);
             if (!Character.isDigit(charAt) && charAt != ' ') {
-                JOptionPane.showMessageDialog(null, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            	// right 1
+                JOptionPane.showMessageDialog(null, "ÊäÈë°üº¬·ÇÊý×ÖÄÚÈÝ");
+                // right 1
                 textField.setText("");
+                // right 1
                 return;
             }
         }
-        String[] numStrs = arrayStr.split(" {1,}");			// ï¿½Ö¸ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
-        int[] numArray = new int[numStrs.length];			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        // ×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // right 2
+        String[] numStrs = arrayStr.split(" {1,}");			// ·Ö¸î×Ö·û´®
+        // right 2.5
+        int[] numArray = new int[numStrs.length];			// ´´½¨ÕûÐÍÊý×é
+        // ×ª»»ÊäÈëÎªÕûÐÍÊý×é
+        // right 5.5
         for (int i = 0; i < numArray.length; i++) {
+        	// right 5.5
             numArray[i] = Integer.valueOf(numStrs[i]);
         }
-        int min = numArray[0];							// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // right 1
+        int min = numArray[0];							// ´´½¨×îÐ¡Êý±äÁ¿
         for (int j = 0; j < numArray.length; j++) {
-            if (min > numArray[j]) {					// ï¿½ï¿½È¡ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½
+        	// right 4
+            if (min > numArray[j]) {					// ÌáÈ¡×îÐ¡ÕûÊý
+            	// right 2
                 min = numArray[j];
             }
         }
-        label.setText("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½Ç£ï¿½" + min);		//ï¿½ï¿½Ê¾ï¿½ï¿½Ð¡Öµï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä±ï¿½Ç©ï¿½ï¿½
+        label.setText("Êý×éÖÐ×îÐ¡µÄÊýÊÇ£º" + min);		//ÏÔÊ¾×îÐ¡Öµµ½Ö¸¶¨µÄ±êÇ©ÖÐ
     }
 }
