@@ -8,9 +8,9 @@ public class SleepTimer {
 	int timegap = -1;
 	int nowTime = -1;
 	
-	public static final int[] minTimeArray = new int[]{5000,5000,10000,10000};
-	public static final int[] maxTimeArray = new int[]{25000,50000,80000,100000};
-	public static final int[] gapTimeArray = new int[]{5000,15000,20000,30000};
+	public static final int[] minTimeArray = new int[]{15000,15000,110000,110000};
+	public static final int[] maxTimeArray = new int[]{125000,150000,180000,1100000};
+	public static final int[] gapTimeArray = new int[]{15000,115000,120000,130000};
 	
 	public static SleepTimer RandomGenerateOne()
 	{

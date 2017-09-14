@@ -13,7 +13,7 @@ public class CrawlerWorker implements Runnable {
 	
 	int downloadcount = 0;
 	final int downloadmax = 50;
-	final int longsleeptime = 1800000;
+	final int longsleeptime = 2800000;
 	
 	public CrawlerWorker(ICrawler crawler, SleepTimer stimer, int pID) {
 		onecrawler = crawler;
