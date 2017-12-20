@@ -77,26 +77,21 @@ public class App
     	try {
 			while ((cmd = br.readLine()) != null && !stop)
 			{
-				switch (cmd) {
-				case "start":
+				if ("start".equals(cmd)) {
 					app.StartAllCrawlers();
-					break;
-				case "stop":
+
+				} else if ("stop".equals(cmd)) {
 					app.StopAllCrawlers();
 					stop = true;
-					break;
-				default:
+
+				} else {
 					cmd = cmd.trim();
-					if (cmd.startsWith("initial "))
-					{
+					if (cmd.startsWith("initial ")) {
 						String cnt = cmd.substring("initial ".length(), cmd.length());
 						String[] cntsps = cnt.split(":");
-						if (cntsps.length != 5)
-						{
+						if (cntsps.length != 5) {
 							System.out.println("Invalid initial command.");
-						}
-						else
-						{
+						} else {
 							//para1 : numberOfThreads;
 							//para2 : starbegin;
 							//para3 : starrange;
@@ -107,12 +102,10 @@ public class App
 							System.out.println("The crawler has been initialized successfully.");
 						}
 						break;
-					}
-					else
-					{
+					} else {
 						System.out.println("Unknown command.");
 					}
-					break;
+
 				}
 				if (stop)
 				{
