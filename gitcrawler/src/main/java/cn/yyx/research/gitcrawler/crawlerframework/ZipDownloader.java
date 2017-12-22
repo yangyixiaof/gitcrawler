@@ -35,6 +35,9 @@ public class ZipDownloader {
 				System.err.println("Wrong name:" + zipfname);
 				e.printStackTrace();
 			}
+		} else {
+			System.out.println("File alreay exist! : " + filename);
+			return zipfname;
 		}
 		InputStream inStream = null;
 		FileOutputStream fs = null;
