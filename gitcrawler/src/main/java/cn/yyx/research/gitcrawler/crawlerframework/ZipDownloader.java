@@ -51,6 +51,7 @@ public class ZipDownloader {
 			}
 			System.out.println("File " + filename + "Downloaded Successfully.....");
 		} catch (Exception e) {
+			zfile.delete();
 			System.out.println("Download Exception:" + e);
 			return "false";
 		} finally {
