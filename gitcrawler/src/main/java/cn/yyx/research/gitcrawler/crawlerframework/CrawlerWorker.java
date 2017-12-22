@@ -1,9 +1,12 @@
 package cn.yyx.research.gitcrawler.crawlerframework;
 
+import cn.yyx.research.gitcrawler.gitcrawler.FileUtility;
+
 import java.util.ArrayList;
 
-public class CrawlerWorker implements Runnable {
-	
+//public class CrawlerWorker implements Runnable {
+public class CrawlerWorker {
+
 	Thread selfThread = null;
 	ICrawler onecrawler = null;
 	boolean running = false;
@@ -20,7 +23,7 @@ public class CrawlerWorker implements Runnable {
 		sleeptimer = stimer;
 		ID = pID;
 	}
-	
+/*
 	public void RunCrawler()
 	{
 		running = true;
@@ -28,7 +31,53 @@ public class CrawlerWorker implements Runnable {
 		selfThread = new Thread(this);
 		selfThread.start();
 	}
+*/
 
+	public void run() {
+		String nexturl = null;
+		while ((nexturl = onecrawler.NextProjectPage()) != null)
+		{
+			ArrayList<String> ziplinks = onecrawler.ExtractProjectZipLinks(nexturl);
+			if (ziplinks != null)
+			{
+				for (String zlink : ziplinks)
+				{
+					String filename = ExtractFileNameFromLink(zlink);
+					System.out.println("Downloading file : "+filename);
+					ZipDownloader.downLoadZip(zlink, filename);
+					downloadcount++;
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			/*
+			if (downloadcount >= downloadmax)
+			{
+				downloadcount = 0;
+				try {
+					Thread.sleep(longsleeptime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			*/
+		}
+
+		int star = FileUtility.getNumber(FileUtility.starFilePath);
+		int range = FileUtility.getProperRange(star);
+		FileUtility.setNumber(FileUtility.starFilePath, star + range);
+		FileUtility.setNumber(FileUtility.pageFilePath, 0);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+/*
 	@Override
 	public void run() {
 		String nexturl = null;
@@ -66,7 +115,7 @@ public class CrawlerWorker implements Runnable {
 		}
 		stopped = true;
 	}
-	
+*/
 	private String ExtractFileNameFromLink(String link)
 	{
 		int pos1 = link.lastIndexOf('/', link.length());

@@ -1,5 +1,6 @@
 package cn.yyx.research.gitcrawler.gitcrawler;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -29,20 +30,21 @@ public class GitCrawler implements ICrawler{
 	final int[] sleeps = {5000,10000,15000};
 	final int sidxmax= sleeps.length;
 	
-	public GitCrawler(Config cfg) {
-		Initial(cfg);
+	public GitCrawler(Config cfg, int curPage) {
+		Initial(cfg, curPage);
 	}
 	
 	@Override
-	public void Initial(Config cfg) {
+	public void Initial(Config cfg, int curPage) {
 		starmin = cfg.getStarmin();
 		starmax = cfg.getStarmax();
 		
 		startbegin = starmin;
-		startend = startbegin + STARRANGE - 1;
+		//startend = startbegin + STARRANGE - 1;
+		startend = starmax;
 		
 		language = cfg.getLanguage();
-		page = 0;
+		page = curPage;
 		hasnext = true;
 	}
 
@@ -50,16 +52,19 @@ public class GitCrawler implements ICrawler{
 	public String NextProjectPage() {
 		if (hasnext)
 		{
-			page++;
 			String nexturl = "https://github.com/search?p="+page+"&q=stars%3A"+startbegin+".."+startend+"+language%3A"+language+"&ref=searchresults&type=Repositories&utf8=%E2%9C%93";
 			
-			System.out.println("hasnext page?" + hasnext);
+			System.out.println("hasnext page.txt?" + hasnext);
 			System.out.println("download url:" + nexturl);
-			
+
+			page++;
+			FileUtility.setNumber(FileUtility.pageFilePath, page);
+
 			return nexturl;
 		}
 		else
 		{
+			/*
 			page = 1;
 			startbegin = startbegin + STARRANGE;
 			
@@ -72,10 +77,12 @@ public class GitCrawler implements ICrawler{
 			startend = startbegin + STARRANGE - 1;
 			String nexturl = "https://github.com/search?p="+page+"&q=stars%3A"+startbegin+".."+startend+"+language%3A"+language+"&ref=searchresults&type=Repositories&utf8=%E2%9C%93";
 			
-			System.out.println("hasnext page?" + hasnext);
+			System.out.println("hasnext page.txt?" + hasnext);
 			System.out.println("download url:" + nexturl);
 			
 			return nexturl;
+			*/
+			return null;
 		}
 	}
 
