@@ -101,7 +101,7 @@ public class App
 							app.Initial(Integer.parseInt(cntsps[0]), Integer.parseInt(cntsps[1]), Integer.parseInt(cntsps[2]), cntsps[3], cntsps[4]);
 							System.out.println("The crawler has been initialized successfully.");
 						}
-						break;
+						//break;
 					} else {
 						System.out.println("Unknown command.");
 					}

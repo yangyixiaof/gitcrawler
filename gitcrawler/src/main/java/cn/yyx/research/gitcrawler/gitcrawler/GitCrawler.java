@@ -102,7 +102,7 @@ public class GitCrawler implements ICrawler{
 			hasnext = false;
 		}
 		ArrayList<String> result = new ArrayList<String>();
-		Elements plinks = doc.select("h3.repo-list-name > a");
+		Elements plinks = doc.select("a[class*=v-align-middle]");
 		for (Element link : plinks) {
 			result.add(link.attr("abs:href").trim()+"/archive/master.zip");
 		}
