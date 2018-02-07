@@ -56,7 +56,6 @@ public class App {
     }
 
 
-
     public static void main(String[] args) {
         ZipDownloader.setRepodir(args[0]);
         while (true) {
