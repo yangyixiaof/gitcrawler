@@ -8,7 +8,7 @@ Thus, we change the test data sets to the original 'hard version' which contains
 Actually in this hard version, the 6-gram performs similar to 3-gram as the unseen word will decrease the performance of the model sharply. 
 In the meanwhile, our model can deal with the unseen word and even predict the unseen word correctly. 
 Please use the newest version for comparison. 
-If you have any questions about our paper or our experiments, please contact me for free yangyixiaofirst@163.com, thanks. 
+If you have any questions about our paper or our experiments, please contact me for free: yangyixiaofirst@163.com, thanks. 
 
 
 
