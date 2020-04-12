@@ -50,7 +50,6 @@ public class DeleteUtil {
                 list.add(stu_obj);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return list;
@@ -60,8 +59,8 @@ public class DeleteUtil {
     public void deleteStu(int id) {
         conn_obj = getConn(); // 获取数据库连接
         try {
-            Statement stmt = conn_obj.createStatement();// 定义更新SQL语句
-            stmt.executeUpdate("delete from tb_stu where id= " + id); // 执行预处理语句
+            Statement stmt_obj = conn_obj.createStatement();// 定义更新SQL语句
+            stmt_obj.executeUpdate("delete from tb_stu where id= " + id); // 执行预处理语句
         } catch (Exception e) {
             e.printStackTrace();
         }

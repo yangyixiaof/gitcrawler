@@ -15,7 +15,7 @@ public class DrawSquareFrame extends JFrame {
     public DrawSquareFrame() {
         super(); // 调用超类的构造方法
         setTitle("绘制正方形"); // 窗体标题
-        setBounds(100, 100, 280, 180); // 窗体的显示位置和大小
+        setBounds(100, 100, 680, 580); // 窗体的显示位置和大小
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 窗体关闭方式
         add(square_panel); // 将面板类的实例添加到窗体容器中
     }
