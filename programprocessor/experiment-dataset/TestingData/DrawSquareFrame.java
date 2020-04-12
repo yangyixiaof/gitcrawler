@@ -13,19 +13,19 @@ public class DrawSquareFrame extends JFrame {
     }
     
     public DrawSquareFrame() {
-        super(); // 调用超类的构造方法
-        setTitle("绘制正方形"); // 窗体标题
-        setBounds(100, 100, 680, 580); // 窗体的显示位置和大小
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 窗体关闭方式
-        add(square_panel); // 将面板类的实例添加到窗体容器中
+        super();
+        setTitle("绘制正方形");
+        setBounds(100, 100, 680, 580);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(square_panel);
     }
     
-    class DrawSquarePanel extends JPanel {// 创建内部面板类
-        public void paint(Graphics g) {   // 重写paint()方法
-            g.drawRect(20, 20, 100, 100); // 绘制空心正方形
-            g.drawRect(40, 40, 60, 60);   // 绘制空心正方形
-            g.drawRect(140, 20, 100, 100);   // 绘制空心正方形
-            g.fillRect(160, 40, 60, 60);  // 绘制实心正方形
+    class DrawSquarePanel extends JPanel {
+        public void paint(Graphics g) {
+            g.drawRect(20, 20, 100, 800);
+            g.drawRect(40, 40, 60, 30);
+            g.drawRect(140, 20, 100, 70);
+            g.fillRect(160, 40, 60, 90);
         }
     }
 }
