@@ -11,28 +11,25 @@ import java.util.List;
 public class DeleteUtil {
     static Connection conn_obj = null;
     
-    // 获取数据库连接
     public static Connection getConn() {
         try {
-            Class.forName("net.sourceforge.jtds.jdbc.Driver"); // 加载数据库驱动
+            Class.forName("net.sourceforge.jtds.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        String url_cnt = "jdbc:jtds:sqlserver://localhost:1433;DatabaseName=db_database17"; // 连接数据库URL
-        String user_name = "sa"; // 连接数据库的用户名
-        String pass_word = ""; // 连接数据库密码
+        String url_cnt = "jdbc:jtds:sqlserver://localhost:1433;DatabaseName=db_database17";
+        String user_name = "sa";
+        String pass_word = "";
         try {
-            conn_obj = DriverManager.getConnection(url_cnt, user_name, pass_word); // 获取数据库连接
+            conn_obj = DriverManager.getConnection(url_cnt, user_name, pass_word);
             if (conn_obj != null) {
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return conn_obj; // 返回Connection对象
+        return conn_obj;
     }
     
-
-    // 定义查询所有同学信息方法
     public List selectStu() {
         conn_obj = getConn();
         Statement stmt;
@@ -55,12 +52,11 @@ public class DeleteUtil {
         return list;
     }
     
-    // 定义删除指定记录的方法
     public void deleteStu(int id) {
-        conn_obj = getConn(); // 获取数据库连接
+        conn_obj = getConn();
         try {
-            Statement stmt_obj = conn_obj.createStatement();// 定义更新SQL语句
-            stmt_obj.executeUpdate("delete from tb_stu where id= " + id); // 执行预处理语句
+            Statement stmt_obj = conn_obj.createStatement();
+            stmt_obj.executeUpdate("delete from tb_stu where id= " + id);
         } catch (Exception e) {
             e.printStackTrace();
         }

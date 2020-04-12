@@ -5,11 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class DrawSquareFrame extends JFrame {
-    DrawSquarePanel square_panel = new DrawSquarePanel(); // 创建面板类的实例
+    DrawSquarePanel square_panel = new DrawSquarePanel();
     
-    public static void main(String args[]) { // 主方法
-        DrawSquareFrame frame = new DrawSquareFrame(); // 创建窗体类的实例
-        frame.setVisible(true); // 显示窗体
+    public static void main(String args[]) {
+        DrawSquareFrame frame = new DrawSquareFrame();
+        frame.setVisible(true);
     }
     
     public DrawSquareFrame() {

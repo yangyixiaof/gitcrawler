@@ -1,65 +1,63 @@
 package com.zzk;
 import java.awt.*;
 import javax.swing.JLabel;
-/**
- * @author 张振坤
- */
+
 public class BallPanel extends JLabel implements Runnable {
-    private int x_r = 10;// 小球半径
-    private int x_width = x_r * 2;// 球宽度
-    private int x_height = x_r * 2;// 球高度
-    private Color ball_color = Color.BLUE;// 默认颜色
+    private int x_r = 10;
+    private int x_width = x_r * 2;
+    private int x_height = x_r * 2;
+    private Color ball_color = Color.BLUE;
     public BallPanel() {
-        setPreferredSize(new Dimension(x_width, x_height));// 初始化大小
-        new Thread(this).start();// 启动小球跳跃线程
+        setPreferredSize(new Dimension(x_width, x_height));
+        new Thread(this).start();
     }
     @Override
     protected void paintComponent(Graphics b_g) {
         super.paintComponent(b_g);
-        b_g.setColor(ball_color);// 设置默认颜色
-        b_g.fillOval(0, 0, x_width, x_height);// 在标签上绘制球体
+        b_g.setColor(ball_color);
+        b_g.fillOval(0, 0, x_width, x_height);
     }
+    
     @Override
     public void run() {
-        Container parent = getParent();/// 获得当前标签的父级容器对象
-        Point my_point = getLocation();// 获取初始位置
-        while (true) {// 循环读取父容器对象
+        Container parent = getParent();
+        Point my_point = getLocation();
+        while (true) {
             if (parent == null) {
                 try {
-                    Thread.sleep(50);// 线程休眠
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                my_point = getLocation();// 获取初始位置
-                parent = getParent();// 获得当前标签的父级容器对象
-            } else {// 如果已经获取到父容器
-                break;// 跳出循环
+                my_point = getLocation();
+                parent = getParent();
+            } else {
+                break;
             }
         }
-        int sx = my_point.x;// X坐标
-        int sy = my_point.y;// y坐标
-        int step = (int) (Math.random() * 10) % 3 + 1;// 移动步进
-        int dx = (Math.random() * 100) >= 50 ? step : -step;// 水平步进值
-        step = (int) (Math.random() * 10) % 3 + 1;// 移动步进
-        int dy = (Math.random() * 100) >= 50 ? step : -step;// 垂直步进值
-        int stime = (int) (Math.random() * 80 + 10);// 随机移动速度
+        int sx = my_point.x;
+        int sy = my_point.y;
+        int step = (int) (Math.random() * 10) % 3 + 1;
+        int dx = (Math.random() * 100) >= 50 ? step : -step;
+        step = (int) (Math.random() * 10) % 3 + 1;
+        int dy = (Math.random() * 100) >= 50 ? step : -step;
+        int stime = (int) (Math.random() * 80 + 10);
         while (parent.isVisible()) {
-            int parentWidth = parent.getWidth();// 容器宽度
-            int parentHeight = parent.getHeight();// 容器高度
-            setLocation(sx, sy);// 指定小球的位置
+            int parentWidth = parent.getWidth();
+            int parentHeight = parent.getHeight();
+            setLocation(sx, sy);
             try {
-                Thread.sleep(stime);// 通过休眠改变移动速度
+                Thread.sleep(stime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            sx = sx + dx * 5;// 水平坐标偏移5个像素
-            sy = sy + dy * 5;// 垂直坐标偏移5个像素
-            // 检测垂直边界
+            sx = sx + dx * 5;
+            sy = sy + dy * 5;
+            
             if (sy > parentHeight - x_height || sy < 0)
-                dy = -dy;// 防止坐标超出垂直边界
-            // 检测水平边界
+                dy = -dy;
             if (sx > parentWidth - x_width || sx < 0)
-                dx = -dx;// 防止坐标超出水平边界
+                dx = -dx;
         }
     }
 }

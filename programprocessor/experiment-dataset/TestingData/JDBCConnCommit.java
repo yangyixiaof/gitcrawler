@@ -1,26 +1,13 @@
 import java.sql.*;
-/**
- * <p>Title: JDBC连接数据库</p>
- * <p>Description: 本实例演示如何使用JDBC连接Oracle数据库，并演示添加数据和查询数据。</p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Filename: JDBCConnCommit.java</p>
- * @author 杜江
- * @version 1.0
- */
+
 public class JDBCConnCommit{
   private static String url="";
   private static String username="";
   private static String password="";
-/**
- *<br>方法说明：获得数据连接
- *<br>输入参数：
- *<br>返回类型：Connection 连接对象
- */  
+  
   public Connection conn(){
      try {
-     	//加载JDBC驱动
         Class.forName("oracle.jdbc.driver.OracleDriver");
-        //创建数据库连接
         Connection con = DriverManager.getConnection(url, username, password);
         return con;
     }catch(ClassNotFoundException cnf){
@@ -34,25 +21,16 @@ public class JDBCConnCommit{
         return null;
      }
   }
-
-/**
- *<br>方法说明：执行查询SQL语句
- *<br>输入参数：Connection con 数据库连接
- *<br>输入参数：String sql 要执行的SQL语句
- *<br>返回类型：
- */
+  
   public void query(Connection con, String sql) throws SQLException,Exception {
     try{
      if(con==null){
        throw new Exception("database connection can't use!");
      }
      if(sql==null) throw new Exception("check your parameter: 'sql'! don't input null!");
-     //声明语句
      Statement stmt = con.createStatement();
-     //执行查询
      ResultSet rs = stmt.executeQuery(sql); 
      ResultSetMetaData r_meta = rs.getMetaData();
-     //获得数据字段个数
      int num_columns = r_meta.getColumnCount();
      while(rs.next())
 	 {
@@ -71,12 +49,7 @@ public class JDBCConnCommit{
       throw new SQLException("query error");
     }
   }
-/**
- *<br>方法说明：执行插入、更新、删除等没有返回结果集的SQL语句
- *<br>输入参数：Connection con 数据库连接
- *<br>输入参数：String sql 要执行的SQL语句
- *<br>返回类型：
- */
+  
    public void execute(Connection con, String sql) throws SQLException  {
     try{
      if(con==null) return;
@@ -91,11 +64,6 @@ public class JDBCConnCommit{
     }
   }
 
-/**
- *<br>方法说明：实例演示
- *<br>输入参数：
- *<br>返回类型：
- */
   public void demo(){
       JDBCConnCommit oc = new JDBCConnCommit();
       Connection conn = oc.conn();
@@ -127,11 +95,7 @@ public class JDBCConnCommit{
     }
     
   }
-/**
- *<br>方法说明：主方法
- *<br>输入参数：
- *<br>返回类型：
- */
+  
   public static void main(String[] arg){
     if(arg.length!=3){
       System.out.println("use: java JDBCConnCommit url username password");

@@ -1,25 +1,20 @@
-//文件名：StatefulShopTestClient.java
-//有状态会话EJB测试客户端
-package stateful;
 import javax.naming.*;
 import java.util.Properties;
 import java.util.Vector;
 import javax.rmi.PortableRemoteObject;
+
 public class StatefulShopTestClient {
   private static final String ERROR_NULL_REMOTE = "Remote interface reference is null.  It must be created by calling one of the Home interface methods first.";
   private static final int MAX_OUTPUT_LINE_LENGTH = 100;
   private boolean logging = true;
   private StatefulShopHome StatefulShopHome = null;
   private StatefulShop StatefulShop = null;
-  //构造器
+  
   public StatefulShopTestClient() {
    log("Initializing bean access.");
     try {
-      //得到context上下文
       Context ctx = getInitialContext();
-      //查询StatefulShop
       Object ref = ctx.lookup("StatefulShop");
-      //创建Home主接口
       StatefulShopHome = (StatefulShopHome) PortableRemoteObject.narrow(ref, StatefulShopHome.class);
       log("Succeeded initializing bean access.");
     }
@@ -30,7 +25,7 @@ public class StatefulShopTestClient {
       e.printStackTrace();
     }
   }
-//方法说明：初始化上下文
+  
   private Context getInitialContext() throws Exception {
     String url = "t3://localhost:7001";
     String user = null;
@@ -52,7 +47,7 @@ public class StatefulShopTestClient {
       throw e;
     }
   }
-//方法说明：创建EJB实例
+  
 public StatefulShop create() {
     log("Calling create()");
     try {
@@ -72,7 +67,7 @@ public StatefulShop create() {
     }
     return StatefulShop;
   }
-//方法说明：添加账户资金
+
   public void addGoods(int id,String goods,double value) {
     if (StatefulShop == null) {
       System.out.println("Error in addGoods(): " + ERROR_NULL_REMOTE);
@@ -92,7 +87,7 @@ public StatefulShop create() {
       e.printStackTrace();
     }
   }
-//方法说明：提取账户资金
+  
  public void removeGoods(int id) {
     if (StatefulShop == null) {
       System.out.println("Error in removeGoods(): " + ERROR_NULL_REMOTE);
@@ -112,7 +107,7 @@ public StatefulShop create() {
       e.printStackTrace();
     }
   }
-//方法说明：获取账户资金数
+ 
   public Vector seeGoods() {
     Vector returnValue = new Vector();;
     if (StatefulShop == null) {
@@ -137,7 +132,7 @@ public StatefulShop create() {
     }
     return returnValue;
   }
-//方法说明：显示信息
+  
   private void log(String message) {
     if (message == null) {
       System.out.println("-- null");
@@ -150,15 +145,16 @@ public StatefulShop create() {
       System.out.println("-- " + message);
     }
   }
+  
   //Main method
   public static void main(String[] args) {
     StatefulShopTestClient client = new StatefulShopTestClient();
     client.create();
     client.seeGoods();
-    client.addGoods(1,"ACR光驱",190);
+    client.addGoods(1,"ACR",190);
     client.addGoods(2,"CPU AMD",280);
-    client.addGoods(3,"精英主板",680);
+    client.addGoods(3,"Main Card",680);
     client.removeGoods(2);
-    client.log("现在的商品:"+client.seeGoods());
+    client.log("Good:"+client.seeGoods());
   }
 }

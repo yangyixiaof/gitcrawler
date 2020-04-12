@@ -45,7 +45,7 @@ public class DeleteFrame extends JFrame {
      */
     public DeleteFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 329);
+        setBounds(100, 100, 450, 319);
         content_pane = new JPanel();
         content_pane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(content_pane);

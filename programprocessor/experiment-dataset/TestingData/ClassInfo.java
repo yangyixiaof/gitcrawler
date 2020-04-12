@@ -57,30 +57,28 @@ public class ClassInfo extends JFrame {
     
     private JTable getTable() {
         if (c_table == null) {
-            c_table = new JTable();// 创建表格控件
-            c_table.setRowHeight(23);// 设置行高度
-            String[] columns = { "姓名", "性别", "出生日期" };// 创建列名数组
-            // 创建表格模型
+            c_table = new JTable();
+            c_table.setRowHeight(23);
+            String[] columns = { "name", "sex", "birth-date" };
             DefaultTableModel model = new DefaultTableModel(columns, 0);
-            c_table.setModel(model);// 设置表格模型
-            List<String> students = getStudents();// 调用方法传递list集合对象
-            for (String info : students) {// 遍历学生集合对象
-                String[] args = info.split(",");// 把学生信息拆分为数组
-                model.addRow(args);// 把学生信息添加到表格的行
+            c_table.setModel(model);
+            List<String> students = getStudents();
+            for (String info : students) {
+                String[] args = info.split(",");
+                model.addRow(args);
             }
         }
         return c_table;
     }
     
     private List<String> getStudents() {
-        // 创建List集合对象
         List<String> list = new ArrayList<String>();
-        list.add("李哥,男,1981-1-1");// 添加数据到集合对象
-        list.add("小陈,女,1981-1-1");
-        list.add("小刘,男,1981-1-1");
-        list.add("小张,男,1981-1-1");
-        list.add("小董,男,1981-1-1");
-        list.add("小吕,男,1981-1-1");
+        list.add("li,male,1981-1-1");
+        list.add("chen,female,1981-1-1");
+        list.add("liu,male,1981-1-1");
+        list.add("zhang,male,1981-1-1");
+        list.add("dong,male,1981-1-1");
+        list.add("lv,male,1981-1-1");
         return list;
     }
 }

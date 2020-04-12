@@ -78,7 +78,7 @@ public class FullScreenFrame extends JFrame {
         content_pane.add(button_panel, BorderLayout.SOUTH);
         
         JButton choose_button = new JButton("\u9009\u62E9\u6587\u4EF6");
-        choose_button.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        choose_button.setFont(new Font("unseen", Font.PLAIN, 16));
         choose_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 do_chooseButton_actionPerformed(arg0);
@@ -87,7 +87,7 @@ public class FullScreenFrame extends JFrame {
         button_panel.add(choose_button);
         
         JButton fullscreen_button = new JButton("\u5168\u5C4F\u663E\u793A");
-        fullscreen_button.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        fullscreen_button.setFont(new Font("unseen", Font.PLAIN, 16));
         fullscreen_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 do_fullscreenButton_actionPerformed(arg0);
@@ -101,7 +101,7 @@ public class FullScreenFrame extends JFrame {
     
     protected void do_chooseButton_actionPerformed(ActionEvent arg0) {
         JFileChooser file_chooser = new JFileChooser();
-        file_chooser.setFileFilter(new FileNameExtensionFilter("PDF文件", "pdf"));
+        file_chooser.setFileFilter(new FileNameExtensionFilter("PDF", "pdf"));
         file_chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         file_chooser.setMultiSelectionEnabled(false);
         int result = file_chooser.showOpenDialog(this);
@@ -129,18 +129,18 @@ public class FullScreenFrame extends JFrame {
     
     protected void do_fullscreenButton_actionPerformed(ActionEvent arg0) {
         if (pdf_page == null) {
-            JOptionPane.showMessageDialog(this, "请选择PDF文件", null, JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "please choose PDF file", null, JOptionPane.WARNING_MESSAGE);
             return;
         }
         Rectangle rect = new Rectangle(0, 0, (int) pdf_page.getBBox().getWidth(), (int) pdf_page.getBBox().getHeight());// 获得用户选中的PDF页面的边框
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension dimension = toolkit.getScreenSize(); // 获得用户的显示器大小
-        double times = dimension.getHeight() / rect.height;// 获得高度需要放大的倍数
+        Dimension dimension = toolkit.getScreenSize();
+        double times = dimension.getHeight() / rect.height;
         Image image = pdf_page.getImage((int) (rect.width * times), dimension.height, rect, null, true, true);// 设置图片的大小
         if (pdf_panel != null) {
             pdf_panel.removeAll();
         }
-        pdf_panel.add(new JLabel(new ImageIcon(image))); // 显示生成的图片
+        pdf_panel.add(new JLabel(new ImageIcon(image)));
         new FullScreenWindow(pdf_panel);
     }
 }
