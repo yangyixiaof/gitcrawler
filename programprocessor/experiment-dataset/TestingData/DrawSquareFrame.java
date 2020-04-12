@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class DrawSquareFrame extends JFrame {
-    DrawSquarePanel squarePanel = new DrawSquarePanel(); // 创建面板类的实例
+    DrawSquarePanel square_panel = new DrawSquarePanel(); // 创建面板类的实例
     
     public static void main(String args[]) { // 主方法
         DrawSquareFrame frame = new DrawSquareFrame(); // 创建窗体类的实例
@@ -17,7 +17,7 @@ public class DrawSquareFrame extends JFrame {
         setTitle("绘制正方形"); // 窗体标题
         setBounds(100, 100, 280, 180); // 窗体的显示位置和大小
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 窗体关闭方式
-        add(squarePanel); // 将面板类的实例添加到窗体容器中
+        add(square_panel); // 将面板类的实例添加到窗体容器中
     }
     
     class DrawSquarePanel extends JPanel {// 创建内部面板类

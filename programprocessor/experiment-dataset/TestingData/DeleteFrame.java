@@ -19,10 +19,10 @@ import java.util.List;
 
 public class DeleteFrame extends JFrame {
     
-    private JPanel contentPane;
-    private JTable table;
-    private LocalTableModel model = new LocalTableModel();
-    private DeleteUtil util = new DeleteUtil();
+    private JPanel content_pane;
+    private JTable j_table;
+    private LocalTableModel lt_model = new LocalTableModel();
+    private DeleteUtil d_util = new DeleteUtil();
     
     /**
      * Launch the application.
@@ -46,14 +46,14 @@ public class DeleteFrame extends JFrame {
     public DeleteFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 329);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
-        contentPane.setLayout(null);
+        content_pane = new JPanel();
+        content_pane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(content_pane);
+        content_pane.setLayout(null);
         
         JPanel panel = new JPanel();
         panel.setBounds(0, 0, 434, 291);
-        contentPane.add(panel);
+        content_pane.add(panel);
         panel.setLayout(null);
         
         JLabel messageLabel = new JLabel("删除数据时给出提示信息");
@@ -65,14 +65,14 @@ public class DeleteFrame extends JFrame {
         scrollPane.setBounds(34, 70, 364, 173);
         panel.add(scrollPane);
         
-        table = new JTable(model);
-        List list = util.selectStu();
+        j_table = new JTable(lt_model);
+        List list = d_util.selectStu();
         for (int i = 0; i < list.size(); i++) {
             Stu stu = (Stu) list.get(i);
-            model.addRow(new Object[] { stu.getId(), stu.getName(),
+            lt_model.addRow(new Object[] { stu.getId(), stu.getName(),
                     stu.getSex(), stu.getSpecialty(), stu.getGrade() });
         }
-        scrollPane.setViewportView(table);
+        scrollPane.setViewportView(j_table);
         
         JButton deleteButton = new JButton("删除");
         deleteButton.addActionListener(new ActionListener() {
@@ -95,12 +95,12 @@ public class DeleteFrame extends JFrame {
     
     // 删除按钮的单击事件
     protected void do_deleteButton_actionPerformed(ActionEvent arg0) {
-        int row = table.getSelectedRow();
+        int row = j_table.getSelectedRow();
         if (row >= 0) {
             int n = JOptionPane.showConfirmDialog(getContentPane(), "确认删除吗？",
                     "确认对话框", JOptionPane.YES_NO_CANCEL_OPTION);
             if (n == JOptionPane.YES_OPTION) { // 如果用户确认信息
-                util.deleteStu(row+1);
+                d_util.deleteStu(row+1);
             }           
            validate();
         }

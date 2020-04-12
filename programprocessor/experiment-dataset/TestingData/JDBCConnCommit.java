@@ -51,15 +51,15 @@ public class JDBCConnCommit{
      Statement stmt = con.createStatement();
      //执行查询
      ResultSet rs = stmt.executeQuery(sql); 
-     ResultSetMetaData rmeta = rs.getMetaData();
+     ResultSetMetaData r_meta = rs.getMetaData();
      //获得数据字段个数
-     int numColumns = rmeta.getColumnCount();
+     int num_columns = r_meta.getColumnCount();
      while(rs.next())
 	 {
-	   for(int i = 0;i< numColumns;i++)
+	   for(int i = 0;i< num_columns;i++)
 	   {
-		String sTemp = rs.getString(i+1);
-		System.out.print(sTemp+"  ");
+		String s_temp = rs.getString(i+1);
+		System.out.print(s_temp+"  ");
 	   }
 	  System.out.println("");	
 	 }

@@ -13,8 +13,8 @@ import javax.swing.JTable;
 
 public class ClassInfo extends JFrame {
     
-    private JPanel contentPane;
-    private JTable table;
+    private JPanel content_pane;
+    private JTable c_table;
     
     /**
      * Launch the application.
@@ -23,16 +23,16 @@ public class ClassInfo extends JFrame {
         try {
             UIManager
                     .setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Throwable e) {
-            e.printStackTrace();
+        } catch (Throwable ex) {
+            ex.printStackTrace();
         }
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ClassInfo frame = new ClassInfo();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    ClassInfo ci_frame = new ClassInfo();
+                    ci_frame.setVisible(true);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -45,31 +45,31 @@ public class ClassInfo extends JFrame {
         setTitle("\u7528List\u96C6\u5408\u4F20\u9012\u5B66\u751F\u4FE1\u606F");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 392, 223);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.setLayout(new BorderLayout(0, 0));
-        setContentPane(contentPane);
+        content_pane = new JPanel();
+        content_pane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        content_pane.setLayout(new BorderLayout(0, 0));
+        setContentPane(content_pane);
         
-        JScrollPane scrollPane = new JScrollPane();
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-        scrollPane.setViewportView(getTable());
+        JScrollPane scroll_pane = new JScrollPane();
+        content_pane.add(scroll_pane, BorderLayout.CENTER);
+        scroll_pane.setViewportView(getTable());
     }
     
     private JTable getTable() {
-        if (table == null) {
-            table = new JTable();// 创建表格控件
-            table.setRowHeight(23);// 设置行高度
+        if (c_table == null) {
+            c_table = new JTable();// 创建表格控件
+            c_table.setRowHeight(23);// 设置行高度
             String[] columns = { "姓名", "性别", "出生日期" };// 创建列名数组
             // 创建表格模型
             DefaultTableModel model = new DefaultTableModel(columns, 0);
-            table.setModel(model);// 设置表格模型
+            c_table.setModel(model);// 设置表格模型
             List<String> students = getStudents();// 调用方法传递list集合对象
             for (String info : students) {// 遍历学生集合对象
                 String[] args = info.split(",");// 把学生信息拆分为数组
                 model.addRow(args);// 把学生信息添加到表格的行
             }
         }
-        return table;
+        return c_table;
     }
     
     private List<String> getStudents() {

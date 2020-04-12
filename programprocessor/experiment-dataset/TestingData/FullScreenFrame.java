@@ -37,9 +37,9 @@ public class FullScreenFrame extends JFrame {
      * 
      */
     private static final long serialVersionUID = -5506015730370161973L;
-    private JPanel contentPane;
-    private JPanel pdfPanel;
-    private PDFPage pdfPage;
+    private JPanel content_pane;
+    private JPanel pdf_panel;
+    private PDFPage pdf_page;
     
     /**
      * Launch the application.
@@ -53,8 +53,8 @@ public class FullScreenFrame extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    FullScreenFrame frame = new FullScreenFrame();
-                    frame.setVisible(true);
+                    FullScreenFrame f = new FullScreenFrame();
+                    f.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -69,53 +69,53 @@ public class FullScreenFrame extends JFrame {
         setTitle("\u5168\u5C4F\u663E\u793APDF\u6587\u4EF6");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 300);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
-        contentPane.setLayout(new BorderLayout(0, 0));
+        content_pane = new JPanel();
+        content_pane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(content_pane);
+        content_pane.setLayout(new BorderLayout(0, 0));
         
-        JPanel buttonPanel = new JPanel();
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+        JPanel button_panel = new JPanel();
+        content_pane.add(button_panel, BorderLayout.SOUTH);
         
-        JButton chooseButton = new JButton("\u9009\u62E9\u6587\u4EF6");
-        chooseButton.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-        chooseButton.addActionListener(new ActionListener() {
+        JButton choose_button = new JButton("\u9009\u62E9\u6587\u4EF6");
+        choose_button.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        choose_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 do_chooseButton_actionPerformed(arg0);
             }
         });
-        buttonPanel.add(chooseButton);
+        button_panel.add(choose_button);
         
-        JButton fullscreenButton = new JButton("\u5168\u5C4F\u663E\u793A");
-        fullscreenButton.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-        fullscreenButton.addActionListener(new ActionListener() {
+        JButton fullscreen_button = new JButton("\u5168\u5C4F\u663E\u793A");
+        fullscreen_button.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        fullscreen_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 do_fullscreenButton_actionPerformed(arg0);
             }
         });
-        buttonPanel.add(fullscreenButton);
+        button_panel.add(fullscreen_button);
         
-        pdfPanel = new JPanel();
-        contentPane.add(pdfPanel, BorderLayout.CENTER);
+        pdf_panel = new JPanel();
+        content_pane.add(pdf_panel, BorderLayout.CENTER);
     }
     
     protected void do_chooseButton_actionPerformed(ActionEvent arg0) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileFilter(new FileNameExtensionFilter("PDF文件", "pdf"));
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setMultiSelectionEnabled(false);
-        int result = fileChooser.showOpenDialog(this);
+        JFileChooser file_chooser = new JFileChooser();
+        file_chooser.setFileFilter(new FileNameExtensionFilter("PDF文件", "pdf"));
+        file_chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        file_chooser.setMultiSelectionEnabled(false);
+        int result = file_chooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            File selectFile = fileChooser.getSelectedFile();
+            File select_file = file_chooser.getSelectedFile();
             try {
-                pdfPage = getPDFPage(selectFile);
+                pdf_page = getPDFPage(select_file);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            PagePanel pagePanel = new PagePanel();
-            pdfPanel.add(pagePanel);
+            PagePanel page_panel = new PagePanel();
+            pdf_panel.add(page_panel);
             validate();
-            pagePanel.showPage(pdfPage);
+            page_panel.showPage(pdf_page);
         }
     }
     
@@ -123,24 +123,24 @@ public class FullScreenFrame extends JFrame {
         RandomAccessFile raf = new RandomAccessFile(file, "r");
         FileChannel channel = raf.getChannel();
         ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-        PDFFile pdfFile = new PDFFile(buffer);
-        return pdfFile.getPage(2);
+        PDFFile pdf_file = new PDFFile(buffer);
+        return pdf_file.getPage(2);
     }
     
     protected void do_fullscreenButton_actionPerformed(ActionEvent arg0) {
-        if (pdfPage == null) {
+        if (pdf_page == null) {
             JOptionPane.showMessageDialog(this, "请选择PDF文件", null, JOptionPane.WARNING_MESSAGE);
             return;
         }
-        Rectangle rect = new Rectangle(0, 0, (int) pdfPage.getBBox().getWidth(), (int) pdfPage.getBBox().getHeight());// 获得用户选中的PDF页面的边框
+        Rectangle rect = new Rectangle(0, 0, (int) pdf_page.getBBox().getWidth(), (int) pdf_page.getBBox().getHeight());// 获得用户选中的PDF页面的边框
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension dimension = toolkit.getScreenSize(); // 获得用户的显示器大小
         double times = dimension.getHeight() / rect.height;// 获得高度需要放大的倍数
-        Image image = pdfPage.getImage((int) (rect.width * times), dimension.height, rect, null, true, true);// 设置图片的大小
-        if (pdfPanel != null) {
-            pdfPanel.removeAll();
+        Image image = pdf_page.getImage((int) (rect.width * times), dimension.height, rect, null, true, true);// 设置图片的大小
+        if (pdf_panel != null) {
+            pdf_panel.removeAll();
         }
-        pdfPanel.add(new JLabel(new ImageIcon(image))); // 显示生成的图片
-        new FullScreenWindow(pdfPanel);
+        pdf_panel.add(new JLabel(new ImageIcon(image))); // 显示生成的图片
+        new FullScreenWindow(pdf_panel);
     }
 }
