@@ -56,9 +56,9 @@ public class DeleteFrame extends JFrame {
         content_pane.add(panel);
         panel.setLayout(null);
         
-        JLabel messageLabel = new JLabel("删除数据时给出提示信息");
-        messageLabel.setFont(new Font("华文中宋", Font.PLAIN, 16));
-        messageLabel.setBounds(123, 26, 213, 34);
+        JLabel messageLabel = new JLabel("info when deleting data");
+        messageLabel.setFont(new Font("Helvetica", Font.PLAIN, 6));
+        messageLabel.setBounds(123, 26, 213, 314);
         panel.add(messageLabel);
         
         JScrollPane scrollPane = new JScrollPane();
@@ -74,7 +74,7 @@ public class DeleteFrame extends JFrame {
         }
         scrollPane.setViewportView(j_table);
         
-        JButton deleteButton = new JButton("删除");
+        JButton deleteButton = new JButton("delete");
         deleteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 do_deleteButton_actionPerformed(arg0);
@@ -83,7 +83,7 @@ public class DeleteFrame extends JFrame {
         deleteButton.setBounds(108, 253, 73, 23);
         panel.add(deleteButton);
         
-        JButton closeButton = new JButton("关闭");
+        JButton closeButton = new JButton("close");
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 do_button_1_actionPerformed(arg0);
@@ -93,13 +93,12 @@ public class DeleteFrame extends JFrame {
         panel.add(closeButton);
     }
     
-    // 删除按钮的单击事件
     protected void do_deleteButton_actionPerformed(ActionEvent arg0) {
         int row = j_table.getSelectedRow();
         if (row >= 0) {
-            int n = JOptionPane.showConfirmDialog(getContentPane(), "确认删除吗？",
-                    "确认对话框", JOptionPane.YES_NO_CANCEL_OPTION);
-            if (n == JOptionPane.YES_OPTION) { // 如果用户确认信息
+            int n = JOptionPane.showConfirmDialog(getContentPane(), "confirm delete?",
+                    "ensure", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (n == JOptionPane.YES_OPTION) {
                 d_util.deleteStu(row+1);
             }           
            validate();
@@ -107,7 +106,6 @@ public class DeleteFrame extends JFrame {
         
     }
     
-    // 关闭按钮的单击事件
     protected void do_button_1_actionPerformed(ActionEvent arg0) {
         System.exit(0);
     }
